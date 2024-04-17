@@ -2,23 +2,23 @@ import { NavItem } from './nav-item/nav-item';
 
 export const navItems: NavItem[] = [
   {
-    navCap: 'Home',
+    navCap: 'Inicio',
   },
   {
-    displayName: 'Dashboard',
+    displayName: 'Panel de información',
     iconName: 'layout-dashboard',
     route: '/dashboard',
   },
   {
-    navCap: 'Ui Components',
+    navCap: 'Ventas',
   },
   {
-    displayName: 'Badge',
+    displayName: 'Registrar venta',
     iconName: 'rosette',
     route: '/ui-components/badge',
   },
   {
-    displayName: 'Chips',
+    displayName: 'Ver ventas',
     iconName: 'poker-chip',
     route: '/ui-components/chips',
   },
@@ -38,29 +38,37 @@ export const navItems: NavItem[] = [
     route: '/ui-components/tooltips',
   },
   {
-    navCap: 'Auth',
+    navCap: 'Compras',
   },
   {
-    displayName: 'Login',
+    displayName: 'Registrar compra',
     iconName: 'lock',
     route: '/authentication/login',
   },
   {
-    displayName: 'Register',
+    displayName: 'Ver compras',
     iconName: 'user-plus',
     route: '/authentication/register',
   },
   {
-    navCap: 'Extra',
+    navCap: 'Clientes',
   },
   {
-    displayName: 'Icons',
+    displayName: 'Registrar cliente',
     iconName: 'mood-smile',
     route: '/extra/icons',
   },
   {
-    displayName: 'Sample Page',
+    displayName: 'Ver clientes',
     iconName: 'aperture',
     route: '/extra/sample-page',
   },
+  {
+    navCap: 'Inventario',
+  },
+  {
+    displayName: 'Ver inventario',
+    iconName: 'mood-smile',
+    route: '/extra/icons',
+  }
 ];
