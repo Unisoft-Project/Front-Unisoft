@@ -1,56 +1,40 @@
 <mat-card class="cardWithShadow theme-card">
   <mat-card-header>
-    <mat-card-title class="m-b-0">Badges</mat-card-title>
+    <mat-card-title class="m-b-0">Agregar Cliente</mat-card-title>
   </mat-card-header>
   <mat-card-content class="b-t-1">
-    <mat-card class="b-1 shadow-none">
-      <mat-card-content>
-        <p>
-          <span matBadge="4" matBadgeOverlap="false" class="f-w-500 text-muted">Text with a badge</span>
-        </p>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="b-1 shadow-none">
-      <mat-card-content>
-        <p>
-          <span matBadge="4" matBadgeOverlap="false" matBadgeSize="large" class="f-w-500 text-muted">Text with large
-            CLIENTES</span>
-        </p>
-      </mat-card-content>
-    </mat-card>
-    
-    <mat-card class="b-1 shadow-none">
-      <mat-card-content>
-        <p class="f-w-500 text-muted">
-          Button with a badge on the left
-          <button mat-flat-button color="primary" matBadge="8" matBadgePosition="before" matBadgeColor="accent">
-            Action
-          </button>
-        </p>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="b-1 shadow-none">
-      <mat-card-content>
-        <p class="f-w-500 text-muted">
-          Icon with a badge
-          <mat-icon matBadge="15" matBadgeColor="warn">home</mat-icon>
-        </p>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="b-1 shadow-none">
-      <mat-card-content>
-        <p>
-          Button toggles badge visibility
-          <button mat-flat-button color="primary" matBadge="7" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">
-            Hide
-          </button>
-        </p>
-      </mat-card-content>
-    </mat-card>
 
 
+    <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+      <form class="m-t-30">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput />
+        </mat-form-field>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
+        <mat-chip-listbox aria-label="Fish selection">
+          <mat-chip-option class="f-s-14" color="primary">Cédula de Ciudadanía</mat-chip-option>
+          <mat-chip-option class="f-s-14" color="primary">Cédula de Extranjería</mat-chip-option>
+          <mat-chip-option class="f-s-14" color="primary">Tarjeta de identidad</mat-chip-option>
+        </mat-chip-listbox>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput />
+        </mat-form-field>
 
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput />
+        </mat-form-field>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput />
+        </mat-form-field>
+
+        <a [routerLink]="['/']" mat-flat-button color="primary" class="w-100">
+          Agregar
+        </a>
+      </form>
+    </div>
   </mat-card-content>
 </mat-card>
