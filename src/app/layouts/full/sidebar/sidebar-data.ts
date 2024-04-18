@@ -14,11 +14,58 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Registrar venta',
+    iconName: 'credit-card',
+    route: '/ventas/agregar-venta',
+  },
+  {
+    displayName: 'Ver ventas',
+    iconName: 'notes',
+    route: '/ui-components/chips', ///****** */
+  },
+  {
+    navCap: 'Compras',
+  },
+  {
+    displayName: 'Registrar compra',
+    iconName: 'shopping-cart',
+    route: '/compras/agregar-compra',
+  },
+  {
+    displayName: 'Ver compras',
+    iconName: 'list',
+    route: '/authentication/register', //********* */
+  },
+  {
+    navCap: 'Clientes',
+  },
+  {
+    displayName: 'Registrar cliente',
+    iconName: 'user-plus',
+    route: '/clientes/agregar-cliente',
+  },
+  {
+    displayName: 'Ver clientes',
+    iconName: 'users',
+    route: '/extra/sample-page', ///********* */
+  },
+  {
+    navCap: 'Inventario',
+  },
+  {
+    displayName: 'Ver inventario',
+    iconName: 'building-warehouse',
+    route: '/inventario/ver-inventario',
+  },
+  {
+    navCap: 'Originales',
+  },
+  {
+    displayName: 'Badge',
     iconName: 'rosette',
     route: '/ui-components/badge',
   },
   {
-    displayName: 'Ver ventas',
+    displayName: 'Chips',
     iconName: 'poker-chip',
     route: '/ui-components/chips',
   },
@@ -38,37 +85,23 @@ export const navItems: NavItem[] = [
     route: '/ui-components/tooltips',
   },
   {
-    navCap: 'Compras',
-  },
-  {
-    displayName: 'Registrar compra',
+    displayName: 'Login',
     iconName: 'lock',
     route: '/authentication/login',
   },
   {
-    displayName: 'Ver compras',
+    displayName: 'Registro',
     iconName: 'user-plus',
     route: '/authentication/register',
   },
   {
-    navCap: 'Clientes',
-  },
-  {
-    displayName: 'Registrar cliente',
+    displayName: 'Icons',
     iconName: 'mood-smile',
     route: '/extra/icons',
   },
   {
-    displayName: 'Ver clientes',
+    displayName: 'Sample Page',
     iconName: 'aperture',
     route: '/extra/sample-page',
   },
-  {
-    navCap: 'Inventario',
-  },
-  {
-    displayName: 'Ver inventario',
-    iconName: 'mood-smile',
-    route: '/extra/icons',
-  }
 ];

@@ -26,6 +26,34 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'clientes',
+        loadChildren: () =>
+          import('./pages/clientes/clientes.module').then(
+            (m) => m.ClientesModule
+          ),
+      },
+      {
+        path: 'ventas',
+        loadChildren: () =>
+          import('./pages/ventas/ventas.module').then(
+            (m) => m.VentasModule
+          ),
+      },
+      {
+        path: 'compras',
+        loadChildren: () =>
+          import('./pages/compras/compras.module').then(
+            (m) => m.ComprasModule
+          ),
+      },
+      {
+        path: 'inventario',
+        loadChildren: () =>
+          import('./pages/inventario/inventario.module').then(
+            (m) => m.InventarioModule
+          ),
+      },
+      {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.module').then((m) => m.ExtraModule),
