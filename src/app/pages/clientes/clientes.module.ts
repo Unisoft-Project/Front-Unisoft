@@ -9,12 +9,17 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import * as TablerIcons from 'angular-tabler-icons/icons';
 import { clientesRoutes } from './clientes.routing';
+import { EditarClienteComponent } from './editar-cliente/editar-cliente.component';
+import { VerClientesComponent } from './ver-clientes/ver-clientes.component';
 
 
 
 @NgModule({
   declarations: [
-    AgregarClienteComponent
+    AgregarClienteComponent,
+    EditarClienteComponent,
+    VerClientesComponent
+    
   ],
   imports: [
     CommonModule,

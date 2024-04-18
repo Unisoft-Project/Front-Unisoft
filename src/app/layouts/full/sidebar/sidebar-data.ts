@@ -44,9 +44,14 @@ export const navItems: NavItem[] = [
     route: '/clientes/agregar-cliente',
   },
   {
+    displayName: 'Editar cliente',
+    iconName: 'edit',
+    route: '/clientes/editar-cliente',
+  },
+  {
     displayName: 'Ver clientes',
     iconName: 'users',
-    route: '/extra/sample-page', ///********* */
+    route: '/clientes/ver-clientes', ///********* */
   },
   {
     navCap: 'Inventario',

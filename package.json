@@ -25,6 +25,7 @@
     "ng-apexcharts": "1.7.1",
     "rxjs": "~7.5.0",
     "sass": "^1.57.1",
+    "sweetalert2": "^11.10.8",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },
