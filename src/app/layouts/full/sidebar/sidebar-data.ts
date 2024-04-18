@@ -2,15 +2,62 @@ import { NavItem } from './nav-item/nav-item';
 
 export const navItems: NavItem[] = [
   {
-    navCap: 'Home',
+    navCap: 'Inicio',
   },
   {
-    displayName: 'Dashboard',
+    displayName: 'Panel de información',
     iconName: 'layout-dashboard',
     route: '/dashboard',
   },
   {
-    navCap: 'Ui Components',
+    navCap: 'Ventas',
+  },
+  {
+    displayName: 'Registrar venta',
+    iconName: 'credit-card',
+    route: '/ventas/agregar-venta',
+  },
+  {
+    displayName: 'Ver ventas',
+    iconName: 'notes',
+    route: '/ui-components/chips', ///****** */
+  },
+  {
+    navCap: 'Compras',
+  },
+  {
+    displayName: 'Registrar compra',
+    iconName: 'shopping-cart',
+    route: '/compras/agregar-compra',
+  },
+  {
+    displayName: 'Ver compras',
+    iconName: 'list',
+    route: '/authentication/register', //********* */
+  },
+  {
+    navCap: 'Clientes',
+  },
+  {
+    displayName: 'Registrar cliente',
+    iconName: 'user-plus',
+    route: '/clientes/agregar-cliente',
+  },
+  {
+    displayName: 'Ver clientes',
+    iconName: 'users',
+    route: '/extra/sample-page', ///********* */
+  },
+  {
+    navCap: 'Inventario',
+  },
+  {
+    displayName: 'Ver inventario',
+    iconName: 'building-warehouse',
+    route: '/inventario/ver-inventario',
+  },
+  {
+    navCap: 'Originales',
   },
   {
     displayName: 'Badge',
@@ -38,20 +85,14 @@ export const navItems: NavItem[] = [
     route: '/ui-components/tooltips',
   },
   {
-    navCap: 'Auth',
-  },
-  {
     displayName: 'Login',
     iconName: 'lock',
     route: '/authentication/login',
   },
   {
-    displayName: 'Register',
+    displayName: 'Registro',
     iconName: 'user-plus',
     route: '/authentication/register',
-  },
-  {
-    navCap: 'Extra',
   },
   {
     displayName: 'Icons',
