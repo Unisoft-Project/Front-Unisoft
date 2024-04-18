@@ -30,10 +30,23 @@
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input matInput />
         </mat-form-field>
-
-        <a [routerLink]="['/']" mat-flat-button color="primary" class="w-100">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
+        <label for="file-upload">
+          <i-tabler class="routeIcon" name="photo-plus" matListItemIcon></i-tabler>
+        </label>
+        <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
+        <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
+        <!-- <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo"> -->
+        <div>
+          <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo" class="w-50" mat-card-image style="max-width: 200px; max-height: 200px;" />
+          <button *ngIf="selectedFile" (click)="deleteSelectedPhoto()" aria-label="Delete Photo">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        
+        <button mat-flat-button color="primary" class="w-100" (click)="addClient()">
           Agregar
-        </a>
+        </button>
       </form>
     </div>
   </mat-card-content>

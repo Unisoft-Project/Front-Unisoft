@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
+import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
-
 @Component({
-  selector: 'app-agregar-cliente',
-  templateUrl: './agregar-cliente.component.html',
+  selector: 'app-editar-cliente',
+  templateUrl: './editar-cliente.component.html'
 })
-export class AgregarClienteComponent {
+export class EditarClienteComponent {
   selectedFile: string | ArrayBuffer | null = null;
 
   constructor(private router: Router) { }
-
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
@@ -20,18 +18,6 @@ export class AgregarClienteComponent {
       };
       reader.readAsDataURL(file);
     }
-  }
-  addClient() {
-    Swal.fire({
-      title: 'Cliente agregado con éxito',
-      text: '',
-      icon: 'success',
-      confirmButtonText: 'OK'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.router.navigate(['/clientes/ver-clientes']);
-      }
-    });
   }
 
   deleteSelectedPhoto() {
@@ -44,5 +30,16 @@ export class AgregarClienteComponent {
 
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
+  }
+  editClient() {
+    Swal.fire({
+      title: 'Cliente editado con éxito',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.router.navigate(['/clientes/ver-clientes']);
+      }
+    });
   }
 }
