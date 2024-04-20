@@ -6,40 +6,39 @@
   
   
       <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-        <form class="m-t-30">
+        <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="editClient(clientesForm)">
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
         <div style="display: flex;">
             <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px;">
-              <input matInput />
+              <input matInput name="documento" #documentoField="ngModel" ngModel/>
             </mat-form-field>
-            <a [routerLink]="['/']" mat-flat-button color="primary" style="width: 100px; margin-top: 10px;">
+            <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px;" type="button" (click)="searchClient(documentoField.value)">
               Buscar
-            </a>
+            </button>
           </div>
           
           
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput />
+            <input required matInput name="nombre" [(ngModel)]="data.nombre" />
           </mat-form-field>
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
-          <mat-chip-listbox aria-label="Fish selection">
+          <mat-chip-listbox aria-label="Fish selection" name="tipo_Documento" ngModel [(ngModel)]="data.tipo_documento">
             <mat-chip-option class="f-s-14" color="primary">Cédula de Ciudadanía</mat-chip-option>
             <mat-chip-option class="f-s-14" color="primary">Cédula de Extranjería</mat-chip-option>
-            <mat-chip-option class="f-s-14" color="primary">Tarjeta de identidad</mat-chip-option>
+            <mat-chip-option class="f-s-14" color="primary">Tarjeta de Identidad</mat-chip-option>
+            <mat-chip-option class="f-s-14" color="primary">Pasaporte</mat-chip-option>
+            <mat-chip-option class="f-s-14" color="primary">NIT</mat-chip-option>
           </mat-chip-listbox>
-          
-          <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput />
-          </mat-form-field>
+     
   
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput />
+            <input required matInput name="direccion" ngModel [(ngModel)]="data.direccion"/>
           </mat-form-field>
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput />
+            <input required matInput name="telefono" ngModel [(ngModel)]="data.telefono"/>
           </mat-form-field>
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
           <label for="file-upload">
@@ -55,7 +54,7 @@
             </button>
           </div>
           
-          <button mat-flat-button color="primary" class="w-100"  (click)="editClient()">
+          <button mat-flat-button color="primary" class="w-100" >
             Editar
           </button>
         </form>
