@@ -1,101 +1,20 @@
 <div class="col-lg-20">
     <mat-card class="cardWithShadow">
-        <mat-card-content class="p-24">
-            <mat-card-title>Clientes Registrados</mat-card-title>
-            <div class="table-responsive m-t-16">
-                <table mat-table [dataSource]="dataSource" class="w-100">
-                    <!-- Position Column -->
-                    <ng-container matColumnDef="Id">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Item
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.id }}
-                        </td>
-                        <!-- <td mat-cell *matCellDef="let element">
-                            <div class="d-flex align-items-center">
-                                <img [src]="element.imagePath" alt="users" width="40" class="rounded-circle" />
-                                <div class="m-l-16">
-                                    <h6 class="mat-subtitle-1 f-s-14 f-w-600">
-                                        {{ element.uname }}
-                                    </h6>
-                                    <span class="mat-body-1 f-s-12">
-                                        {{ element.position }}
-                                    </span>
-                                </div>
-                            </div>
-                        </td> -->
-                    </ng-container>
-
-                    <!-- Name Column -->
-                    <ng-container matColumnDef="TipoDocumento">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Tipo de Documento
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.tipo_documento }}
-                        </td>
-                    </ng-container>
-
-                    <!-- Weight Column -->
-                    <ng-container matColumnDef="Documento">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Documento
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.documento }}
-                        </td>
-                    </ng-container>
-
-                    <!-- Symbol Column -->
- 
-                    <ng-container matColumnDef="Nombre">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Nombre
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.nombre }}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="Direccion">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Direccion
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.direccion }}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="Telefono">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Telefono
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.telefono }}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="FotoDocumento">
-                        <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                            Foto documento
-                        </th>
-                        <!-- <td mat-cell *matCellDef="let element" class="mat-body-1">
-                            {{ element.foto_documento }}
-                        </td> -->
-                        <td mat-cell *matCellDef="let element">
-                            <div class="d-flex align-items-center">
-                              <img
-                                [src]="element.foto_documento"
-                                alt="users"
-                                width="40"
-                                class="rounded-square"
-                              />
-                              
-                            </div>
-                          </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-                </table>
-            </div>
-        </mat-card-content>
+      <mat-card-content class="p-24">
+        <mat-card-title>Clientes Registrados</mat-card-title>
+        <div class="table-responsive m-t-16">
+          <table mat-table [dataSource]="dataSource" class="w-100">
+            <!-- Define table columns using ngFor -->
+            <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">{{ column }}</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ column === 'TipoDocumento' ? element.tipo_documento : element[column.toLowerCase()] }}</td>
+              </ng-container>
+            <!-- Header and Row definitions -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </mat-card-content>
     </mat-card>
-</div>
+  </div>
+  

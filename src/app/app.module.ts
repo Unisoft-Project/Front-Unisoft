@@ -23,7 +23,9 @@ import { SidebarComponent } from './layouts/full/sidebar/sidebar.component';
 import { HeaderComponent } from './layouts/full/header/header.component';
 import { BrandingComponent } from './layouts/full/sidebar/branding.component';
 import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.component';
-
+import {AngularFireModule} from "@angular/fire/compat";
+import {AngularFireStorageModule} from "@angular/fire/compat/storage";
+import { environment } from './environment/environment';
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,6 +35,7 @@ import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.co
     HeaderComponent,
     BrandingComponent,
     AppNavItemComponent,
+    
   ],
   imports: [
     BrowserModule,
@@ -43,6 +46,8 @@ import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.co
     ReactiveFormsModule,
     MaterialModule,
     TablerIconsModule.pick(TablerIcons),
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireStorageModule
   ],
   exports: [TablerIconsModule],
   bootstrap: [AppComponent],
