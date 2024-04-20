@@ -6,29 +6,29 @@
 
 
     <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-      <form class="m-t-30">
+      <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="addClient(clientesForm)">
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput />
+          <input required matInput name="nombre" ngModel/>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
-        <mat-chip-listbox aria-label="Fish selection">
+        <mat-chip-listbox aria-label="Fish selection" name="tipoDocumento" ngModel>
           <mat-chip-option class="f-s-14" color="primary">Cédula de Ciudadanía</mat-chip-option>
           <mat-chip-option class="f-s-14" color="primary">Cédula de Extranjería</mat-chip-option>
           <mat-chip-option class="f-s-14" color="primary">Tarjeta de identidad</mat-chip-option>
         </mat-chip-listbox>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput />
+          <input required matInput name="documento" ngModel/>
         </mat-form-field>
 
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput />
+          <input required matInput name="direccion" ngModel/>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput />
+          <input required matInput name="telefono" ngModel/>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
         <label for="file-upload">
@@ -44,7 +44,7 @@
           </button>
         </div>
         
-        <button mat-flat-button color="primary" class="w-100" (click)="addClient()">
+        <button mat-flat-button color="primary" class="w-100">
           Agregar
         </button>
       </form>
