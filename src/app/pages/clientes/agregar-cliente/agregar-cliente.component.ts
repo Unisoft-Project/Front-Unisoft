@@ -37,17 +37,17 @@ export class AgregarClienteComponent {
     };
     //
     if(form.value.tipoDocumento === "Cédula de Ciudadanía"){
-      data.tipo_documento = "1";
-    } else if(form.value.documento === "Tarjeta de Identidad"){
-      data.tipo_documento = "2";
-    } else if(form.value.documento === "Cédula de Extranjería"){
-      data.tipo_documento = "3";
-    } else if(form.value.documento === "Pasaporte"){
-      data.tipo_documento = "4";
-    } else if(form.value.documento === "NIT"){
-      data.tipo_documento = "5";
+      data.tipo_documento = 1;
+    } else if(form.value.tipoDocumento === "Tarjeta de Identidad"){
+      data.tipo_documento = 2;
+    } else if(form.value.tipoDocumento === "Cédula de Extranjería"){
+      data.tipo_documento = 3;
+    } else if(form.value.tipoDocumento === "Pasaporte"){
+      data.tipo_documento = 4;
+    } else if(form.value.tipoDocumento === "NIT"){
+      data.tipo_documento = 5;
     } 
-    
+    console.log(data.tipo_documento);
     data.nombre = form.value.nombre;
     
     data.documento = form.value.documento;
