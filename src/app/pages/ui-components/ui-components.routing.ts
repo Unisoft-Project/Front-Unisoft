@@ -6,7 +6,6 @@ import { AppChipsComponent } from './chips/chips.component';
 import { AppListsComponent } from './lists/lists.component';
 import { AppMenuComponent } from './menu/menu.component';
 import { AppTooltipsComponent } from './tooltips/tooltips.component';
-import { AgregarClienteComponent } from '../clientes/agregar-cliente/agregar-cliente.component';
 
 export const UiComponentsRoutes: Routes = [
   {
