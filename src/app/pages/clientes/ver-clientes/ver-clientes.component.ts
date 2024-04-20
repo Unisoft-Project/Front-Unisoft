@@ -20,7 +20,7 @@ interface Client {
 
 
 export class VerClientesComponent {
-  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono', 'FotoDocumento'];
+  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono'];
   dataSource: Client[] = [];
   documentTypeMap: any = {
     1: 'Cédula de Ciudadanía',

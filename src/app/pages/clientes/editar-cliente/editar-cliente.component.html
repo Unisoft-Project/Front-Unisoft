@@ -48,8 +48,8 @@
           <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
           <!-- <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo"> -->
           <div>
-            <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo" class="w-50" mat-card-image style="max-width: 200px; max-height: 200px;" />
-            <button *ngIf="selectedFile" (click)="deleteSelectedPhoto()" aria-label="Delete Photo">
+            <img *ngIf="photoUrl || selectedFile" [src]="photoUrl ? photoUrl : selectedFile" alt="Selected Photo" class="w-50" mat-card-image style="max-width: 200px; max-height: 200px;" />
+            <button *ngIf="photoUrl || selectedFile" (click)="deleteSelectedPhoto(photoUrl)" aria-label="Delete Photo">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
