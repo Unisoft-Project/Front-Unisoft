@@ -1,1 +1,171 @@
-<p>agregar-compra works!</p>
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Agregar Compra</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <div
+      class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+    >
+      <form [formGroup]="compraForm" (ngSubmit)="onSubmit()" class="m-t-30">
+        <!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
+        <div style="display: flex">
+          <!--IMEI-->
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            IMEI
+          </mat-label>
+          <mat-form-field
+            appearance="outline"
+            class="w-100"
+            color="primary"
+            style="margin-right: 8px"
+          >
+            <input matInput formControlName="imei" placeholder="IMEI" />
+            <mat-error
+              *ngIf="
+                compraForm.controls['imei'].invalid &&
+                compraForm.controls['imei'].touched
+              "
+            >
+              IMEI es requerido
+            </mat-error>
+          </mat-form-field>
+
+          <!--Marca-->
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Marca de Teléfono
+          </mat-label>
+          <mat-form-field
+            appearance="outline"
+            class="w-100"
+            color="primary"
+            style="margin-right: 8px"
+          >
+            <input matInput placeholder="Marca de Teléfono" />
+          </mat-form-field>
+        </div>
+        <!--Procedencia-->
+        <!--TODO: Aclarar qué es procedencia en este contexto (Posibles inputs)-->
+        <div style="display: flex">
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Procedencia
+          </mat-label>
+          <mat-form-field
+            appearance="outline"
+            class="w-100"
+            color="primary"
+            style="margin-right: 8px"
+          >
+            <input matInput placeholder="Procedencia" />
+          </mat-form-field>
+
+          <!--Modelo del Teléfono-->
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Modelo del Teléfono
+          </mat-label>
+          <mat-form-field
+            appearance="outline"
+            class="w-100"
+            color="primary"
+            style="margin-right: 8px"
+          >
+            <input matInput placeholder="Modelo" />
+          </mat-form-field>
+        </div>
+
+        <!--Detalles-->
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+          Detalles del Teléfono
+        </mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="w-100"
+          color="primary"
+          style="margin-right: 8px"
+        >
+          <textarea
+            matInput
+            placeholder="Detalles"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="7"
+          >
+          </textarea>
+        </mat-form-field>
+
+        <!--Valor Compra-->
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+          Valor de Compra
+        </mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="w-100"
+          color="primary"
+          style="margin-right: 8px"
+        >
+          <!--TODO: Eliminar capacidad de aumentar de 1 en 1 mediante pequeñas flechas-->
+          <input
+            matInput
+            type="number"
+            min="0"
+            placeholder="0"
+            appareance="textfield"
+          />
+          <span matTextPrefix>$&nbsp;</span>
+        </mat-form-field>
+        <label for="format-upload">
+          <i-tabler
+            class="routeIcon"
+            name="file-plus"
+            matListItemIcon
+          ></i-tabler>
+        </label>
+        <input
+          id="format-upload"
+          type="file"
+          style="display: none"
+          (change)="onFormatSelected($event)"
+        />
+        <button mat-flat-button color="primary" class="w-100">
+          Agregar Compra
+        </button>
+      </form>
+    </div>
+  </mat-card-content>
+
+  <!--Apartado de Tabla-->
+  <mat-card-content>
+    <div
+      class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+    >
+      <table class="table">
+        <thead>
+          <tr>
+            <th>IMEI</th>
+            <th>Marca de Teléfono</th>
+            <th>Procedencia</th>
+            <th>Modelo del Teléfono</th>
+            <th>Detalles del Teléfono</th>
+            <th>Valor de Compra</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>123456789</td>
+            <td>Samsung</td>
+            <td>China</td>
+            <td>Galaxy S20</td>
+            <td>Phone details</td>
+            <td>$500</td>
+          </tr>
+          <tr>
+            <td>987654321</td>
+            <td>Apple</td>
+            <td>USA</td>
+            <td>iPhone 12</td>
+            <td>Phone details</td>
+            <td>$1000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
