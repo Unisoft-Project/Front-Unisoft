@@ -1,12 +1,19 @@
 <mat-card class="cardWithShadow theme-card">
   <mat-card-header>
-    <mat-card-title class="m-b-0">Agregar Compra</mat-card-title>
+    <mat-card-title class="m-b-0">Registrar Compra</mat-card-title>
   </mat-card-header>
   <mat-card-content class="b-t-1">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">Agregar Dispositivo</mat-card-title>
+    </mat-card-header>
     <div
       class="position-relative row w-100 h-100 bg-gredient justify-content-center"
     >
-      <form [formGroup]="compraForm" (ngSubmit)="onSubmit()" class="m-t-30">
+      <form
+        [formGroup]="compraForm"
+        (ngSubmit)="onSubmitCompra()"
+        class="m-t-30"
+      >
         <!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
         <div style="display: flex">
           <!--IMEI-->
@@ -19,7 +26,12 @@
             color="primary"
             style="margin-right: 8px"
           >
-            <input matInput formControlName="imei" placeholder="IMEI" />
+            <input
+              matInput
+              formControlName="imei"
+              type="number"
+              placeholder="IMEI"
+            />
             <mat-error
               *ngIf="
                 compraForm.controls['imei'].invalid &&
@@ -40,7 +52,19 @@
             color="primary"
             style="margin-right: 8px"
           >
-            <input matInput placeholder="Marca de Teléfono" />
+            <input
+              matInput
+              formControlName="marcaTelefono"
+              placeholder="Marca de Teléfono"
+            />
+            <mat-error
+              *ngIf="
+                compraForm.controls['marcaTelefono'].invalid &&
+                compraForm.controls['marcaTelefono'].touched
+              "
+            >
+              Marca de Teléfono es Requerido
+            </mat-error>
           </mat-form-field>
         </div>
         <!--Procedencia-->
@@ -55,7 +79,19 @@
             color="primary"
             style="margin-right: 8px"
           >
-            <input matInput placeholder="Procedencia" />
+            <input
+              matInput
+              formControlName="procedencia"
+              placeholder="Procedencia"
+            />
+            <mat-error
+              *ngIf="
+                compraForm.controls['procedencia'].invalid &&
+                compraForm.controls['procedencia'].touched
+              "
+            >
+              Procedencia es Requerido
+            </mat-error>
           </mat-form-field>
 
           <!--Modelo del Teléfono-->
@@ -68,10 +104,35 @@
             color="primary"
             style="margin-right: 8px"
           >
-            <input matInput placeholder="Modelo" />
+            <input
+              matInput
+              formControlName="modeloTelefono"
+              placeholder="Modelo"
+            />
+            <mat-error
+              *ngIf="
+                compraForm.controls['modeloTelefono'].invalid &&
+                compraForm.controls['modeloTelefono'].touched
+              "
+            >
+              Modelo de Telefono es Requerido
+            </mat-error>
           </mat-form-field>
         </div>
 
+        <!--Botón Subir Formato Compaventa-->
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+          Formato de Compraventa
+        </mat-label>
+        <label for="format-upload">
+          <i-tabler class="routeIcon" name="receipt" matListItemIcon></i-tabler>
+        </label>
+        <input
+          id="format-upload"
+          type="file"
+          style="display: none"
+          (change)="onFormatSelected($event)"
+        />
         <!--Detalles-->
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
           Detalles del Teléfono
@@ -84,6 +145,7 @@
         >
           <textarea
             matInput
+            formControlName="detallesTelefono"
             placeholder="Detalles"
             cdkTextareaAutosize
             cdkAutosizeMinRows="7"
@@ -104,6 +166,7 @@
           <!--TODO: Eliminar capacidad de aumentar de 1 en 1 mediante pequeñas flechas-->
           <input
             matInput
+            formControlName="valorCompra"
             type="number"
             min="0"
             placeholder="0"
@@ -111,21 +174,8 @@
           />
           <span matTextPrefix>$&nbsp;</span>
         </mat-form-field>
-        <label for="format-upload">
-          <i-tabler
-            class="routeIcon"
-            name="file-plus"
-            matListItemIcon
-          ></i-tabler>
-        </label>
-        <input
-          id="format-upload"
-          type="file"
-          style="display: none"
-          (change)="onFormatSelected($event)"
-        />
-        <button mat-flat-button color="primary" class="w-100">
-          Agregar Compra
+        <button class="w-100" mat-raised-button color="primary" type="submit">
+          Agregar
         </button>
       </form>
     </div>
@@ -133,39 +183,137 @@
 
   <!--Apartado de Tabla-->
   <mat-card-content>
+    <mat-table
+      class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+    >
+      <!-- Columnas de la tabla -->
+      <ng-container matColumnDef="IMEI">
+        <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
+        <mat-cell *matCellDef="let element"> 123456789 </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="Marca de Teléfono">
+        <mat-header-cell *matHeaderCellDef> Marca de Teléfono </mat-header-cell>
+        <mat-cell *matCellDef="let element"> Samsung </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="Procedencia">
+        <mat-header-cell *matHeaderCellDef> Procedencia </mat-header-cell>
+        <mat-cell *matCellDef="let element"> China </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="Modelo del Teléfono">
+        <mat-header-cell *matHeaderCellDef>
+          Modelo del Teléfono
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element"> Galaxy S20 </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="Detalles del Teléfono">
+        <mat-header-cell *matHeaderCellDef>
+          Detalles del Teléfono
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element"> Phone details </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="Valor de Compra">
+        <mat-header-cell *matHeaderCellDef> Valor de Compra </mat-header-cell>
+        <mat-cell *matCellDef="let element"> $500 </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+    <!--TODO: Quitar lo Estático y hacer que tome la info desde Firebase (Agregar Dispositivo)-->
+  </mat-card-content>
+
+  <!--Datos del Cliente-->
+  <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="onSubmiCliente()">
+    <mat-card-content class="b-t-1">
+      <mat-card-header>
+        <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
+      </mat-card-header>
+      <div
+        class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+      >
+        <div style="display: flex">
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Buscar Cliente
+          </mat-label>
+          <mat-form-field
+            appearance="outline"
+            class="w-100"
+            color="primary"
+            style="margin-right: 8px"
+          >
+            <input matInput placeholder="Identificación" />
+          </mat-form-field>
+
+          <!--Botón Buscar-->
+          <button class="w-100" mat-raised-button color="primary" type="submit">
+            Buscar
+          </button>
+          <a mat-button color="accent" routerLink="/registrar-cliente"
+            >Registrar Cliente</a
+          >
+          <!--TODO: Revisar ruta y que lleve a Registrar Cliente / Modal (openDialog()) con el registro de cliente clonado-->
+        </div>
+        <!--Datos del Cliente-->
+
+        <!--<div *ngIf="clienteEncontrado">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+          Datos del Cliente
+        </mat-label>
+        <mat-card>
+          <mat-card-content>
+            <p>Nombre: {{ clienteEncontrado.nombre }}</p>
+            <p>Apellido: {{ clienteEncontrado.apellido }}</p>
+            <p>Correo: {{ clienteEncontrado.correo }}</p>
+            <p>Teléfono: {{ clienteEncontrado.telefono }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>-->
+        <!--TODO: Quitar lo Estático y hacer que tome la info desde Firebase (Buscar Cliente / Registrar Cliente)-->
+      </div>
+      <div
+        class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+      >
+        <mat-card>
+          <mat-card-content>
+            <p>Identificación: 123246</p>
+            <p>Nombre: Juan</p>
+            <p>Dirección: Dirección</p>
+            <p>Teléfono: 123456</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </form>
+
+  <!--Otras Acciones-->
+  <mat-card-content class="b-t-1">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">Otras Acciones</mat-card-title>
+    </mat-card-header>
     <div
       class="position-relative row w-100 h-100 bg-gredient justify-content-center"
     >
-      <table class="table">
-        <thead>
-          <tr>
-            <th>IMEI</th>
-            <th>Marca de Teléfono</th>
-            <th>Procedencia</th>
-            <th>Modelo del Teléfono</th>
-            <th>Detalles del Teléfono</th>
-            <th>Valor de Compra</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>123456789</td>
-            <td>Samsung</td>
-            <td>China</td>
-            <td>Galaxy S20</td>
-            <td>Phone details</td>
-            <td>$500</td>
-          </tr>
-          <tr>
-            <td>987654321</td>
-            <td>Apple</td>
-            <td>USA</td>
-            <td>iPhone 12</td>
-            <td>Phone details</td>
-            <td>$1000</td>
-          </tr>
-        </tbody>
-      </table>
+      <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+        Generar Factura
+      </mat-label>
+      <label for="format-upload">
+        <i-tabler
+          class="routeIcon"
+          name="file-download"
+          matListItemIcon
+        ></i-tabler>
+      </label>
+      <input
+        id="format-upload"
+        type="file"
+        style="display: none"
+        (change)="onFormatSelected($event)"
+      />
     </div>
   </mat-card-content>
 </mat-card>
