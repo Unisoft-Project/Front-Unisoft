@@ -10,13 +10,13 @@
       class="position-relative row w-100 h-100 bg-gredient justify-content-center"
     >
       <form
-        [formGroup]="compraForm"
-        (ngSubmit)="onSubmitCompra()"
         class="m-t-30"
+        #compraForm="ngForm"
+        (ngSubmit)="addCompra(compraForm)"
       >
         <!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
         <div style="display: flex">
-          <!--IMEI-->
+          <!--*IMEI-->
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
             IMEI
           </mat-label>
@@ -27,22 +27,16 @@
             style="margin-right: 8px"
           >
             <input
+              required
               matInput
-              formControlName="imei"
-              type="number"
+              ngModel
+              name="imei"
+              type="string"
               placeholder="IMEI"
             />
-            <mat-error
-              *ngIf="
-                compraForm.controls['imei'].invalid &&
-                compraForm.controls['imei'].touched
-              "
-            >
-              IMEI es requerido
-            </mat-error>
           </mat-form-field>
 
-          <!--Marca-->
+          <!--*Marca-->
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
             Marca de Teléfono
           </mat-label>
@@ -53,18 +47,13 @@
             style="margin-right: 8px"
           >
             <input
+              required
               matInput
-              formControlName="marcaTelefono"
+              ngModel
+              name="marca_telefono"
+              type="string"
               placeholder="Marca de Teléfono"
             />
-            <mat-error
-              *ngIf="
-                compraForm.controls['marcaTelefono'].invalid &&
-                compraForm.controls['marcaTelefono'].touched
-              "
-            >
-              Marca de Teléfono es Requerido
-            </mat-error>
           </mat-form-field>
         </div>
         <!--Procedencia-->
@@ -80,18 +69,14 @@
             style="margin-right: 8px"
           >
             <input
+              required
               matInput
-              formControlName="procedencia"
+              ngModel
+              name="procedencia"
+              type="string"
               placeholder="Procedencia"
             />
-            <mat-error
-              *ngIf="
-                compraForm.controls['procedencia'].invalid &&
-                compraForm.controls['procedencia'].touched
-              "
-            >
-              Procedencia es Requerido
-            </mat-error>
+            <mat-error> Procedencia es Requerido </mat-error>
           </mat-form-field>
 
           <!--Modelo del Teléfono-->
@@ -105,18 +90,14 @@
             style="margin-right: 8px"
           >
             <input
+              required
               matInput
-              formControlName="modeloTelefono"
+              ngModel
+              type="string"
+              name="modelo_telefono"
               placeholder="Modelo"
             />
-            <mat-error
-              *ngIf="
-                compraForm.controls['modeloTelefono'].invalid &&
-                compraForm.controls['modeloTelefono'].touched
-              "
-            >
-              Modelo de Telefono es Requerido
-            </mat-error>
+            <mat-error> Modelo de Telefono es Requerido </mat-error>
           </mat-form-field>
         </div>
 
@@ -131,24 +112,39 @@
           id="format-upload"
           type="file"
           style="display: none"
-          (change)="onFormatSelected($event)"
+          (change)="onFileSelected($event)"
         />
+        <div>
+          <img
+            *ngIf="selectedFile"
+            [src]="selectedFile"
+            alt="Selected Photo"
+            class="w-50"
+            mat-card-image
+            style="max-width: 200px; max-height: 200px"
+          />
+          <button
+            *ngIf="selectedFile"
+            (click)="deleteSelectedPhoto()"
+            aria-label="Delete Photo"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
         <!--Detalles-->
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
           Detalles del Teléfono
         </mat-label>
-        <mat-form-field
-          appearance="outline"
-          class="w-100"
-          color="primary"
-          style="margin-right: 8px"
-        >
+        <mat-form-field appearance="outline" class="w-100" color="primary">
           <textarea
             matInput
-            formControlName="detallesTelefono"
+            ngModel
+            name="detalles"
+            type="string"
             placeholder="Detalles"
             cdkTextareaAutosize
-            cdkAutosizeMinRows="7"
+            cdkAutosizeMinRows="5"
           >
           </textarea>
         </mat-form-field>
@@ -157,16 +153,12 @@
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
           Valor de Compra
         </mat-label>
-        <mat-form-field
-          appearance="outline"
-          class="w-100"
-          color="primary"
-          style="margin-right: 8px"
-        >
+        <mat-form-field appearance="outline" class="w-100" color="primary">
           <!--TODO: Eliminar capacidad de aumentar de 1 en 1 mediante pequeñas flechas-->
           <input
             matInput
-            formControlName="valorCompra"
+            ngModel
+            name="valor_compra"
             type="number"
             min="0"
             placeholder="0"
@@ -174,7 +166,12 @@
           />
           <span matTextPrefix>$&nbsp;</span>
         </mat-form-field>
-        <button class="w-100" mat-raised-button color="primary" type="submit">
+        <button
+          class="w-100"
+          mat-raised-button
+          color="primary"
+          (click)="addFila(compraForm)"
+        >
           Agregar
         </button>
       </form>
@@ -182,53 +179,71 @@
   </mat-card-content>
 
   <!--Apartado de Tabla-->
-  <mat-card-content>
-    <mat-table
-      class="position-relative row w-100 h-100 bg-gredient justify-content-center"
-    >
-      <!-- Columnas de la tabla -->
-      <ng-container matColumnDef="IMEI">
-        <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
-        <mat-cell *matCellDef="let element"> 123456789 </mat-cell>
-      </ng-container>
+  <mat-card-content class="b-t-1">
+    <mat-table [dataSource]="dataSource">
+      <div
+        class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+      >
+        <!-- Columna IMEI -->
+        <ng-container matColumnDef="IMEI">
+          <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div>{{ element.imei }}</div>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="Marca de Teléfono">
-        <mat-header-cell *matHeaderCellDef> Marca de Teléfono </mat-header-cell>
-        <mat-cell *matCellDef="let element"> Samsung </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="Marca de Teléfono">
+          <mat-header-cell *matHeaderCellDef>
+            Marca de Teléfono
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div>{{ element.marca_telefono }}</div>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="Procedencia">
-        <mat-header-cell *matHeaderCellDef> Procedencia </mat-header-cell>
-        <mat-cell *matCellDef="let element"> China </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="Procedencia">
+          <mat-header-cell *matHeaderCellDef> Procedencia </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div>{{ element.procedencia }}</div>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="Modelo del Teléfono">
-        <mat-header-cell *matHeaderCellDef>
-          Modelo del Teléfono
-        </mat-header-cell>
-        <mat-cell *matCellDef="let element"> Galaxy S20 </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="Modelo del Teléfono">
+          <mat-header-cell *matHeaderCellDef>
+            Modelo del Teléfono
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div>{{ element.modelo_telefono }}</div>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="Detalles del Teléfono">
-        <mat-header-cell *matHeaderCellDef>
-          Detalles del Teléfono
-        </mat-header-cell>
-        <mat-cell *matCellDef="let element"> Phone details </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="Detalles del Teléfono">
+          <mat-header-cell *matHeaderCellDef>
+            Detalles del Teléfono
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div>{{ element.detalles }}</div>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="Valor de Compra">
-        <mat-header-cell *matHeaderCellDef> Valor de Compra </mat-header-cell>
-        <mat-cell *matCellDef="let element"> $500 </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="Valor de Compra">
+          <mat-header-cell *matHeaderCellDef> Valor de Compra </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div>{{ element.valor_compra }}</div>
+          </mat-cell>
+        </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="row-height"
+        ></mat-row>
+      </div>
     </mat-table>
-    <!--TODO: Quitar lo Estático y hacer que tome la info desde Firebase (Agregar Dispositivo)-->
   </mat-card-content>
 
   <!--Datos del Cliente-->
-  <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="onSubmiCliente()">
+  <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="getCliente()">
     <mat-card-content class="b-t-1">
       <mat-card-header>
         <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
@@ -308,12 +323,7 @@
           matListItemIcon
         ></i-tabler>
       </label>
-      <input
-        id="format-upload"
-        type="file"
-        style="display: none"
-        (change)="onFormatSelected($event)"
-      />
+      <input id="format-upload" type="file" style="display: none" />
     </div>
   </mat-card-content>
 </mat-card>

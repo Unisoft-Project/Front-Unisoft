@@ -1,59 +1,82 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 @Component({
   selector: 'app-agregar-compra',
   templateUrl: './agregar-compra.component.html'
 })
+
 export class AgregarCompraComponent {
-  //Gestión Formulario Dispositivo
-  selectedFormat: any = null;
-  compraForm: FormGroup;
+  selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
+  firebaseFile: File | null = null;
 
-  constructor(private formBuilder: FormBuilder) {
-    this.compraForm = this.formBuilder.group({
-      imei: ['', Validators.required],
-      marcaTelefono: ['', Validators.required],
-      procedencia: ['', Validators.required],
-      modeloTelefono: ['', Validators.required],
-      detallesTelefono: ['', Validators.required],
-      valorCompra: ['', Validators.required]
-    });
-  }
+  //* Gestión Formulario Compras (Entero)
+  public compraForm = {
+    imei: '',
+    marca_telefono: '',
+    procedencia: '',
+    modelo_telefono: '',
+    detalles: '',
+    valor_compra: 0
+  };
 
-  //Gestión Subida de Archivos
-  onFormatSelected(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      this.selectedFormat = event.target.files[0];
-    }
-  }
 
-  onSubmitCompra() {
-    if (this.compraForm.valid && this.selectedFormat) {
-      const formData = new FormData();
-      formData.append('formatoCompraVenta', this.selectedFormat);
-      Object.keys(this.compraForm.value).forEach(key => {
-        formData.append(key, this.compraForm.value[key]);
+  async addCompra(form: any) {
+    /*if (
+      !form.value.imei ||
+      !form.value.marca_telefono ||
+      !form.value.procedencia ||
+      !form.value.modelo_telefono ||
+      !form.value.detalles ||
+      !form.value.valor_compra
+    ) {
+      // Show Swal fire alert if any field is empty
+      Swal.fire({
+        title: 'Debe rellenar todos los campos',
+        text: '',
+        icon: 'warning',
+        confirmButtonText: 'OK',
       });
+      return;
+    }*/
+    }
 
-      // Aquí puedes enviar los datos del formulario a tu servidor o servicio
-      // Por ejemplo: this.miServicio.agregarCompra(formData);
+  //* Subida de Formato CompraVenta
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedFile = e.target.result;
+        this.firebaseFile = file;
+      };
+      reader.readAsDataURL(file);
     }
   }
-  //Gestión Tabla
+
+  deleteSelectedPhoto() {
+    this.selectedFile = null;
+  }
+
+  //* Gestión Tabla
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   displayedColumns: string[] = ['IMEI', 'Marca de Teléfono', 'Procedencia', 'Modelo del Teléfono', 'Detalles del Teléfono', 'Valor de Compra'];
+  DATA: any[] = []
 
-  //Gestión Formulario Cliente (GET)
-  onSubmiCliente() {
-    if (this.compraForm.valid && this.selectedFormat) {
-      const formData = new FormData();
-      formData.append('formatoCompraVenta', this.selectedFormat);
-      Object.keys(this.compraForm.value).forEach(key => {
-        formData.append(key, this.compraForm.value[key]);
-      });
+  addFila(form: any) {
+    this.compraForm = form.value;
+    const newData = this.DATA
+    newData.push(this.compraForm);
 
-      // Aquí puedes enviar los datos del formulario a tu servidor o servicio
-      // Por ejemplo: this.miServicio.agregarCompra(formData);
-    }
-  }
+    this.dataSource.data = [...newData];
+    console.log('Formulario Captado:', this.compraForm);
+    console.log('Data Source Cargado', this.dataSource.data);
+  };
+
+  //Gestión GET Cliente
+  getCliente(){}
 }
