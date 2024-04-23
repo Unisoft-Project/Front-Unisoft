@@ -1,22 +1,28 @@
+<!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
 <mat-card class="cardWithShadow theme-card">
   <mat-card-header>
     <mat-card-title class="m-b-0">Registrar Compra</mat-card-title>
   </mat-card-header>
-  <mat-card-content class="b-t-1">
-    <mat-card-header>
-      <mat-card-title class="m-b-0">Agregar Dispositivo</mat-card-title>
-    </mat-card-header>
-    <div
+  <div
+    class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+  >
+    <form class="b-t-1" #compraForm="ngForm" (ngSubmit)="addCompra(compraForm)">
+      <!--* Apartado Agregar Dispositivo-->
+      <mat-card-content class="b-t-1">
+        <mat-card-header>
+          <mat-card-title class="m-b-0">Agregar Dispositivo</mat-card-title>
+        </mat-card-header>
+        <!-- <div
       class="position-relative row w-100 h-100 bg-gredient justify-content-center"
     >
       <form
-        class="m-t-30"
+        class="b-t-1"
         #compraForm="ngForm"
         (ngSubmit)="addCompra(compraForm)"
-      >
-        <!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
+      > -->
         <div style="display: flex">
-          <!--*IMEI-->
+          <!--* Agregar Dispositivo-->
+          <!--IMEI-->
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
             IMEI
           </mat-label>
@@ -57,7 +63,6 @@
           </mat-form-field>
         </div>
         <!--Procedencia-->
-        <!--TODO: Aclarar qué es procedencia en este contexto (Posibles inputs)-->
         <div style="display: flex">
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
             Procedencia
@@ -174,156 +179,164 @@
         >
           Agregar
         </button>
-      </form>
-    </div>
-  </mat-card-content>
+        <!-- </form> -->
+        <!-- </div> -->
+      </mat-card-content>
 
-  <!--Apartado de Tabla-->
-  <mat-card-content class="b-t-1">
-    <mat-table [dataSource]="dataSource">
-      <div
-        class="position-relative row w-100 h-100 bg-gredient justify-content-center"
-      >
-        <!-- Columna IMEI -->
-        <ng-container matColumnDef="IMEI">
-          <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <div>{{ element.imei }}</div>
-          </mat-cell>
-        </ng-container>
+      <!--* Apartado de Tabla-->
+      <mat-card-content class="b-t-1">
+        <mat-table [dataSource]="dataSource">
+          <div
+            class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+          >
+            <!-- Columna IMEI -->
+            <ng-container matColumnDef="IMEI">
+              <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{ element.imei }}</div>
+              </mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="Marca de Teléfono">
-          <mat-header-cell *matHeaderCellDef>
-            Marca de Teléfono
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <div>{{ element.marca_telefono }}</div>
-          </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="Marca de Teléfono">
+              <mat-header-cell *matHeaderCellDef>
+                Marca de Teléfono
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{ element.marca_telefono }}</div>
+              </mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="Procedencia">
-          <mat-header-cell *matHeaderCellDef> Procedencia </mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <div>{{ element.procedencia }}</div>
-          </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="Procedencia">
+              <mat-header-cell *matHeaderCellDef> Procedencia </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{ element.procedencia }}</div>
+              </mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="Modelo del Teléfono">
-          <mat-header-cell *matHeaderCellDef>
-            Modelo del Teléfono
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <div>{{ element.modelo_telefono }}</div>
-          </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="Modelo del Teléfono">
+              <mat-header-cell *matHeaderCellDef>
+                Modelo del Teléfono
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{ element.modelo_telefono }}</div>
+              </mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="Detalles del Teléfono">
-          <mat-header-cell *matHeaderCellDef>
-            Detalles del Teléfono
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <div>{{ element.detalles }}</div>
-          </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="Detalles del Teléfono">
+              <mat-header-cell *matHeaderCellDef>
+                Detalles del Teléfono
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{ element.detalles }}</div>
+              </mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="Valor de Compra">
-          <mat-header-cell *matHeaderCellDef> Valor de Compra </mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <div>{{ element.valor_compra }}</div>
-          </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="Valor de Compra">
+              <mat-header-cell *matHeaderCellDef>
+                Valor de Compra
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{ element.valor_compra }}</div>
+              </mat-cell>
+            </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row
-          *matRowDef="let row; columns: displayedColumns"
-          class="row-height"
-        ></mat-row>
-      </div>
-    </mat-table>
-  </mat-card-content>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              class="row-height"
+            ></mat-row>
+          </div>
+        </mat-table>
+      </mat-card-content>
 
-  <!--Datos del Cliente-->
-  <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="getCliente()">
-    <mat-card-content class="b-t-1">
-      <mat-card-header>
-        <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
-      </mat-card-header>
-      <div
-        class="position-relative row w-100 h-100 bg-gredient justify-content-center"
-      >
-        <div style="display: flex">
+      <!--* Datos del Cliente-->
+      <mat-card-content class="b-t-1">
+        <mat-card-header>
+          <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
+        </mat-card-header>
+        <div
+          class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+        >
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
             Buscar Cliente
           </mat-label>
-          <mat-form-field
-            appearance="outline"
-            class="w-100"
-            color="primary"
-            style="margin-right: 8px"
-          >
-            <input matInput placeholder="Identificación" />
-          </mat-form-field>
+          <div style="display: flex">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              color="primary"
+              style="margin-right: 8px"
+            >
+              <input
+                matInput
+                placeholder="Identificación"
+                #documentoField="ngModel"
+                ngModel
+              />
+            </mat-form-field>
 
-          <!--Botón Buscar-->
-          <button class="w-100" mat-raised-button color="primary" type="submit">
-            Buscar
-          </button>
-          <a mat-button color="accent" routerLink="/registrar-cliente"
-            >Registrar Cliente</a
-          >
-          <!--TODO: Revisar ruta y que lleve a Registrar Cliente / Modal (openDialog()) con el registro de cliente clonado-->
+            <!--Botón Buscar-->
+            <button
+              class="w-100"
+              mat-raised-button
+              color="primary"
+              type="button"
+              (click)="getCliente(documentoField.value)"
+            >
+              Buscar
+            </button>
+            <a
+              mat-button
+              color="accent"
+              routerLink="/clientes/agregar-cliente"
+              target="_blank"
+              >Registrar Cliente</a
+            >
+          </div>
+          <!--Datos del Cliente-->
         </div>
-        <!--Datos del Cliente-->
+        <div
+          class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+        >
+          <mat-card>
+            <mat-card-content>
+              <p>Identificación: {{ clienteEncontrado.documento }}</p>
+              <p>Nombre: {{ clienteEncontrado.nombre }}</p>
+              <p>Dirección: {{ clienteEncontrado.direccion }}</p>
+              <p>Teléfono: {{ clienteEncontrado.telefono }}</p>
+              <!-- TODO Verificar Busqueda e Impresión de contenidos-->
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-card-content>
 
-        <!--<div *ngIf="clienteEncontrado">
-        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
-          Datos del Cliente
-        </mat-label>
-        <mat-card>
-          <mat-card-content>
-            <p>Nombre: {{ clienteEncontrado.nombre }}</p>
-            <p>Apellido: {{ clienteEncontrado.apellido }}</p>
-            <p>Correo: {{ clienteEncontrado.correo }}</p>
-            <p>Teléfono: {{ clienteEncontrado.telefono }}</p>
-          </mat-card-content>
-        </mat-card>
-      </div>-->
-        <!--TODO: Quitar lo Estático y hacer que tome la info desde Firebase (Buscar Cliente / Registrar Cliente)-->
-      </div>
-      <div
-        class="position-relative row w-100 h-100 bg-gredient justify-content-center"
-      >
-        <mat-card>
-          <mat-card-content>
-            <p>Identificación: 123246</p>
-            <p>Nombre: Juan</p>
-            <p>Dirección: Dirección</p>
-            <p>Teléfono: 123456</p>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </mat-card-content>
-  </form>
-
-  <!--Otras Acciones-->
-  <mat-card-content class="b-t-1">
-    <mat-card-header>
-      <mat-card-title class="m-b-0">Otras Acciones</mat-card-title>
-    </mat-card-header>
-    <div
-      class="position-relative row w-100 h-100 bg-gredient justify-content-center"
-    >
-      <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
-        Generar Factura
-      </mat-label>
-      <label for="format-upload">
-        <i-tabler
-          class="routeIcon"
-          name="file-download"
-          matListItemIcon
-        ></i-tabler>
-      </label>
-      <input id="format-upload" type="file" style="display: none" />
-    </div>
-  </mat-card-content>
+      <!--Otras Acciones-->
+      <mat-card-content class="b-t-1">
+        <mat-card-header>
+          <mat-card-title class="m-b-0">Otras Acciones</mat-card-title>
+        </mat-card-header>
+        <div
+          class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+          display="flex"
+        >
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Generar Factura
+          </mat-label>
+          <label for="format-upload">
+            <i-tabler
+              class="routeIcon"
+              name="file-download"
+              matListItemIcon
+            ></i-tabler>
+          </label>
+          <input id="format-upload" type="file" style="display: none" />
+        </div>
+      </mat-card-content>
+      <button class="w-100" mat-raised-button color="primary" type="submit">
+        Agregar Compra
+      </button>
+    </form>
+  </div>
 </mat-card>
