@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { HttpClient } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 
+
 @Component({
   selector: 'app-agregar-compra',
   templateUrl: './agregar-compra.component.html'
@@ -14,9 +15,13 @@ export class AgregarCompraComponent {
   documentoField: any;
   clientFoundTag: boolean = false;
   clientFound: any;
+  selectedModeloDispositivo: any;
+  selectedMarcaDispositivo: any;
   selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
   firebaseFile: File | null = null;
   fireStorage: AngularFireStorage;
+  modelosDispositivos: any[] = [];
+  marcasDispositivos: any[] = [];
 
   constructor(
     private router: Router,
@@ -44,9 +49,34 @@ export class AgregarCompraComponent {
     telefono: '',
   };
 
+  ngOnInit(): void {
+    this.obtenerModelosDispositivos();
+    this.obtenerMarcasDispositivos();
+  }
+
+  obtenerModelosDispositivos(): void {
+    const url = 'https://back-unisoft-lnv0.onrender.com/modelo/modelo_dispositivo';
+    this.http.get<any[]>(url)
+      .subscribe((data: any[]) => {
+        this.modelosDispositivos = data;
+        console.log('Modelos de dispositivos:', this.modelosDispositivos);
+      });
+  }
+
+  obtenerMarcasDispositivos(): void {
+    const url = 'https://back-unisoft-lnv0.onrender.com/marca/marca_dispositivo';
+    this.http.get<any[]>(url)
+      .subscribe((data: any[]) => {
+        this.marcasDispositivos = data;
+        console.log('Marcas de dispositivos:', this.marcasDispositivos);
+      });
+  }
+
   async addCompra(form: any) {
     const data: any = {};
-    if (!form.value.imei || !form.value.marca_dispositivo || !form.value.consecutivo || !form.value.modelo_dispositivo || !form.value.valor_compra) {
+    if (!form.value.imei || !form.value.marca_dispositivo || !form.value.consecutivo || !form.value.modelo_dispositivo || !form.value.valor_compra
+        || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
+    ) {
       // Show Swal fire alert if any field is empty
       Swal.fire({
         title: 'Debe rellenar todos los campos',
@@ -54,12 +84,15 @@ export class AgregarCompraComponent {
         icon: 'warning',
         confirmButtonText: 'OK',
       });
-      console.log(!form.value.imei);
-      console.log(!form.value.marca_dispositivo);
-      console.log(!form.value.consecutivo);
-      console.log(!form.value.modelo_dispositivo);
-      console.log(!form.value.valor_compra);
+
       return;
+    } else if (!this.clientFound) {
+      Swal.fire({
+        title: 'Debe buscar el cliente',
+        text: '',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
     } else {
 
       if (this.firebaseFile) {
@@ -75,10 +108,10 @@ export class AgregarCompraComponent {
       data.consecutivo_compraventa = form.value.consecutivo;
       data.observacion = form.value.observacion;
       data.valor_compra = form.value.valor_compra;
-      // data.modelo_dispositivo = form.value.modelo_dispositivo;
-      data.modelo_dispositivo = 1;
-      // data.marca_dispositivo = form.value.marca_dispositivo;
-      data.marca_dispositivo = 12;
+      data.modelo_dispositivo = this.selectedModeloDispositivo;
+      // data.modelo_dispositivo = 1;
+      data.marca_dispositivo = this.selectedMarcaDispositivo;
+      // data.marca_dispositivo = 12;
       data.cliente_id = this.clientFound.oid;
       data.valor_venta = '0';
       data.fecha_hora = '0';

@@ -82,18 +82,40 @@
             </mat-form-field>
           </div>
 
-          <div style="flex: 1; margin-right: 8px;">
+          <!-- <div style="flex: 1; margin-right: 8px;">
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marca de dispositivo</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
               <input required matInput ngModel name="marca_dispositivo" type="string" placeholder="Marca del dispositivo" />
               <mat-error>Campo obligatorio</mat-error>
             </mat-form-field>
-          </div>
+          </div> -->
+          <div style="flex: 1; margin-right: 8px;">
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marca de dispositivo</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <mat-select required [(ngModel)]="selectedMarcaDispositivo" name="marca_dispositivo" placeholder="Seleccione una marca">
+                <mat-option *ngFor="let marca of marcasDispositivos" [value]="marca.oid">
+                  {{ marca.descripcion_marca_dispositivo }} <!-- O el campo que contenga el nombre de la marca -->
+                </mat-option>
+              </mat-select>
+              <mat-error>Campo obligatorio</mat-error>
+            </mat-form-field>
+          </div>          
 
-          <div style="flex: 1;">
+          <!-- <div style="flex: 1;">
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Modelo del dispositivo</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
               <input required matInput ngModel type="string" name="modelo_dispositivo" placeholder="Modelo" />
+              <mat-error>Campo obligatorio</mat-error>
+            </mat-form-field>
+          </div> -->
+          <div style="flex: 1;">
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Modelo del dispositivo</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <mat-select required [(ngModel)]="selectedModeloDispositivo" name="modelo_dispositivo" placeholder="Seleccione un modelo">
+                <mat-option *ngFor="let modelo of modelosDispositivos" [value]="modelo.oid">
+                  {{ modelo.modelos }}
+                </mat-option>
+              </mat-select>
               <mat-error>Campo obligatorio</mat-error>
             </mat-form-field>
           </div>
