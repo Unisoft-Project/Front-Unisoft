@@ -62,10 +62,10 @@ export const navItems: NavItem[] = [
     route: '/inventario/ver-inventario',
   },
   {
-    navCap: 'Originales',
+    navCap: 'Perfiles',
   },
   {
-    displayName: 'Badge',
+    displayName: 'Perfil de usuario',
     iconName: 'rosette',
     route: '/ui-components/badge',
   },

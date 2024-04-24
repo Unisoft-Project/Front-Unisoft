@@ -1,43 +1,41 @@
 <mat-toolbar class="topbar">
-  <!-- Mobile Menu -->
+  <!-- Menú móvil -->
   <button mat-icon-button (click)="toggleMobileNav.emit()" *ngIf="!showToggle">
-    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
+    <i-tabler name="menu-2" class="icon-30 d-flex"></i-tabler>
   </button>
   <!-- --------------------------------------------------------------- -->
 
   <!-- --------------------------------------------------------------- -->
-  <!-- Notification Dropdown -->
+  <!-- Notificaciones desplegables -->
   <!-- --------------------------------------------------------------- -->
-
- 
 
   <span class="flex-1-auto"></span>
 
   <!-- --------------------------------------------------------------- -->
-  <!-- profile Dropdown -->
+  <!-- Menú de perfil desplegable -->
   <!-- --------------------------------------------------------------- -->
-  
+
   <button
     mat-icon-button
     [matMenuTriggerFor]="profilemenu"
-    aria-label="Notifications"
+    aria-label="Notificaciones"
   >
     <img
       src="/assets/images/profile/user-1.jpg"
       class="rounded-circle object-cover"
-      width="35"
+      width="60"
     />
   </button>
   <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
     <button mat-menu-item>
       <mat-icon class="d-flex align-items-center"
         ><i-tabler name="user" class="icon-18 d-flex"></i-tabler></mat-icon
-      >My Profile
+      >Mi Perfil
     </button>
     <button mat-menu-item>
       <mat-icon class="d-flex align-items-center"
         ><i-tabler name="mail" class="icon-18 d-flex"></i-tabler></mat-icon
-      >My Account
+      >Mi Cuenta
     </button>
     <button mat-menu-item>
       <mat-icon class="d-flex align-items-center"
@@ -45,7 +43,7 @@
           name="list-check"
           class="icon-18 d-flex"
         ></i-tabler></mat-icon
-      >My Task
+      >Mis Tareas
     </button>
 
     <div class="p-x-12 m-t-12">
@@ -54,7 +52,7 @@
         mat-stroked-button
         color="primary"
         class="w-100"
-        >Logout</a
+        >Cerrar sesión</a
       >
     </div>
   </mat-menu>

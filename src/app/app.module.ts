@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +17,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FullComponent } from './layouts/full/full.component';
 import { BlankComponent } from './layouts/blank/blank.component';
 
+
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './pages/authentication/login/auth.interceptor';
+
+
 // Vertical Layout
 import { SidebarComponent } from './layouts/full/sidebar/sidebar.component';
 import { HeaderComponent } from './layouts/full/header/header.component';
@@ -27,6 +31,7 @@ import {AngularFireModule} from "@angular/fire/compat";
 import {AngularFireStorageModule} from "@angular/fire/compat/storage";
 import { environment } from './environment/environment';
 @NgModule({
+
   declarations: [
     AppComponent,
     FullComponent,
@@ -35,7 +40,7 @@ import { environment } from './environment/environment';
     HeaderComponent,
     BrandingComponent,
     AppNavItemComponent,
-    
+
   ],
   imports: [
     BrowserModule,
@@ -47,8 +52,19 @@ import { environment } from './environment/environment';
     MaterialModule,
     TablerIconsModule.pick(TablerIcons),
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireStorageModule
+    AngularFireStorageModule,
+    HttpClientModule
   ],
+
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
+
+
   exports: [TablerIconsModule],
   bootstrap: [AppComponent],
 })

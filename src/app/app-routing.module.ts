@@ -10,8 +10,13 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/dashboard',
+        redirectTo: '/login',
         pathMatch: 'full',
+      },
+      {
+        path: 'login',
+        loadChildren: () =>
+          import('./pages/authentication/authentication.module').then((m) => m.AuthenticationModule),
       },
       {
         path: 'dashboard',
