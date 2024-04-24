@@ -11,6 +11,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 })
 
 export class AgregarCompraComponent {
+  documentoField: any; 
   selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
   firebaseFile: File | null = null;
   fireStorage: AngularFireStorage;
