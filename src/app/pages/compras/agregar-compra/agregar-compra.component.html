@@ -5,6 +5,52 @@
   </mat-card-header>
   <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
     <form class="b-t-1" #compraForm="ngForm" (ngSubmit)="addCompra(compraForm)">
+    
+      <!--* Datos del Cliente-->
+      <mat-card-content class="b-t-1">
+        <div style="margin-bottom: 20px;">
+        <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
+        </div>
+        <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+          <!-- Columna izquierda -->
+          <div class="col-md-8" style="display: flex; flex-wrap: wrap;">
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Buscar Cliente</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
+              <input matInput placeholder="Identificación" [(ngModel)]="documentoField" [ngModelOptions]="{ standalone: true }">
+            </mat-form-field>
+          </div>
+          <!-- Columna derecha -->
+          <div class="col-md-4" style="display: flex; flex-wrap: wrap; align-items: flex-end;">
+            <!-- Botón Buscar -->
+            <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+              <div style="display: flex; flex-wrap: wrap; align-items: center;">
+                <!-- Botón Buscar -->
+                <button mat-raised-button color="primary" type="button" (click)="getCliente(documentoField)" style="margin-right: 8px;">
+                  Buscar
+                </button>
+                <!-- Botón Registrar Cliente -->
+                <a mat-button color="accent" routerLink="/clientes/agregar-cliente" target="_blank" style="margin-right: 8px;">
+                  Registrar Cliente
+                </a>
+              </div>
+            </div>            
+          </div>
+        </div>
+        
+        <div *ngIf="clientFoundTag" class="search-client position-relative row w-100 h-100 bg-gredient justify-content-center">
+          <mat-card class="client-card">
+            <mat-card-content>
+              <div class="client-info">
+                <p><strong>Identificación:</strong> {{ clienteEncontrado.documento }}</p>
+                <p><strong>Nombre:</strong> {{ clienteEncontrado.nombre }}</p>
+                <p><strong>Dirección:</strong> {{ clienteEncontrado.direccion }}</p>
+                <p><strong>Teléfono:</strong> {{ clienteEncontrado.telefono }}</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>   
+      </mat-card-content>
+
       <!--* Apartado Agregar Dispositivo-->
       <mat-card-content class="b-t-1">
         <div style="margin-bottom: 20px;">
@@ -29,25 +75,25 @@
           </div>
 
           <div style="flex: 1; margin-right: 8px;">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marca de Teléfono</mat-label>
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Consecutivo</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input required matInput ngModel name="marca_telefono" type="string" placeholder="Marca de Teléfono" />
+              <input required matInput ngModel name="consecutivo" type="string" placeholder="Consecutivo Compraventa" />
               <mat-error>Campo obligatorio</mat-error>
             </mat-form-field>
           </div>
 
           <div style="flex: 1; margin-right: 8px;">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Procedencia</mat-label>
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marca de dispositivo</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input required matInput ngModel name="procedencia" type="string" placeholder="Procedencia" />
+              <input required matInput ngModel name="marca_dispositivo" type="string" placeholder="Marca del dispositivo" />
               <mat-error>Campo obligatorio</mat-error>
             </mat-form-field>
           </div>
 
           <div style="flex: 1;">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Modelo del Teléfono</mat-label>
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Modelo del dispositivo</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input required matInput ngModel type="string" name="modelo_telefono" placeholder="Modelo" />
+              <input required matInput ngModel type="string" name="modelo_dispositivo" placeholder="Modelo" />
               <mat-error>Campo obligatorio</mat-error>
             </mat-form-field>
           </div>
@@ -77,36 +123,33 @@
 
         <!--Detalles-->
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
-          Detalles del Teléfono
+          Observacion del dispositivo
         </mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <textarea matInput ngModel name="detalles" type="string" placeholder="Detalles" cdkTextareaAutosize
+          <textarea matInput ngModel name="observacion" type="string" placeholder="observacion" cdkTextareaAutosize
             cdkAutosizeMinRows="5">
             </textarea>
         </mat-form-field>
 
 
         <!--Valor Compra-->
-        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
-          Valor de Compra
-        </mat-label>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"> Valor de Compra </mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <!--TODO: Eliminar capacidad de aumentar de 1 en 1 mediante pequeñas flechas-->
-          <input matInput ngModel name="valor_compra" type="number" min="0" placeholder="0" appareance="textfield" />
+          <input matInput ngModel name="valor_compra" type="string" min="0" placeholder="0" appareance="textfield" />
           <span matTextPrefix>$&nbsp;</span>
         </mat-form-field>
-        <button class="w-100" mat-raised-button color="primary" (click)="addFila(compraForm)">
-          Agregar
+        <button class="w-100" mat-raised-button color="primary">
+          Agregar compra
         </button>
         <!-- </form> -->
         <!-- </div> -->
       </mat-card-content>
 
       <!--* Apartado de Tabla-->
-      <mat-card-content class="b-t-1">
+      <!-- <mat-card-content class="b-t-1">
         <mat-table [dataSource]="dataSource">
           <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-            <!-- Columna IMEI -->
             <ng-container matColumnDef="IMEI">
               <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
               <mat-cell *matCellDef="let element">
@@ -161,56 +204,10 @@
             <mat-row *matRowDef="let row; columns: displayedColumns" class="row-height"></mat-row>
           </div>
         </mat-table>
-      </mat-card-content>
-
-      <!--* Datos del Cliente-->
-      <mat-card-content class="b-t-1">
-        <div style="margin-bottom: 20px;">
-        <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
-        </div>
-        <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-          <!-- Columna izquierda -->
-          <div class="col-md-8" style="display: flex; flex-wrap: wrap;">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Buscar Cliente</mat-label>
-            <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
-              <input matInput placeholder="Identificación" [(ngModel)]="documentoField" [ngModelOptions]="{ standalone: true }">
-            </mat-form-field>
-          </div>
-          <!-- Columna derecha -->
-          <div class="col-md-4" style="display: flex; flex-wrap: wrap; align-items: flex-end;">
-            <!-- Botón Buscar -->
-            <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-              <div style="display: flex; flex-wrap: wrap; align-items: center;">
-                <!-- Botón Buscar -->
-                <button mat-raised-button color="primary" type="button" (click)="getCliente(documentoField)" style="margin-right: 8px;">
-                  Buscar
-                </button>
-                <!-- Botón Registrar Cliente -->
-                <a mat-button color="accent" routerLink="/clientes/agregar-cliente" target="_blank" style="margin-right: 8px;">
-                  Registrar Cliente
-                </a>
-              </div>
-            </div>            
-          </div>
-        </div>
-        
-        <div *ngIf="false" class="search-client position-relative row w-100 h-100 bg-gredient justify-content-center">
-          <mat-card class="client-card">
-            <mat-card-content>
-              <div class="client-info">
-                <p><strong>Identificación:</strong> {{ clienteEncontrado.documento }}</p>
-                <p><strong>Nombre:</strong> {{ clienteEncontrado.nombre }}</p>
-                <p><strong>Dirección:</strong> {{ clienteEncontrado.direccion }}</p>
-                <p><strong>Teléfono:</strong> {{ clienteEncontrado.telefono }}</p>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
-        
-      </mat-card-content>
+      </mat-card-content> -->
 
       <!--Otras Acciones-->
-      <mat-card-content class="b-t-1">
+      <!-- <mat-card-content class="b-t-1">
         <mat-card-title class="m-b-0">Otras Acciones</mat-card-title>
         <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
           <div class="generate-invoice-container" style="display: flex; align-items: center;">
@@ -224,7 +221,7 @@
       </mat-card-content>
       <button class="w-100" mat-raised-button color="primary" type="submit">
         Agregar Compra
-      </button>
+      </button> -->
     </form>
   </div>
 </mat-card>
