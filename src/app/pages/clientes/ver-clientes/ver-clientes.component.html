@@ -2,12 +2,12 @@
     <mat-card class="cardWithShadow">
       <div style="display: flex;">
         <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px;">
-          <input matInput placeholder="Documento" name="documento" #documentoField="ngModel" [(ngModel)]="documento"/>
+          <input matInput placeholder="Nombre o Documento" name="filtro" #filtroField="ngModel" [(ngModel)]="filtro"/>
         </mat-form-field>
         <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px;" type="button" (click)="filtrarClientes()">
           Filtrar
         </button>
-      </div>      
+      </div>   
       <mat-card-content class="p-24">
         <mat-card-title>Clientes Registrados</mat-card-title>
         <div class="table-responsive m-t-16">

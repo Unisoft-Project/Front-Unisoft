@@ -87,8 +87,8 @@ export class AgregarClienteComponent {
       // Post client data to the server
       this.http
         .post<any>(
-          //'https://back-unisoft-lnv0.onrender.com/cliente/registerCliente'
-          `http://localhost:8000/cliente/registerCliente`,
+          'https://back-unisoft-lnv0.onrender.com/cliente/registerCliente',
+          //`http://localhost:8000/cliente/registerCliente`,
           data,
           { headers: headers }
         ).pipe(

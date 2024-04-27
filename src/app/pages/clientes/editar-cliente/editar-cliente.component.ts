@@ -61,8 +61,8 @@ export class EditarClienteComponent {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-    //const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
-    const endpoint = `http://localhost:8000/cliente/listaClientes/documento/${documento}`;
+    const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
+    //const endpoint = `http://localhost:8000/cliente/listaClientes/documento/${documento}`;
     
     this.http.get(endpoint, { headers: headers }).pipe(
       timeout(200000) 
@@ -176,8 +176,8 @@ export class EditarClienteComponent {
       }
       this.http
         .put<any>(
-          `http://localhost:8000/cliente/actualizarClientes/${form.value.documento}`,
-        //`https://back-unisoft-lnv0.onrender.com/cliente/actualizarClientes/${form.value.documento}`,
+        //  `http://localhost:8000/cliente/actualizarClientes/${form.value.documento}`,
+        `https://back-unisoft-lnv0.onrender.com/cliente/actualizarClientes/${form.value.documento}`,
         data,
         { headers: headers }
       ).pipe(

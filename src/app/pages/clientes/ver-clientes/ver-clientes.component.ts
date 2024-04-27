@@ -27,7 +27,7 @@ export class VerClientesComponent {
   dataSource: Client[] = [];
   loading: boolean = false;
   errorMessage: string = '';
-  documento: string = '';
+  filtro: string = '';
   documentTypeMap: any = {
     1: 'Cédula de Ciudadanía',
     2: 'Cédula de Extranjería',
@@ -51,8 +51,8 @@ export class VerClientesComponent {
     });
     //
      this.http.get<any[]>(
-        //`https://back-unisoft-lnv0.onrender.com/cliente/listaClientes`
-        `http://localhost:8000/cliente/listaClientes`,
+        `https://back-unisoft-lnv0.onrender.com/cliente/listaClientes`,
+        //`http://localhost:8000/cliente/listaClientes`,
         { headers: headers }
       ).pipe(
         timeout(200000)
@@ -80,12 +80,16 @@ export class VerClientesComponent {
   }
 
   filtrarClientes() {
-    if (this.documento) {
-      // Filtrar la lista de clientes por documento
-      this.dataSource = this.dataSource.filter(cliente => cliente.documento.includes(this.documento));
+    if (this.filtro) {
+      // Filtrar la lista de clientes por nombre o número de documento
+      this.dataSource = this.dataSource.filter(cliente => {
+        const documentoMatch = cliente.documento.toLowerCase().includes(this.filtro.toLowerCase());
+        const nombreMatch = cliente.nombre.toLowerCase().includes(this.filtro.toLowerCase());
+        return documentoMatch || nombreMatch;
+      });
     } else {
-      // Si el campo de documento está vacío, mostrar todos los clientes nuevamente
+      // Si el campo de filtro está vacío, mostrar todos los clientes nuevamente
       this.getClients();
     }
-  }
+  } 
 }
