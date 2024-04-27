@@ -51,7 +51,7 @@ export class VerClientesComponent {
     });
     //
      this.http.get<any[]>(
-        `https://back-unisoft-lnv0.onrender.com/cliente/listaClientes`,
+        `https://back-unisoft-1.onrender.com/cliente/listaClientes`,
         //`http://localhost:8000/cliente/listaClientes`,
         { headers: headers }
       ).pipe(
@@ -81,15 +81,15 @@ export class VerClientesComponent {
 
   filtrarClientes() {
     if (this.filtro) {
-      // Filtrar la lista de clientes por nombre o número de documento
+      // Filtrar la lista de clientes por documento o nombre exacto
       this.dataSource = this.dataSource.filter(cliente => {
-        const documentoMatch = cliente.documento.toLowerCase().includes(this.filtro.toLowerCase());
-        const nombreMatch = cliente.nombre.toLowerCase().includes(this.filtro.toLowerCase());
+        const documentoMatch = cliente.documento.toLowerCase() === this.filtro.toLowerCase();
+        const nombreMatch = cliente.nombre.toLowerCase() === this.filtro.toLowerCase();
         return documentoMatch || nombreMatch;
       });
     } else {
       // Si el campo de filtro está vacío, mostrar todos los clientes nuevamente
       this.getClients();
     }
-  } 
+  }
 }

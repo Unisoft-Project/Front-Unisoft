@@ -177,7 +177,7 @@ export class EditarClienteComponent {
       this.http
         .put<any>(
         //  `http://localhost:8000/cliente/actualizarClientes/${form.value.documento}`,
-        `https://back-unisoft-lnv0.onrender.com/cliente/actualizarClientes/${form.value.documento}`,
+        `https://back-unisoft-1.onrender.com/cliente/actualizarClientes/${form.value.documento}`,
         data,
         { headers: headers }
       ).pipe(
