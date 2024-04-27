@@ -1,5 +1,13 @@
 <div class="col-lg-20">
     <mat-card class="cardWithShadow">
+      <div style="display: flex;">
+        <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px;">
+          <input matInput placeholder="Documento" name="documento" #documentoField="ngModel" [(ngModel)]="documento"/>
+        </mat-form-field>
+        <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px;" type="button" (click)="filtrarClientes()">
+          Filtrar
+        </button>
+      </div>      
       <mat-card-content class="p-24">
         <mat-card-title>Clientes Registrados</mat-card-title>
         <div class="table-responsive m-t-16">
@@ -17,4 +25,11 @@
       </mat-card-content>
     </mat-card>
   </div>
-  
+  <div  *ngIf="loading" class="loading-overlay">
+    <div class="text-center">
+      <img src="../../../../assets/images/recarga/cargando.gif" width="100px">
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>

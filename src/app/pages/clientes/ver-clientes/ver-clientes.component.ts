@@ -1,5 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { timeout } from 'rxjs/operators';
+
 interface Client {
   id: number;
   tipo_documento: string;
@@ -13,15 +15,19 @@ interface Client {
 
 @Component({
   selector: 'app-ver-clientes',
-  templateUrl: './ver-clientes.component.html'
+  templateUrl: './ver-clientes.component.html',
+  styleUrls: ['./agregar-cliente.component.css']
 })
 
 
 
 
 export class VerClientesComponent {
-  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono'];
+  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direcciòn', 'Telefono', 'FotoDocumento'];
   dataSource: Client[] = [];
+  loading: boolean = false;
+  errorMessage: string = '';
+  documento: string = '';
   documentTypeMap: any = {
     1: 'Cédula de Ciudadanía',
     2: 'Cédula de Extranjería',
@@ -37,9 +43,22 @@ export class VerClientesComponent {
   constructor(private http: HttpClient) { }
 
   getClients() {
-    this.http.get<any[]>('https://back-unisoft-lnv0.onrender.com/cliente/listaClientes')
-      .subscribe(
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    //
+     this.http.get<any[]>(
+        //`https://back-unisoft-lnv0.onrender.com/cliente/listaClientes`
+        `http://localhost:8000/cliente/listaClientes`,
+        { headers: headers }
+      ).pipe(
+        timeout(200000)
+      ).subscribe(
         (response) => {
+          this.loading = false;
           // Map document type ID to description
           this.dataSource = response.map(client => {
             return {
@@ -49,13 +68,24 @@ export class VerClientesComponent {
           });
         },
         (error) => {
+          this.loading = false;
+          if (error.status === 404) {
+            this.errorMessage = 'No se encontraron clientes.';
+          } else {
+            this.errorMessage = 'Ocurrió un error al obtener los clientes.';
+          }
           console.error('Error fetching clients:', error);
-        }
+          }
       );
   }
-  
-  
-  
 
-
+  filtrarClientes() {
+    if (this.documento) {
+      // Filtrar la lista de clientes por documento
+      this.dataSource = this.dataSource.filter(cliente => cliente.documento.includes(this.documento));
+    } else {
+      // Si el campo de documento está vacío, mostrar todos los clientes nuevamente
+      this.getClients();
+    }
+  }
 }

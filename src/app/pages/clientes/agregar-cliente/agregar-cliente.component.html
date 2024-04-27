@@ -43,7 +43,6 @@
             <mat-icon>delete</mat-icon>
           </button>
         </div>
-        
         <button mat-flat-button color="primary" class="w-100">
           Agregar
         </button>
@@ -51,3 +50,8 @@
     </div>
   </mat-card-content>
 </mat-card>
+<div  *ngIf="loading" class="loading-overlay">
+  <div class="text-center">
+    <img src="../../../../assets/images/recarga/cargando.gif" width="100px">
+  </div>
+</div>

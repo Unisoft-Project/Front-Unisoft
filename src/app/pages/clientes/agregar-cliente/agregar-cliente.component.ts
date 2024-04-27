@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-
+import { timeout } from 'rxjs/operators';
 @Component({
   selector: 'app-agregar-cliente',
   templateUrl: './agregar-cliente.component.html',
+  styleUrls: ['./agregar-cliente.component.css']
 })
 export class AgregarClienteComponent {
   selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
   firebaseFile: File | null = null;
+  loading: boolean = false;
 
   clienteForm = {
     nombre: '',
@@ -27,6 +29,12 @@ export class AgregarClienteComponent {
   ) {}
 
   async addClient(form: any) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     const data: any = {};
 
     // Upload photo if a file is selected
@@ -37,6 +45,7 @@ export class AgregarClienteComponent {
       !form.value.direccion ||
       !form.value.telefono
     ) {
+      this.loading = false;
       // Show Swal fire alert if any field is empty
       Swal.fire({
         title: 'Debe rellenar todos los campos',
@@ -52,8 +61,8 @@ export class AgregarClienteComponent {
         this.fireStorage.upload(path, file);
         const uploadTask = await this.fireStorage.upload(path, file);
         const url = await uploadTask.ref.getDownloadURL();
-        console.log(url);
         data.foto_documento = url;
+        this.loading = false;
       }
 
       // Map document type string to corresponding ID
@@ -78,11 +87,15 @@ export class AgregarClienteComponent {
       // Post client data to the server
       this.http
         .post<any>(
-          'https://back-unisoft-lnv0.onrender.com/cliente/registerCliente',
-          data
-        )
-        .subscribe(
+          //'https://back-unisoft-lnv0.onrender.com/cliente/registerCliente'
+          `http://localhost:8000/cliente/registerCliente`,
+          data,
+          { headers: headers }
+        ).pipe(
+          timeout(200000)
+        ).subscribe(
           (response) => {
+            this.loading = false;
             Swal.fire({
               title: 'Cliente agregado con éxito',
               text: '',
@@ -95,14 +108,35 @@ export class AgregarClienteComponent {
             });
           },
           (error) => {
-            // Handle error response
-            console.error('Error adding client:', error);
-            Swal.fire({
-              title: 'Error',
-              text: 'Error adding client',
-              icon: 'error',
-              confirmButtonText: 'OK',
-            });
+            this.loading = false;
+            // Manejo de respuesta en caso de error
+            if (error.status === 400) {
+              // Error 400: Bad Request
+              Swal.fire({
+                title: 'Error al crear cliente',
+                text: 'El documento ya está registrado. Por favor, intente con otro documento.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            } else if (error.status === 404) {
+              this.loading = false;
+              // Error 404: Not Found
+              Swal.fire({
+                title: 'Error al crear cliente',
+                text: 'El documento ya está registrado. Por favor, intente con otro documento.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            } else {
+              this.loading = false;
+              // Otros errores
+              Swal.fire({
+                title: 'Error',
+                text: 'Error al agregar cliente. Por favor, inténtelo nuevamente más tarde.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            }
           }
         );
     }

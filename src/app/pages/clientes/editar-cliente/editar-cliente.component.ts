@@ -1,19 +1,22 @@
 import { Component, ViewChild } from '@angular/core';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { timeout } from 'rxjs/operators';
+
 @Component({
   selector: 'app-editar-cliente',
   templateUrl: './editar-cliente.component.html',
+  styleUrls: ['./agregar-cliente.component.css']
 })
 
-//http://localhost:8000/cliente/listaClientes/documento/123456789
 export class EditarClienteComponent {
   selectedFile: string | ArrayBuffer | null = null;
   photoUrl: string | null = null;
   firebaseFile: File | null = null;
+  loading: boolean = false;
   @ViewChild('clientesForm', { static: true }) clientesForm: NgForm;
 
   doc = '';
@@ -52,18 +55,32 @@ export class EditarClienteComponent {
     this.hidden = !this.hidden;
   }
   searchClient(documento: string) {
-    const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
-    this.http.get(endpoint).subscribe(
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    //const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
+    const endpoint = `http://localhost:8000/cliente/listaClientes/documento/${documento}`;
+    
+    this.http.get(endpoint, { headers: headers }).pipe(
+      timeout(200000) 
+    ).subscribe(
       (response: any) => {
+        this.loading = false;
+        Swal.fire({
+          title: 'Cliente encontrado',
+          text: 'El cliente ha sido encontrado exitosamente.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
         // Handle the response here
         this.doc = documento;
-        console.log(response);
         this.clientesForm.controls['nombre'].setValue(response[0].nombre);
-
         this.clientesForm.controls['direccion'].setValue(response[0].direccion);
         this.clientesForm.controls['telefono'].setValue(response[0].telefono);
 
-        console.log(response[0].tipo_documento.oid);
 
         switch (response[0].tipo_documento.oid) {
           case 1:
@@ -85,16 +102,38 @@ export class EditarClienteComponent {
             break;
         }
         this.getPhoto(documento);
-        console.log(this.clientesForm.value.tipoDocumento);
       },
       (error) => {
-        // Handle errors here
-        console.error(error);
+        this.loading = false;
+        // Error en la petición
+        if (error.status === 404) {
+          // Cliente no encontrado
+          Swal.fire({
+            title: 'Cliente no encontrado',
+            text: 'El cliente no existe en la base de datos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          // Otro error
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al procesar la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
       }
+    }
     );
   }
 
   async editClient(form: any) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     const data: any = {};
     if (form.value.tipo_Documento === 'Cédula de Ciudadanía') {
       data.tipo_documento = 1;
@@ -114,11 +153,7 @@ export class EditarClienteComponent {
       !form.value.direccion ||
       !form.value.telefono
     ) {
-      console.log(form.value.nombre)
-      console.log(form.value.tipo_Documento)
-      console.log(form.value.documento)
-      console.log(form.value.direccion)
-      console.log(form.value.telefono)
+      this.loading = false;
       // Show Swal fire alert if any field is empty
       Swal.fire({
         title: 'Debe rellenar todos los campos',
@@ -129,26 +164,27 @@ export class EditarClienteComponent {
       // Exit the method if any field is empty
     } else {
       
-      console.log(data.tipo_documento);
       data.nombre = form.value.nombre;
       data.documento = form.value.documento;
       data.direccion = form.value.direccion;
       data.telefono = form.value.telefono;
-
-      console.log('added', data);
       if (this.firebaseFile) {
         const file: File = this.firebaseFile as File;
         const path = `docs/${form.value.documento}`;
         await this.storage.upload(path, file);
-        console.log(file);
+        this.loading = false;
       }
       this.http
         .put<any>(
-          `https://back-unisoft-lnv0.onrender.com/cliente/actualizarClientes/${form.value.documento}`,
-          data
-        )
-        .subscribe(
+          `http://localhost:8000/cliente/actualizarClientes/${form.value.documento}`,
+        //`https://back-unisoft-lnv0.onrender.com/cliente/actualizarClientes/${form.value.documento}`,
+        data,
+        { headers: headers }
+      ).pipe(
+        timeout(200000) // Establece un tiempo de espera de 200 segundos
+      ).subscribe(
           (response) => {
+            this.loading = false;
             Swal.fire({
               title: 'Cliente editado con éxito',
               text: '',
@@ -161,15 +197,24 @@ export class EditarClienteComponent {
             });
           },
           (error) => {
-            // Handle error response
-            console.error('Error adding client:', error);
-            Swal.fire({
-              title: 'Error',
-              text: 'Error adding client',
-              icon: 'error',
-              confirmButtonText: 'OK',
-            });
-          }
+            this.loading = false;
+        if (error.status === 404) {
+          Swal.fire({
+            title: 'Cliente no encontrado',
+            text: 'No se encontró el cliente',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al editar el cliente',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+        }
+      }
+          
         );
     }
   }
@@ -186,14 +231,17 @@ export class EditarClienteComponent {
           (url) => {
             // Assign the download URL to the photoUrl property
             this.photoUrl = url;
-            return url;
           },
           (error) => {
-            console.error('Error getting download URL:', error);
+            
+            console.error('Error fetching photo:', error);
+            // Set photoUrl to null to avoid displaying broken image
+            this.photoUrl = null;
+            console.log(`Photo with documento ${documento} not found`);
           }
         );
     } else {
-      console.error('Photo path not found for ID:');
+      this.photoUrl = null;
     }
   }
 
@@ -203,11 +251,9 @@ export class EditarClienteComponent {
     // Delete the file using the storage reference
     storageRef.delete().subscribe(
       () => {
-        console.log('Photo deleted successfully');
         // Handle success, such as updating UI
       },
       (error) => {
-        console.error('Error deleting photo:', error);
         // Handle error, such as displaying an error message
       }
     );
