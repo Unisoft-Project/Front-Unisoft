@@ -14,22 +14,61 @@
           <table mat-table [dataSource]="dataSource" class="w-100">
             <!-- Define table columns using ngFor -->
             <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">{{ column }}</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ column === 'TipoDocumento' ? element.tipo_documento : element[column.toLowerCase()] }}</td>
-              </ng-container>
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">{{ column }}</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">
+                <div class="center-icon">
+                  <ng-container *ngIf="column === 'FotoDocumento'">
+                    <button mat-icon-button (click)="printDocumento(element.documento)">
+                      <mat-icon class="documentoIcon">assignment_ind</mat-icon>
+                    </button>
+                  </ng-container>
+                </div>
+                <div class="center-icon">
+                  <ng-container *ngIf="column === 'Eliminar'">
+                    <button mat-icon-button (click)="printEliminarCliente(element.documento)">
+                      <mat-icon class="deleteIcon">delete</mat-icon>
+                    </button>
+                  </ng-container>
+                </div>
+                <ng-container *ngIf="column === 'TipoDocumento'">
+                  {{ element.tipo_documento }}
+                </ng-container>
+                <ng-container *ngIf="column !== 'FotoDocumento' && column !== 'TipoDocumento'">
+                  {{ element[column.toLowerCase()] }}
+                </ng-container>
+              </td>
+            </ng-container>
             <!-- Header and Row definitions -->
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
+          <mat-paginator [length]="allClients.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons (page)="paginaCambiada($event)" #paginator></mat-paginator>
         </div>
       </mat-card-content>
     </mat-card>
   </div>
-  <div  *ngIf="loading" class="loading-overlay">
+  <div *ngIf="loading" class="loading-overlay">
     <div class="text-center">
       <img src="../../../../assets/images/recarga/cargando.gif" width="100px">
     </div>
   </div>
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
+  </div>
+
+
+  <div *ngIf="modalDocumento" class="loading-overlayf" id="myModal">
+    <div class="modal">
+      <mat-card class="cardWithShadow boxed-auth">
+        <!-- Mover el botón de cierre a la esquina superior derecha -->
+        <button mat-icon-button class="close-button" (click)="closeModal()">
+          <mat-icon color="warn">close</mat-icon>
+        </button>
+        <mat-card-content class="p-32">
+          <form class="m-t-30">
+            <img [src]="photoUrl" class="modal-image">
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
