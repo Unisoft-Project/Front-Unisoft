@@ -35,7 +35,7 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerClientesComponent {
-  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono', 'FotoDocumento', 'Eliminar'];
+  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono', 'E-mail', 'FotoDocumento', 'Eliminar'];
   dataSource: Client[] = [];
   loading: boolean = false;
   modalDocumento: boolean = false;

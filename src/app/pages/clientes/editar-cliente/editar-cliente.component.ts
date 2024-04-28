@@ -26,6 +26,7 @@ export class EditarClienteComponent {
     documento: '',
     direccion: '',
     telefono: '',
+    email: ''
   };
   selectOption(option: string) {
     this.data.tipo_documento = option;
@@ -80,6 +81,7 @@ export class EditarClienteComponent {
         this.clientesForm.controls['nombre'].setValue(response[0].nombre);
         this.clientesForm.controls['direccion'].setValue(response[0].direccion);
         this.clientesForm.controls['telefono'].setValue(response[0].telefono);
+        this.clientesForm.controls['email'].setValue(response[0].email);
 
 
         switch (response[0].tipo_documento.oid) {
@@ -151,7 +153,7 @@ export class EditarClienteComponent {
       !form.value.tipo_Documento ||
       !form.value.documento ||
       !form.value.direccion ||
-      !form.value.telefono
+      !form.value.telefono || !form.value.email
     ) {
       this.loading = false;
       // Show Swal fire alert if any field is empty
