@@ -1,1 +1,24 @@
-<p>agregar-venta works!</p>
+<!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
+<mat-card class="cardWithShadow theme-card">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">Registrar Compra</mat-card-title>
+    </mat-card-header>
+    <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+      <form class="b-t-1" #compraForm="ngForm" >
+      
+    
+        <mat-card-content class="b-t-1">
+         
+  
+
+  
+
+          <button class="w-100" mat-raised-button color="primary" (click)="generatePDF()">
+            Generar Factura
+          </button>
+
+        </mat-card-content>
+  
+      </form>
+    </div>
+  </mat-card>
