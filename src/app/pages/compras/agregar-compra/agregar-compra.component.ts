@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { timeout } from 'rxjs/operators';
 
 
 @Component({
@@ -22,6 +23,8 @@ export class AgregarCompraComponent {
   fireStorage: AngularFireStorage;
   modelosDispositivos: any[] = [];
   marcasDispositivos: any[] = [];
+  loading: boolean = false;
+  
 
   constructor(
     private router: Router,
@@ -185,8 +188,17 @@ export class AgregarCompraComponent {
 
   //Gestión GET Cliente
   getCliente(documento: string) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
-    this.http.get(endpoint).subscribe(
+
+    this.http.get(endpoint, { headers: headers }).pipe(
+      timeout(200000) 
+    ).subscribe(
       (response: any) => {
         // Handle the response here
         this.clientFound = response[0];
