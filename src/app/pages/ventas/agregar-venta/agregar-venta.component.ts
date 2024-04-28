@@ -2,30 +2,121 @@ import { Component } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { EmailJSResponseStatus } from '@emailjs/browser';
 import jsPDF from 'jspdf';
-import emailjs from '@emailjs/browser'
+import emailjs from '@emailjs/browser';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { timeout } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import { MatTableDataSource } from '@angular/material/table';
+
+interface TableData {
+  IMEI: string;
+  marcaTelefonos: string;
+  observacion: string;
+  modeloTelefonos: string;
+  valorVenta: number;
+}
+
 @Component({
   selector: 'app-agregar-venta',
   templateUrl: './agregar-venta.component.html'
 })
-export class AgregarVentaComponent {
 
-  constructor(private fireStorage: AngularFireStorage) {}
+export class AgregarVentaComponent {
+  documentoField: any;
+  clientFoundTag: boolean = false;
+  clientFound: any;
+  loading: boolean = false;
+  totalVenta: number = 0;
+
+  constructor(
+    private http: HttpClient,
+    private fireStorage: AngularFireStorage
+  ) { }
+
+  //* Estructura para Busqueda Cliente
+  doc = '';
+  public clienteEncontrado = {
+    nombre: '',
+    tipo_documento: '',
+    documento: '',
+    direccion: '',
+    telefono: '',
+  };
+
+  
+  calcularTotal(): number {
+    return this.tableData.reduce((total, item) => total + item.valorVenta, 0);
+  }
+
+
+  tableData: TableData[] = [
+    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 100 },
+    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 400 },
+    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 800 }
+    // Agrega más objetos de tipo TableData aquí si es necesario
+  ];
+
+
+  // agregarProducto(nuevoProducto: TableData) {
+  //   this.tableData.push(nuevoProducto);
+  //   this.calcularTotal(); // Actualiza el total cuando se agrega un nuevo producto
+  // }
+
+  dataSource: MatTableDataSource<TableData> = new MatTableDataSource<TableData>(this.tableData);
+  displayedColumns: string[] = ['IMEI', 'marcaTelefonos', 'modeloTelefonos', 'observacion', 'valorVenta'];
+
+
+  //Gestión GET Cliente
+  getCliente(documento: string) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
+
+    this.http.get(endpoint, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response: any) => {
+        // Handle the response here
+        this.clientFound = response[0];
+        this.doc = documento;
+        this.clientFoundTag = true;
+        console.log('response', response);
+        this.clienteEncontrado.documento = response[0].documento;
+        this.clienteEncontrado.nombre = response[0].nombre;
+        this.clienteEncontrado.direccion = response[0].direccion;
+        this.clienteEncontrado.telefono = response[0].telefono;
+      }, (error) => {
+        // Handle errors here
+        console.error(error);
+        Swal.fire({
+          title: 'Advertencia',
+          text: 'Cliente no encontrado',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+    );
+  }
 
   generatePDF() {
     const margins = {
-      top: 30, 
-      bottom: 30, 
-      left: 10, 
+      top: 30,
+      bottom: 30,
+      left: 10,
       right: 10
     };
 
     const doc = new jsPDF();
-    
+
     // Add header image
     doc.addImage(
       "/assets/images/smartphone-call.png",
       "PNG",
-      margins.left, 
+      margins.left,
       10,
       20,
       20
@@ -55,63 +146,63 @@ export class AgregarVentaComponent {
     // Now you have a File object representing the PDF document
     // You can use this file object for further processing or upload
     this.addFirebase(file, 1234)
-    
+
   }
 
   async addFirebase(doc: any, factura: any) {
     const file: File = doc as File;
     const path = `facturas-ventas/${factura}`;
     const storageRef = this.fireStorage.ref(path);
-    
+
     // Specify content type based on file extension
     const contentType = this.getContentType(file.name);
 
     try {
-        // Upload the file to Firebase Storage
-        const uploadTask = storageRef.put(file, { contentType });
-        
-        // Get the download URL once the upload is complete
-        uploadTask.then(async (snapshot) => {
-            const downloadURL = await snapshot.ref.getDownloadURL();
-            console.log('File uploaded successfully. Download URL:', downloadURL);
-            this.send(downloadURL);
-            // You can use the downloadURL as needed, e.g., save it to a database
-        });
+      // Upload the file to Firebase Storage
+      const uploadTask = storageRef.put(file, { contentType });
+
+      // Get the download URL once the upload is complete
+      uploadTask.then(async (snapshot) => {
+        const downloadURL = await snapshot.ref.getDownloadURL();
+        console.log('File uploaded successfully. Download URL:', downloadURL);
+        this.send(downloadURL);
+        // You can use the downloadURL as needed, e.g., save it to a database
+      });
     } catch (error) {
-        console.error('Error uploading file:', error);
+      console.error('Error uploading file:', error);
     }
-}
+  }
 
-async send(link: String){
-  emailjs.init('Hul6hhwwkEGu_XFbm')
-  let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
-    from_name: 'Danicell',
-    to_name: 'test',
-    to_email: 'valentinabarbetty2@gmail.com',
-    subject: 'Test subject',
-    message: 'this is message',
-    link: link
-  });
-  console.log("mensaje enviado")
-}
+  async send(link: String) {
+    emailjs.init('Hul6hhwwkEGu_XFbm')
+    let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
+      from_name: 'Danicell',
+      to_name: 'test',
+      to_email: 'valentinabarbetty2@gmail.com',
+      subject: 'Test subject',
+      message: 'this is message',
+      link: link
+    });
+    console.log("mensaje enviado")
+  }
 
 
 
-getContentType(fileName: string): string {
+  getContentType(fileName: string): string {
     const extension = fileName.split('.').pop();
     switch (extension) {
-        case 'pdf':
-            return 'application/pdf';
-        case 'jpg':
-        case 'jpeg':
-            return 'image/jpeg';
-        case 'png':
-            return 'image/png';
-        // Add more cases for other file types as needed
-        default:
-            return 'application/octet-stream'; // Default content type
+      case 'pdf':
+        return 'application/pdf';
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      // Add more cases for other file types as needed
+      default:
+        return 'application/octet-stream'; // Default content type
     }
-}
+  }
 
   private addCustomerInfo(doc: jsPDF, margins: any) {
     // Add customer information
@@ -123,7 +214,7 @@ getContentType(fileName: string): string {
       { label: 'Dirección:', value: 'Cl 7', yPos: 70 },
       { label: 'Teléfono:', value: '987654321', yPos: 75 },
       { label: 'Detalles de compra:', yPos: 85 },
-     
+
     ];
 
     infoTexts.forEach(info => {
@@ -187,10 +278,10 @@ getContentType(fileName: string): string {
       '5.-Sin factura no hay garantía. 6.- Si el daño no está dentro de la garantía debe cancelarse el costo de la revisión y/o arreglo. 7.- Si el equipo entra por garantía, debe contar con un tiempo de revisión y entrega'
     ];
     const concatenatedText = warrantyText.map((text, index) => `${text}`).join(' ');
-    
+
     // Split text into array of lines based on specified width
     const lines = doc.splitTextToSize(concatenatedText, 250); // Adjust width as needed
-    
+
     // Add warranty information to PDF
     lines.forEach((line: any, index: any) => {
       doc.setFontSize(7)

@@ -1,25 +1,168 @@
-<!--TODO: Corregir mat-label para que se muestren encima de su respectivo input-->
 <mat-card class="cardWithShadow theme-card">
     <mat-card-header>
-      <mat-card-title class="m-b-0">Registrar Compra</mat-card-title>
+        <mat-card-title class="m-b-0">Registrar Venta</mat-card-title>
     </mat-card-header>
     <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-      <form class="b-t-1" #compraForm="ngForm" >
-      
-    
-        <mat-card-content class="b-t-1">
-         
-  
+        <form class="b-t-1" #ventaForm="ngForm">
+            <!--* Datos del Cliente-->
+            <mat-card-content class="b-t-1">
+                <div style="margin-bottom: 20px;">
+                    <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
+                </div>
+                <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+                    <!-- Columna izquierda -->
+                    <div class="col-md-8" style="display: flex; flex-wrap: wrap;">
+                        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Buscar Cliente</mat-label>
+                        <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
+                            <input matInput placeholder="Identificación" [(ngModel)]="documentoField"
+                                [ngModelOptions]="{ standalone: true }">
+                        </mat-form-field>
+                    </div>
+                    <!-- Columna derecha -->
+                    <div class="col-md-4" style="display: flex; flex-wrap: wrap; align-items: flex-end;">
+                        <!-- Botón Buscar -->
+                        <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+                            <div style="display: flex; flex-wrap: wrap; align-items: center;">
+                                <!-- Botón Buscar -->
+                                <button mat-raised-button color="primary" type="button"
+                                    (click)="getCliente(documentoField)" style="margin-right: 8px;">
+                                    Buscar
+                                </button>
+                                <!-- Botón Registrar Cliente -->
+                                <a mat-button color="accent" routerLink="/clientes/agregar-cliente" target="_blank"
+                                    style="margin-right: 8px;">
+                                    Registrar Cliente
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  
+                <div *ngIf="clientFoundTag" class="search-client position-relative row justify-content-center">
+                    <div class="col-lg-6">
+                        <mat-card class="client-card">
+                            <mat-card-content>
+                                <div class="client-info">
+                                    <h2>Información del Cliente</h2>
+                                    <hr>
+                                    <p><strong>Identificación:</strong> {{ clienteEncontrado.documento }}</p>
+                                    <p><strong>Nombre:</strong> {{ clienteEncontrado.nombre }}</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                    <div class="col-lg-6">
+                        <mat-card class="client-card">
+                            <mat-card-content>
+                                <div class="client-info">
+                                    <h2>Dirección y Contacto</h2>
+                                    <hr>
+                                    <p><strong>Dirección:</strong> {{ clienteEncontrado.direccion }}</p>
+                                    <p><strong>Teléfono:</strong> {{ clienteEncontrado.telefono }}</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </div>
+            </mat-card-content>
 
-       
-          <button class="w-100" mat-raised-button color="primary" (click)="guardarPDF()">
-            Guardar Factura
-          </button>
-        
-        </mat-card-content>
-  
-      </form>
+            <!--* Apartado Información de Facturación-->
+            <mat-card-content class="b-t-1">
+                <div style="margin-bottom: 20px;">
+                    <mat-card-title class="m-b-0">Información de Facturación</mat-card-title>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Número de factura</mat-label>
+                        <mat-form-field appearance="outline" class="w-100" color="primary">
+                            <input required matInput ngModel name="numeroFactura" type="string"
+                                placeholder="Número de factura" />
+                            <mat-error>Campo obligatorio</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Método de pago</mat-label>
+                        <mat-form-field appearance="outline" class="w-100" color="primary">
+                            <input required matInput ngModel name="metodoPago" type="string"
+                                placeholder="Método de Pago" />
+                            <mat-error>Campo obligatorio</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Fecha de Facturación</mat-label>
+                        <mat-form-field appearance="outline" class="w-100" color="primary">
+                            <input matInput [matDatepicker]="picker" placeholder="Seleccione una fecha"
+                                name="fechaFactura" required ngModel>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-error>Campo obligatorio</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">No sé qué poner</mat-label>
+                        <mat-form-field appearance="outline" class="w-100" color="primary">
+                            <input required matInput ngModel name="numeroFactura" type="string"
+                                placeholder="Si lo quito se me jode" />
+                            <mat-error>Campo obligatorio</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <!--Detalles-->
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+                    Observacion de la factura
+                </mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <textarea matInput ngModel name="observacion" type="string" placeholder="observacion"
+                        cdkTextareaAutosize cdkAutosizeMinRows="5">
+                    </textarea>
+                </mat-form-field>
+            </mat-card-content>
+
+            <!--* Apartado de Tabla-->
+            <mat-card-content class="b-t-1">
+                <div style="margin-bottom: 20px; display: flex; align-items: center;">
+                    <mat-card-title class="m-b-0">Información de los Productos</mat-card-title>
+                    <button mat-icon-button color="primary" style="margin-left: 5px;">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                <mat-table [dataSource]="dataSource">
+                    <ng-container matColumnDef="IMEI">
+                        <mat-header-cell *matHeaderCellDef> IMEI </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.IMEI}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="marcaTelefonos">
+                        <mat-header-cell *matHeaderCellDef> Marca del Teléfono </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.marcaTelefonos}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="modeloTelefonos">
+                        <mat-header-cell *matHeaderCellDef> Modelo del Teléfono </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.modeloTelefonos}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="observacion">
+                        <mat-header-cell *matHeaderCellDef> Observacion </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.observacion}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="valorVenta">
+                        <mat-header-cell *matHeaderCellDef> Valor de Venta </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.valorVenta}} </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                </mat-table>
+            </mat-card-content>
+
+            <mat-card-content class="b-t-1">
+                <button class="w-100" mat-raised-button color="primary" (click)="guardarPDF()">
+                    Guardar Factura
+                </button>
+            </mat-card-content>
+
+        </form>
     </div>
-  </mat-card>
+</mat-card>
