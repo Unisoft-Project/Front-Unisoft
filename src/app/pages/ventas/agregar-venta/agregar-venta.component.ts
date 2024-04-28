@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import jsPDF from 'jspdf';
 
 @Component({
@@ -7,7 +8,7 @@ import jsPDF from 'jspdf';
 })
 export class AgregarVentaComponent {
 
-  constructor() {}
+  constructor(private fireStorage: AngularFireStorage) {}
 
   generatePDF() {
     const margins = {
@@ -42,7 +43,50 @@ export class AgregarVentaComponent {
     this.addDispositivosInfo(doc, margins);
     doc.save('Factura_343536.pdf');
 
+    //agregar a firebase
+    return doc
+
   }
+
+  guardarPDF() {
+    const doc = this.generatePDF(); // Call generatePDF to get the PDF document
+    const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
+    // Now you have a File object representing the PDF document
+    // You can use this file object for further processing or upload
+    this.addFirebase(file, 1234)
+  }
+
+  async addFirebase(doc: any, factura: any) {
+    const file: File = doc as File;
+    const path = `facturas-ventas/${factura}`;
+    const storageRef = this.fireStorage.ref(path);
+    
+    // Specify content type based on file extension
+    const contentType = this.getContentType(file.name);
+
+    try {
+        await storageRef.put(file, { contentType });
+        console.log('File uploaded successfully');
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    }
+}
+
+getContentType(fileName: string): string {
+    const extension = fileName.split('.').pop();
+    switch (extension) {
+        case 'pdf':
+            return 'application/pdf';
+        case 'jpg':
+        case 'jpeg':
+            return 'image/jpeg';
+        case 'png':
+            return 'image/png';
+        // Add more cases for other file types as needed
+        default:
+            return 'application/octet-stream'; // Default content type
+    }
+}
 
   private addCustomerInfo(doc: jsPDF, margins: any) {
     // Add customer information
@@ -77,7 +121,7 @@ export class AgregarVentaComponent {
       { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
       { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
       { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      
+
       // Add more data as needed
       // Add more data as needed
     ];
