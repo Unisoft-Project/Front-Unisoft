@@ -157,6 +157,15 @@
                 </mat-table>
             </mat-card-content>
 
+            <mat-card-content class="b-t-1" style="float: right;">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+                  <span style="font-weight: bold;">Total de la venta</span>
+                </mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                  <input matInput type="number" [disabled]="true" [value]="calcularTotal()" style="font-weight: bold;">
+                </mat-form-field>
+              </mat-card-content>    
+
             <mat-card-content class="b-t-1">
                 <button class="w-100" mat-raised-button color="primary" (click)="guardarPDF()">
                     Guardar Factura
