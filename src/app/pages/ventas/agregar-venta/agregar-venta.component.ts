@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { EmailJSResponseStatus } from '@emailjs/browser';
 import jsPDF from 'jspdf';
-
+import emailjs from '@emailjs/browser'
 @Component({
   selector: 'app-agregar-venta',
   templateUrl: './agregar-venta.component.html'
@@ -54,6 +55,7 @@ export class AgregarVentaComponent {
     // Now you have a File object representing the PDF document
     // You can use this file object for further processing or upload
     this.addFirebase(file, 1234)
+    
   }
 
   async addFirebase(doc: any, factura: any) {
@@ -65,12 +67,35 @@ export class AgregarVentaComponent {
     const contentType = this.getContentType(file.name);
 
     try {
-        await storageRef.put(file, { contentType });
-        console.log('File uploaded successfully');
+        // Upload the file to Firebase Storage
+        const uploadTask = storageRef.put(file, { contentType });
+        
+        // Get the download URL once the upload is complete
+        uploadTask.then(async (snapshot) => {
+            const downloadURL = await snapshot.ref.getDownloadURL();
+            console.log('File uploaded successfully. Download URL:', downloadURL);
+            this.send(downloadURL);
+            // You can use the downloadURL as needed, e.g., save it to a database
+        });
     } catch (error) {
         console.error('Error uploading file:', error);
     }
 }
+
+async send(link: String){
+  emailjs.init('Hul6hhwwkEGu_XFbm')
+  let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
+    from_name: 'Danicell',
+    to_name: 'test',
+    to_email: 'valentinabarbetty2@gmail.com',
+    subject: 'Test subject',
+    message: 'this is message',
+    link: link
+  });
+  console.log("mensaje enviado")
+}
+
+
 
 getContentType(fileName: string): string {
     const extension = fileName.split('.').pop();
