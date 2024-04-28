@@ -95,16 +95,18 @@ export class AgregarCompraComponent {
       });
     } else {
 
-      if (this.firebaseFile) {
-        const file: File = this.firebaseFile as File;
-        const path = `docs/${form.value.imei}`;
-        this.fireStorage.upload(path, file);
-        const uploadTask = await this.fireStorage.upload(path, file);
-        const url = await uploadTask.ref.getDownloadURL();
-        console.log(url);
-        data.foto_documento = url;
-      }
+      // if (this.firebaseFile) {
+      //   const file: File = this.firebaseFile as File;
+      //   const path = `docs/${form.value.imei}`;
+      //   this.fireStorage.upload(path, file);
+      //   const uploadTask = await this.fireStorage.upload(path, file);
+      //   const url = await uploadTask.ref.getDownloadURL();
+      //   console.log(url);
+      //   data.foto_documento = url;
+      // }
+
       // Set other client data
+      data.imei = form.value.imei;
       data.consecutivo_compraventa = form.value.consecutivo;
       data.observacion = form.value.observacion;
       data.valor_compra = form.value.valor_compra;
