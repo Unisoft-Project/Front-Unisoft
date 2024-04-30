@@ -3,15 +3,43 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { EmailJSResponseStatus } from '@emailjs/browser';
 import jsPDF from 'jspdf';
 import emailjs from '@emailjs/browser'
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { timeout } from 'rxjs';
+import { FacturaService } from 'src/app/services/factura.service';
+import { Factura } from 'src/app/models/factura.model';
+
+
 @Component({
   selector: 'app-agregar-venta',
   templateUrl: './agregar-venta.component.html'
 })
+
 export class AgregarVentaComponent {
 
-  constructor(private fireStorage: AngularFireStorage) {}
 
-  generatePDF() {
+  constructor(private fireStorage: AngularFireStorage, private http: HttpClient, private facturaService: FacturaService
+  ) {}
+  dataSource: Factura[] = [];
+  factura: Factura[] = [];
+  errorMessage: string = '';
+  generarFactura() {
+    this.facturaService.getFactura(1).pipe(
+      timeout(200000)
+    )
+      .subscribe(
+        res => {
+          this.factura = res;
+          console.log(this.factura);
+          const doc = this.generatePDF(this.factura); // Call generatePDF to get the PDF document
+          const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
+          this.addFirebase(file, 1234)
+        },
+        err => console.log(err)
+      );
+  }
+  
+  
+  generatePDF(info: Factura[]) {
     const margins = {
       top: 30, 
       bottom: 30, 
@@ -32,31 +60,25 @@ export class AgregarVentaComponent {
     );
     doc.setFontSize(9);
     // Add header text
-    doc.text('DANICELL', 30, 15);
-    doc.text('NIT 1.006.048.770', 30, 20);
-    doc.text('CELULAR: 3178176300', 30, 25);
+    doc.text(info[0].usuario.empresa, 30, 15);
+    doc.text('NIT:' + " " + info[0].usuario.nit, 30, 20);
+    doc.text('CELULAR:' + " " + info[0].cliente.telefono, 30, 25);
     doc.text('No Responsable de IVA', 30, 30);
-    doc.text('01/01/2024', 170, 15);
-    doc.text('Factura No. 343536', 170, 20);
+    doc.text(info[0].fecha_hora, 170, 15);
+    doc.text('Factura No.' + " " + info[0].numero_factura, 170, 20);
 
     // Add customer information
-    this.addCustomerInfo(doc, margins);
-    this.addDispositivosInfo(doc, margins);
-    doc.save('Factura_343536.pdf');
+    this.addCustomerInfo(doc, margins, info);
+    this.addDispositivosInfo(doc, margins, info);
+    doc.save('Factura' + info[0].numero_factura + '.pdf');
 
     //agregar a firebase
     return doc
 
   }
 
-  guardarPDF() {
-    const doc = this.generatePDF(); // Call generatePDF to get the PDF document
-    const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
-    // Now you have a File object representing the PDF document
-    // You can use this file object for further processing or upload
-    this.addFirebase(file, 1234)
-    
-  }
+
+
 
   async addFirebase(doc: any, factura: any) {
     const file: File = doc as File;
@@ -87,7 +109,7 @@ async send(link: String){
   let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
     from_name: 'Danicell',
     to_name: 'test',
-    to_email: 'valentinabarbetty2@gmail.com',
+    to_email: 'inventechco@gmail.com',
     subject: 'Test subject',
     message: 'this is message',
     link: link
@@ -113,11 +135,11 @@ getContentType(fileName: string): string {
     }
 }
 
-  private addCustomerInfo(doc: jsPDF, margins: any) {
+  private addCustomerInfo(doc: jsPDF, margins: any, factura: Factura[]) {
     // Add customer information
     const infoTexts = [
       { label: 'Información del Cliente', yPos: 45 },
-      { label: 'Nombre:', value: 'Valentina', yPos: 55 },
+      { label: 'Nombre:', value: factura[0].cliente.nombre, yPos: 55 },
       { label: 'Tipo De Documento:', value: 'Cédula de Ciudadanía', yPos: 60 },
       { label: 'Número de Cédula:', value: '123456789', yPos: 65 },
       { label: 'Dirección:', value: 'Cl 7', yPos: 70 },
@@ -133,7 +155,7 @@ getContentType(fileName: string): string {
       }
     });
   }
-  private addDispositivosInfo(doc: jsPDF, margins: any) {
+  private addDispositivosInfo(doc: jsPDF, margins: any, info: Factura[]) {
     // Define table headers
     const headers = ['IMEI', 'MARCA', 'MODELO', 'PROCEDENCIA', 'GARANTÍA', 'PRECIO UNITARIO', 'SUBTOTAL'];
 
