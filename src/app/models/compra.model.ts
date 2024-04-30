@@ -10,6 +10,4 @@ export interface CompraInventario {
     valor_compra: string;
     modelo_dispositivo: ModeloDispositivo;
     marca_dispositivo: MarcaDispositivo;
-    cliente_id: any; // Type of 'cliente_id' is not provided in the JSON
-    fecha_hora: string;
 }

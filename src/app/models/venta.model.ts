@@ -9,4 +9,5 @@ export interface VentaItem {
     observacion: string;
     garantia: string;
     compra_inventario: CompraInventario[];
+
 }

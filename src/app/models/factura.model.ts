@@ -1,13 +1,9 @@
 import { Empresa } from './empresa.model';
 import { Cliente } from './cliente.model';
 import { VentaItem } from './venta.model';
+import { InfoFactura } from './InfoFactura.model';
 
 export interface Factura {
-    oid: number;
-    numero_factura: string;
-    fecha_hora: string;
-    usuario: Empresa;
-    cliente: Cliente;
-    total_venta: number;
+    info_factura: InfoFactura[]
     venta_items: VentaItem[];
 }
