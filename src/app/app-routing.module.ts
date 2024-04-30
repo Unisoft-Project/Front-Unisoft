@@ -16,7 +16,7 @@ const routes: Routes = [
             (m) => m.AuthenticationModule
           ),
       },
-     
+
     ],
   },
   {
