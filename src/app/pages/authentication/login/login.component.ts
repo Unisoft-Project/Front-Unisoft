@@ -29,7 +29,7 @@ export class AppSideLoginComponent {
           console.log(body)
           console.log(response.token);
           console.log(response); // Agrega esto para depurar
-          if (response.status==200) {
+          if (response.message === 'Login successful') { //"message": "Login successful"
             localStorage.setItem('token', response.token);
             this.router.navigate(['/dashboard']);
             Swal.fire({
