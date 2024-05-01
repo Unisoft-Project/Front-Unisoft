@@ -65,11 +65,6 @@ export const navItems: NavItem[] = [
     navCap: 'Perfiles',
   },
   {
-    displayName: 'Perfil de usuario',
-    iconName: 'rosette',
-    route: '/ui-components/badge',
-  },
-  {
     displayName: 'Chips',
     iconName: 'poker-chip',
     route: '/ui-components/chips',
