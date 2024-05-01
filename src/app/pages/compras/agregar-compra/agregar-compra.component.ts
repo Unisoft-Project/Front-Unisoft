@@ -115,26 +115,28 @@ export class AgregarCompraComponent {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       });
-      const endpoint = 'https://back-unisoft-lnv0.onrender.com/compra/compras_inventario/nueva_compra';
 
       // Set other client data
-      // Construir el cuerpo de la solicitud con los datos
-      const body = {
-        imei: form.value.imei,
-        consecutivo_compraventa: form.value.consecutivo,
-        observacion: form.value.observacion,
-        valor_compra: form.value.valor_compra,
-        modelo_dispositivo: this.selectedModeloDispositivo,
-        marca_dispositivo: this.selectedMarcaDispositivo,
-        cliente_id: this.clientFound.oid,
-        valor_venta: '0',
-        fecha_hora: '0'
-      };
+      data.imei = form.value.imei;
+      data.consecutivo_compraventa = form.value.consecutivo;
+      data.observacion = form.value.observacion;
+      data.valor_compra = form.value.valor_compra;
+      data.modelo_dispositivo = this.selectedModeloDispositivo;
+      data.marca_dispositivo = this.selectedMarcaDispositivo;
+      data.cliente_id = this.clientFound.oid;
+      data.valor_venta = '0';
+      data.fecha_hora = '0';
+      console.log(data);
       // TODO Revisar los campos y averiguar como concatenar info dispositivo + info cliente en un mismo paquete de datos
       // Realizar la solicitud POST con los datos y encabezados
-      this.http.post(endpoint, body, { headers: headers }).pipe(
-        timeout(200000)
-      ).subscribe(
+      this.http
+        .post<any>(
+          'https://back-unisoft-lnv0.onrender.com/compra/compras_inventario/nueva_compra',
+          data,
+          { headers: headers }
+        ).pipe(
+          timeout(200000)
+        ).subscribe(
         (response: any) => {
           this.loading = false;
           Swal.fire({
