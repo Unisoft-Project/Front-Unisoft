@@ -73,7 +73,7 @@
                         <mat-card-title class="m-b-0">Información de Facturación</mat-card-title>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Número de
                                 factura</mat-label>
                             <mat-form-field appearance="outline" class="w-100" color="primary">
@@ -82,7 +82,7 @@
                                 <mat-error>Campo obligatorio</mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Método de pago</mat-label>
                             <mat-form-field appearance="outline" class="w-100" color="primary">
                                 <input required matInput ngModel name="metodoPago" type="string"
@@ -90,7 +90,7 @@
                                 <mat-error>Campo obligatorio</mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Fecha de
                                 Facturación</mat-label>
                             <mat-form-field appearance="outline" class="w-100" color="primary">
@@ -98,14 +98,6 @@
                                     name="fechaFactura" required ngModel>
                                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                 <mat-datepicker #picker></mat-datepicker>
-                                <mat-error>Campo obligatorio</mat-error>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-md-3">
-                            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">No sé qué poner</mat-label>
-                            <mat-form-field appearance="outline" class="w-100" color="primary">
-                                <input required matInput ngModel name="numeroFactura" type="string"
-                                    placeholder="Si lo quito se me jode" />
                                 <mat-error>Campo obligatorio</mat-error>
                             </mat-form-field>
                         </div>
