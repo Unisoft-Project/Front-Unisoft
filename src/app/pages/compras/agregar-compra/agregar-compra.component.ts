@@ -9,7 +9,8 @@ import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-agregar-compra',
-  templateUrl: './agregar-compra.component.html'
+  templateUrl: './agregar-compra.component.html',
+  styleUrls: ['./agregar-compra.component.css']
 })
 
 export class AgregarCompraComponent {
@@ -24,7 +25,7 @@ export class AgregarCompraComponent {
   modelosDispositivos: any[] = [];
   marcasDispositivos: any[] = [];
   loading: boolean = false;
-  
+
 
   constructor(
     private router: Router,
@@ -78,7 +79,7 @@ export class AgregarCompraComponent {
   async addCompra(form: any) {
     const data: any = {};
     if (!form.value.imei || !form.value.marca_dispositivo || !form.value.consecutivo || !form.value.modelo_dispositivo || !form.value.valor_compra
-        || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
+      || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
     ) {
       // Show Swal fire alert if any field is empty
       Swal.fire({
@@ -108,49 +109,57 @@ export class AgregarCompraComponent {
       //   data.foto_documento = url;
       // }
 
+      this.loading = true;
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+      const endpoint = 'https://back-unisoft-lnv0.onrender.com/compra/compras_inventario/nueva_compra';
+
       // Set other client data
-      data.imei = form.value.imei;
-      data.consecutivo_compraventa = form.value.consecutivo;
-      data.observacion = form.value.observacion;
-      data.valor_compra = form.value.valor_compra;
-      data.modelo_dispositivo = this.selectedModeloDispositivo;
-      // data.modelo_dispositivo = 1;
-      data.marca_dispositivo = this.selectedMarcaDispositivo;
-      // data.marca_dispositivo = 12;
-      data.cliente_id = this.clientFound.oid;
-      data.valor_venta = '0';
-      data.fecha_hora = '0';
+      // Construir el cuerpo de la solicitud con los datos
+      const body = {
+        imei: form.value.imei,
+        consecutivo_compraventa: form.value.consecutivo,
+        observacion: form.value.observacion,
+        valor_compra: form.value.valor_compra,
+        modelo_dispositivo: this.selectedModeloDispositivo,
+        marca_dispositivo: this.selectedMarcaDispositivo,
+        cliente_id: this.clientFound.oid,
+        valor_venta: '0',
+        fecha_hora: '0'
+      };
       // TODO Revisar los campos y averiguar como concatenar info dispositivo + info cliente en un mismo paquete de datos
-      // Post client data to the server
-      this.http
-        .post<any>(
-          'https://back-unisoft-lnv0.onrender.com/compra/compras_inventario/nueva_compra',
-          data
-        )
-        .subscribe(
-          (response) => {
-            Swal.fire({
-              title: 'La compra se ha realizado con éxito',
-              text: '',
-              icon: 'success',
-              confirmButtonText: 'OK',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.router.navigate(['/inventario/ver-inventario']);
-              }
-            });
-          },
-          (error) => {
-            // Handle error response
-            console.error('Error añadiendo la compra: ', error);
-            Swal.fire({
-              title: 'Error',
-              text: 'Error creando la compra',
-              icon: 'error',
-              confirmButtonText: 'OK',
-            });
-          }
-        );
+      // Realizar la solicitud POST con los datos y encabezados
+      this.http.post(endpoint, body, { headers: headers }).pipe(
+        timeout(200000)
+      ).subscribe(
+        (response: any) => {
+          this.loading = false;
+          Swal.fire({
+            title: 'La compra se ha realizado con éxito',
+            text: '',
+            icon: 'success',
+            confirmButtonText: 'OK',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.router.navigate(['/inventario/ver-inventario']);
+            }
+          });
+        },
+        (error) => {
+          this.loading = false;
+          // Handle error response
+          console.error('Error añadiendo la compra: ', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'Error creando la compra',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+        }
+      );
     }
   }
 
@@ -197,10 +206,11 @@ export class AgregarCompraComponent {
     const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
 
     this.http.get(endpoint, { headers: headers }).pipe(
-      timeout(200000) 
+      timeout(200000)
     ).subscribe(
       (response: any) => {
         // Handle the response here
+        this.loading = false;
         this.clientFound = response[0];
         this.doc = documento;
         this.clientFoundTag = true;
@@ -210,14 +220,25 @@ export class AgregarCompraComponent {
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
       }, (error) => {
-        // Handle errors here
-        console.error(error);
-        Swal.fire({
-          title: 'Advertencia',
-          text: 'Cliente no encontrado',
-          icon: 'warning',
-          confirmButtonText: 'OK',
-        });
+        this.loading = false;
+        // Error en la petición
+        if (error.status === 404) {
+          // Cliente no encontrado
+          Swal.fire({
+            title: 'Cliente no encontrado',
+            text: 'El cliente no existe en la base de datos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          // Otro error
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al procesar la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
       }
     );
   }
