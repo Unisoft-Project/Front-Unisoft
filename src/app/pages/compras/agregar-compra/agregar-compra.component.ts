@@ -9,7 +9,8 @@ import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-agregar-compra',
-  templateUrl: './agregar-compra.component.html'
+  templateUrl: './agregar-compra.component.html',
+  styleUrls: ['./agregar-compra.component.css']
 })
 
 export class AgregarCompraComponent {
@@ -20,16 +21,14 @@ export class AgregarCompraComponent {
   selectedMarcaDispositivo: any;
   selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
   firebaseFile: File | null = null;
-  fireStorage: AngularFireStorage;
   modelosDispositivos: any[] = [];
   marcasDispositivos: any[] = [];
   loading: boolean = false;
 
-
   constructor(
     private router: Router,
     private http: HttpClient,
-    private storage: AngularFireStorage
+    private fireStorage: AngularFireStorage
   ) { }
 
   //* Estructura para Formulario Compras
@@ -59,26 +58,25 @@ export class AgregarCompraComponent {
 
   obtenerModelosDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo';
-    this.http.get<any[]>(url).pipe(
-      timeout(200000)
-    ).subscribe((data: any[]) => {
-      this.modelosDispositivos = data;
-      console.log('Modelos de dispositivos:', this.modelosDispositivos);
-    });
+    this.http.get<any[]>(url)
+      .subscribe((data: any[]) => {
+        this.modelosDispositivos = data;
+        console.log('Modelos de dispositivos:', this.modelosDispositivos);
+      });
   }
 
   obtenerMarcasDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
-    this.http.get<any[]>(url).pipe(
-      timeout(200000)
-    ).subscribe((data: any[]) => {
-      this.marcasDispositivos = data;
-      console.log('Marcas de dispositivos:', this.marcasDispositivos);
-    });
+    this.http.get<any[]>(url)
+      .subscribe((data: any[]) => {
+        this.marcasDispositivos = data;
+        console.log('Marcas de dispositivos:', this.marcasDispositivos);
+      });
   }
 
   async addCompra(form: any) {
     const data: any = {};
+    this.loading = true;
     if (!form.value.imei || !form.value.marca_dispositivo || !form.value.consecutivo || !form.value.modelo_dispositivo || !form.value.valor_compra
       || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
     ) {
@@ -100,15 +98,21 @@ export class AgregarCompraComponent {
       });
     } else {
 
-      // if (this.firebaseFile) {
-      //   const file: File = this.firebaseFile as File;
-      //   const path = `docs/${form.value.imei}`;
-      //   this.fireStorage.upload(path, file);
-      //   const uploadTask = await this.fireStorage.upload(path, file);
-      //   const url = await uploadTask.ref.getDownloadURL();
-      //   console.log(url);
-      //   data.foto_documento = url;
-      // }
+      if (this.firebaseFile) {
+        const file: File = this.firebaseFile as File;
+        const path = `formato_compraventa/${form.value.imei}`;
+        this.fireStorage.upload(path, file);
+        const uploadTask = await this.fireStorage.upload(path, file);
+        const url = await uploadTask.ref.getDownloadURL();
+        data.formato_compraventa = url;
+        this.loading = false;
+      }
+
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
 
       // Set other client data
       data.imei = form.value.imei;
@@ -116,21 +120,23 @@ export class AgregarCompraComponent {
       data.observacion = form.value.observacion;
       data.valor_compra = form.value.valor_compra;
       data.modelo_dispositivo = this.selectedModeloDispositivo;
-      // data.modelo_dispositivo = 1;
       data.marca_dispositivo = this.selectedMarcaDispositivo;
-      // data.marca_dispositivo = 12;
       data.cliente_id = this.clientFound.oid;
       data.valor_venta = '0';
       data.fecha_hora = '0';
+      console.log(data);
       // TODO Revisar los campos y averiguar como concatenar info dispositivo + info cliente en un mismo paquete de datos
-      // Post client data to the server
+      // Realizar la solicitud POST con los datos y encabezados
       this.http
         .post<any>(
           'https://back-unisoft-1.onrender.com/compra/compras_inventario/nueva_compra',
-          data
-        )
-        .subscribe(
-          (response) => {
+          data,
+          { headers: headers }
+        ).pipe(
+          timeout(200000)
+        ).subscribe(
+          (response: any) => {
+            this.loading = false;
             Swal.fire({
               title: 'La compra se ha realizado con éxito',
               text: '',
@@ -143,6 +149,7 @@ export class AgregarCompraComponent {
             });
           },
           (error) => {
+            this.loading = false;
             // Handle error response
             console.error('Error añadiendo la compra: ', error);
             Swal.fire({
@@ -203,6 +210,7 @@ export class AgregarCompraComponent {
     ).subscribe(
       (response: any) => {
         // Handle the response here
+        this.loading = false;
         this.clientFound = response[0];
         this.doc = documento;
         this.clientFoundTag = true;
@@ -212,14 +220,25 @@ export class AgregarCompraComponent {
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
       }, (error) => {
-        // Handle errors here
-        console.error(error);
-        Swal.fire({
-          title: 'Advertencia',
-          text: 'Cliente no encontrado',
-          icon: 'warning',
-          confirmButtonText: 'OK',
-        });
+        this.loading = false;
+        // Error en la petición
+        if (error.status === 404) {
+          // Cliente no encontrado
+          Swal.fire({
+            title: 'Cliente no encontrado',
+            text: 'El cliente no existe en la base de datos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          // Otro error
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al procesar la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
       }
     );
   }
