@@ -24,7 +24,7 @@ export class AgregarCompraComponent {
   modelosDispositivos: any[] = [];
   marcasDispositivos: any[] = [];
   loading: boolean = false;
-  
+
 
   constructor(
     private router: Router,
@@ -59,26 +59,28 @@ export class AgregarCompraComponent {
 
   obtenerModelosDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo';
-    this.http.get<any[]>(url)
-      .subscribe((data: any[]) => {
-        this.modelosDispositivos = data;
-        console.log('Modelos de dispositivos:', this.modelosDispositivos);
-      });
+    this.http.get<any[]>(url).pipe(
+      timeout(200000)
+    ).subscribe((data: any[]) => {
+      this.modelosDispositivos = data;
+      console.log('Modelos de dispositivos:', this.modelosDispositivos);
+    });
   }
 
   obtenerMarcasDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
-    this.http.get<any[]>(url)
-      .subscribe((data: any[]) => {
-        this.marcasDispositivos = data;
-        console.log('Marcas de dispositivos:', this.marcasDispositivos);
-      });
+    this.http.get<any[]>(url).pipe(
+      timeout(200000)
+    ).subscribe((data: any[]) => {
+      this.marcasDispositivos = data;
+      console.log('Marcas de dispositivos:', this.marcasDispositivos);
+    });
   }
 
   async addCompra(form: any) {
     const data: any = {};
     if (!form.value.imei || !form.value.marca_dispositivo || !form.value.consecutivo || !form.value.modelo_dispositivo || !form.value.valor_compra
-        || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
+      || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
     ) {
       // Show Swal fire alert if any field is empty
       Swal.fire({
@@ -197,7 +199,7 @@ export class AgregarCompraComponent {
     const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
 
     this.http.get(endpoint, { headers: headers }).pipe(
-      timeout(200000) 
+      timeout(200000)
     ).subscribe(
       (response: any) => {
         // Handle the response here
