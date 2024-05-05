@@ -18,7 +18,8 @@ interface TableData {
 
 @Component({
   selector: 'app-agregar-venta',
-  templateUrl: './agregar-venta.component.html'
+  templateUrl: './agregar-venta.component.html',
+  styleUrls: ['./agregar-venta.component.css']
 })
 
 export class AgregarVentaComponent {
@@ -27,6 +28,8 @@ export class AgregarVentaComponent {
   clientFound: any;
   loading: boolean = false;
   totalVenta: number = 0;
+
+  imeiField: any;
 
   constructor(
     private http: HttpClient,
@@ -43,7 +46,8 @@ export class AgregarVentaComponent {
     telefono: '',
   };
 
-  
+  mostrarModalProductos=false
+
   calcularTotal(): number {
     return this.tableData.reduce((total, item) => total + item.valorVenta, 0);
   }
@@ -102,6 +106,41 @@ export class AgregarVentaComponent {
     );
   }
 
+
+  getProducto(imei: string) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    const endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${documento}`;
+
+    this.http.get(endpoint, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response: any) => {
+        // Handle the response here
+        this.clientFound = response[0];
+        this.doc = documento;
+        this.clientFoundTag = true;
+        console.log('response', response);
+        this.clienteEncontrado.documento = response[0].documento;
+        this.clienteEncontrado.nombre = response[0].nombre;
+        this.clienteEncontrado.direccion = response[0].direccion;
+        this.clienteEncontrado.telefono = response[0].telefono;
+      }, (error) => {
+        // Handle errors here
+        console.error(error);
+        Swal.fire({
+          title: 'Advertencia',
+          text: 'Cliente no encontrado',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+    );
+  }
   generatePDF() {
     const margins = {
       top: 30,
