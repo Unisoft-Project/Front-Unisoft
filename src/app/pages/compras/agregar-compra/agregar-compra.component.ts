@@ -58,7 +58,7 @@ export class AgregarCompraComponent {
   }
 
   obtenerModelosDispositivos(): void {
-    const url = 'https://back-unisoft-lnv0.onrender.com/modelo/modelo_dispositivo';
+    const url = 'https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo';
     this.http.get<any[]>(url)
       .subscribe((data: any[]) => {
         this.modelosDispositivos = data;
@@ -67,7 +67,7 @@ export class AgregarCompraComponent {
   }
 
   obtenerMarcasDispositivos(): void {
-    const url = 'https://back-unisoft-lnv0.onrender.com/marca/marca_dispositivo';
+    const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
     this.http.get<any[]>(url)
       .subscribe((data: any[]) => {
         this.marcasDispositivos = data;
@@ -124,7 +124,7 @@ export class AgregarCompraComponent {
       // Post client data to the server
       this.http
         .post<any>(
-          'https://back-unisoft-lnv0.onrender.com/compra/compras_inventario/nueva_compra',
+          'https://back-unisoft-1.onrender.com/compra/compras_inventario/nueva_compra',
           data
         )
         .subscribe(
