@@ -5,7 +5,7 @@ import { timeout } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { MatPaginator, PageEvent, MatPaginatorIntl  } from '@angular/material/paginator';
 
-interface Client {
+/* interface Device {
   id: number;
   tipo_documento: string;
   documento: string;
@@ -13,12 +13,24 @@ interface Client {
   direccion: string;
   telefono: string;
   foto_documento: string;
+} */
+
+interface Device {
+  oid: number;
+  imei: string;
+  consecutivo_compraventa: string;
+  observacion: string;
+  valor_venta: string;
+  valor_compra: string;
+  modelo_dispositivo: number;
+  marca_dispositivo: string;
+  fecha_hora: string;
 }
 
 export class CustomPaginatorIntl extends MatPaginatorIntl {
   constructor() {
     super();
-    this.itemsPerPageLabel = 'Clientes por página:';
+    this.itemsPerPageLabel = 'Dispositivos por página:';
   }
 }
 
@@ -33,26 +45,20 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerInventarioComponent{
-  displayedColumns: string[] = ['IMEI', 'Marca', 'Modelo', 'Fecha', 'Valor', 'Ver más'];
-  dataSource: Client[] = [];
+  displayedColumns: string[] = ['No.Compraventa', 'IMEI', 'Modelo', 'Marca', 'Observación', 'Precio Venta', 'Ver más'];
+  dataSource: Device[] = [];
   loading: boolean = false;
   modalDocumento: boolean = false;
   errorMessage: string = '';
   filtro: string = '';
   photoUrl: string | null = null;
-  documentTypeMap: any = {
-    1: 'Cédula de Ciudadanía',
-    2: 'Cédula de Extranjería',
-    3: 'Tarjeta de Identidad',
-    4: 'Pasaporte',
-    5: 'NIT'
-  };
+
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
 
   ngOnInit(): void {
-    this.getClients()
+    this.getDevices()
   }
 
 
@@ -62,7 +68,7 @@ export class VerInventarioComponent{
 
 
 
-  getClients() {
+  getDevices() {
     this.loading = true;
     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
     const headers = new HttpHeaders({
@@ -71,8 +77,8 @@ export class VerInventarioComponent{
     });
     //
     this.http.get<any[]>(
-      `https://back-unisoft-1.onrender.com/cliente/listaClientes`,
-      //`http://localhost:8000/cliente/listaClientes`,
+      //`https://back-unisoft-1.onrender.com/compra/compras_inventario`,
+      'http://localhost:8000/compra/dispositivos',
       { headers: headers }
     ).pipe(
       timeout(200000)
@@ -80,10 +86,11 @@ export class VerInventarioComponent{
       (response) => {
         this.loading = false;
         // Map document type ID to description
-        this.dataSource = response.map(client => {
+        this.dataSource = response.map(device => {
           return {
-            ...client,
-            tipo_documento: client.tipo_documento.descripcion
+            ...device,
+            modelo_dispositivo: device.modelo_dispositivo.marca,
+            marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo,
           };
         });
         console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
@@ -93,18 +100,18 @@ export class VerInventarioComponent{
       (error) => {
         this.loading = false;
         if (error.status === 404) {
-          this.errorMessage = 'No se encontraron clientes.';
+          this.errorMessage = 'No se encontraron Dispositivos.';
         } else {
-          this.errorMessage = 'Ocurrió un error al obtener los clientes.';
+          this.errorMessage = 'Ocurrió un error al obtener los Dispositivos.';
         }
-        console.error('Error fetching clients:', error);
+        console.error('Error fetching Devices:', error);
       }
     );
   }
 
-  datosOriginales: Client[] = [];
-  filtrarClientes() {
-    if (this.datosOriginales.length === 0) {
+  datosOriginales: Device[] = [];
+  filtrarDispositivos() {
+    /* if (this.datosOriginales.length === 0) {
       this.datosOriginales = [...this.dataSource];
     }
 
@@ -120,8 +127,8 @@ export class VerInventarioComponent{
         this.errorMessage = 'No se encontraron clientes.';
       }
     } else {
-      this.getClients();
-    }
+      this.getDevices();
+    } */
   }
 
   printDocumento(documento: string) {
@@ -137,7 +144,7 @@ export class VerInventarioComponent{
   }
 
   getPhoto(documento: string) {
-    const photoPath = `docs/${documento}`;
+    /* const photoPath = `docs/${documento}`;
 
     if (photoPath) {
       // Get the download URL of the photo using the retrieved path
@@ -174,11 +181,11 @@ export class VerInventarioComponent{
         icon: 'error',
         confirmButtonText: 'OK'
       });
-    }
+    } */
   }
 
   eliminarCliente(documento: string) {
-    // Mostrar cuadro de diálogo para confirmar eliminación
+    /* // Mostrar cuadro de diálogo para confirmar eliminación
     Swal.fire({
       title: '¿Está seguro?',
       text: `¿Desea eliminar este cliente ${documento} ?`,
@@ -209,7 +216,7 @@ export class VerInventarioComponent{
               icon: 'success',
               confirmButtonText: 'OK'
             });
-            this.getClients();
+            this.getDevices();
           },
           (error) => {
             if (error.status === 409) {
@@ -233,9 +240,9 @@ export class VerInventarioComponent{
           }
         );
       }
-    });
+    }); */
   }
-  allClients: Client[] = [];
+  allClients: Device[] = [];
   paginaCambiada(event: PageEvent) {
     console.log('Page event:', event); // Verificar el evento de paginación
     const startIndex = event.pageIndex * event.pageSize;
