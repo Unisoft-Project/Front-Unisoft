@@ -21,16 +21,14 @@ export class AgregarCompraComponent {
   selectedMarcaDispositivo: any;
   selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
   firebaseFile: File | null = null;
-  fireStorage: AngularFireStorage;
   modelosDispositivos: any[] = [];
   marcasDispositivos: any[] = [];
   loading: boolean = false;
 
-
   constructor(
     private router: Router,
     private http: HttpClient,
-    private storage: AngularFireStorage
+    private fireStorage: AngularFireStorage
   ) { }
 
   //* Estructura para Formulario Compras
@@ -59,7 +57,7 @@ export class AgregarCompraComponent {
   }
 
   obtenerModelosDispositivos(): void {
-    const url = 'https://back-unisoft-lnv0.onrender.com/modelo/modelo_dispositivo';
+    const url = 'https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo';
     this.http.get<any[]>(url)
       .subscribe((data: any[]) => {
         this.modelosDispositivos = data;
@@ -68,7 +66,7 @@ export class AgregarCompraComponent {
   }
 
   obtenerMarcasDispositivos(): void {
-    const url = 'https://back-unisoft-lnv0.onrender.com/marca/marca_dispositivo';
+    const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
     this.http.get<any[]>(url)
       .subscribe((data: any[]) => {
         this.marcasDispositivos = data;
@@ -99,15 +97,16 @@ export class AgregarCompraComponent {
       });
     } else {
 
-      // if (this.firebaseFile) {
-      //   const file: File = this.firebaseFile as File;
-      //   const path = `docs/${form.value.imei}`;
-      //   this.fireStorage.upload(path, file);
-      //   const uploadTask = await this.fireStorage.upload(path, file);
-      //   const url = await uploadTask.ref.getDownloadURL();
-      //   console.log(url);
-      //   data.foto_documento = url;
-      // }
+      if (this.firebaseFile) {
+        const file: File = this.firebaseFile as File;
+        const path = `formato_compraventa/${form.value.imei}`;
+        this.fireStorage.upload(path, file);
+        const uploadTask = await this.fireStorage.upload(path, file);
+        const url = await uploadTask.ref.getDownloadURL();
+        data.formato_compraventa = url;
+        this.loading = false;
+      }
+
 
       this.loading = true;
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
@@ -131,37 +130,37 @@ export class AgregarCompraComponent {
       // Realizar la solicitud POST con los datos y encabezados
       this.http
         .post<any>(
-          'https://back-unisoft-lnv0.onrender.com/compra/compras_inventario/nueva_compra',
+          'https://back-unisoft-1.onrender.com/compra/compras_inventario/nueva_compra',
           data,
           { headers: headers }
         ).pipe(
           timeout(200000)
         ).subscribe(
-        (response: any) => {
-          this.loading = false;
-          Swal.fire({
-            title: 'La compra se ha realizado con éxito',
-            text: '',
-            icon: 'success',
-            confirmButtonText: 'OK',
-          }).then((result) => {
-            if (result.isConfirmed) {
-              this.router.navigate(['/inventario/ver-inventario']);
-            }
-          });
-        },
-        (error) => {
-          this.loading = false;
-          // Handle error response
-          console.error('Error añadiendo la compra: ', error);
-          Swal.fire({
-            title: 'Error',
-            text: 'Error creando la compra',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
-        }
-      );
+          (response: any) => {
+            this.loading = false;
+            Swal.fire({
+              title: 'La compra se ha realizado con éxito',
+              text: '',
+              icon: 'success',
+              confirmButtonText: 'OK',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/inventario/ver-inventario']);
+              }
+            });
+          },
+          (error) => {
+            this.loading = false;
+            // Handle error response
+            console.error('Error añadiendo la compra: ', error);
+            Swal.fire({
+              title: 'Error',
+              text: 'Error creando la compra',
+              icon: 'error',
+              confirmButtonText: 'OK',
+            });
+          }
+        );
     }
   }
 
