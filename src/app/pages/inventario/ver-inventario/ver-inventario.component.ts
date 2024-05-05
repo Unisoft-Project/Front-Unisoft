@@ -78,7 +78,8 @@ export class VerInventarioComponent{
     //
     this.http.get<any[]>(
       //`https://back-unisoft-1.onrender.com/compra/compras_inventario`,
-      'http://localhost:8000/compra/dispositivos',
+      //'http://localhost:8000/compra/compras_inventario',
+      'http://localhost:8000/compra/dispositivos/?imei=&marca_dispositivo=&modelo_dispositivo=',
       { headers: headers }
     ).pipe(
       timeout(200000)
