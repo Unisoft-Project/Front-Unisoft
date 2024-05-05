@@ -112,24 +112,24 @@ export class VerInventarioComponent{
 
   datosOriginales: Device[] = [];
   filtrarDispositivos() {
-    /* if (this.datosOriginales.length === 0) {
+    if (this.datosOriginales.length === 0) {
       this.datosOriginales = [...this.dataSource];
     }
 
     if (this.filtro) {
       const regex = new RegExp(this.filtro); // Expresión regular para buscar el número en cualquier posición del documento
-      this.dataSource = this.datosOriginales.filter(cliente => {
-        const documentoMatch = regex.test(cliente.documento); // Verifica si el número especificado está presente en el documento
-        console.log(`Documento ${cliente.documento}: ${documentoMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el documento coincide con el filtro
-        const nombreMatch = cliente.nombre.toLowerCase().includes(this.filtro.toLowerCase());
-        return documentoMatch || nombreMatch;
+      this.dataSource = this.datosOriginales.filter(device => {
+        const imeiMatch = regex.test(device.imei); // Verifica si el número especificado está presente en el documento
+        console.log(`Documento ${device.imei}: ${imeiMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el documento coincide con el filtro
+        const compraventaMatch = device.consecutivo_compraventa.toLowerCase().includes(this.filtro.toLowerCase());
+        return imeiMatch || compraventaMatch;
       });
       if (this.dataSource.length === 0) {
         this.errorMessage = 'No se encontraron clientes.';
       }
     } else {
       this.getDevices();
-    } */
+    }
   }
 
   printDocumento(documento: string) {
