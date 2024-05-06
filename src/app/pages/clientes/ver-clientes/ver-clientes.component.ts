@@ -62,7 +62,7 @@ export class VerClientesComponent {
     private storage: AngularFireStorage
   ) { }
 
-  
+
 
   getClients() {
     this.loading = true;
@@ -109,7 +109,7 @@ export class VerClientesComponent {
     if (this.datosOriginales.length === 0) {
       this.datosOriginales = [...this.dataSource];
     }
-   
+
     if (this.filtro) {
       const regex = new RegExp(this.filtro); // Expresión regular para buscar el número en cualquier posición del documento
       this.dataSource = this.datosOriginales.filter(cliente => {
@@ -120,7 +120,7 @@ export class VerClientesComponent {
       });
       if (this.dataSource.length === 0) {
         this.errorMessage = 'No se encontraron clientes.';
-      } 
+      }
     } else {
       this.getClients();
     }
@@ -140,7 +140,7 @@ export class VerClientesComponent {
 
   getPhoto(documento: string) {
     const photoPath = `docs/${documento}`;
-  
+
     if (photoPath) {
       // Get the download URL of the photo using the retrieved path
       this.storage
@@ -189,7 +189,7 @@ export class VerClientesComponent {
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-      if (result.isConfirmed) {  
+      if (result.isConfirmed) {
         const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ export class VerClientesComponent {
     this.dataSource = this.allClients.slice(startIndex, endIndex);
     console.log('DataSource after pagination:', this.dataSource); // Verificar el dataSource después de la paginación
   }
-  
+
   actualizarPagina() {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     const endIndex = startIndex + this.paginator.pageSize;

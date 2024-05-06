@@ -29,7 +29,7 @@ export class AgregarVentaComponent {
   clientFound: any;
   loading: boolean = false;
   totalVenta: number = 0;
-
+  productoFoundTag=false;
   imeiField: any;
 
   constructor(
@@ -50,15 +50,12 @@ export class AgregarVentaComponent {
   mostrarModalProductos=false
 
   calcularTotal(): number {
-    return 1; //this.tableData.reduce((total, item) => total + item.valor_venta, 0);
+    return this.tableData.reduce((total, item) => total + item.valor_venta, 0);
   }
 
 
   tableData: Producto[] = [];
-  agregarProductosLista(producto:Producto){
-    const currentData = this.dataSource.data;
-    currentData.push(producto)
-    this.dataSource.data = currentData;
+  limpiarCamposAgregarProductos(){
     const productoVacio: Producto = {
       imei: "",
       valor_compra: "",
@@ -69,31 +66,67 @@ export class AgregarVentaComponent {
       valor_venta: 0
     };
     this.productoEncontrado = productoVacio;
-    this.calcularTotal();
     this.imeiField="";
+    this.productoFoundTag=false;
+  }
 
+  validaProductoLista(productoBuscado : Producto){
+    const imeiBuscado = productoBuscado.imei;
+    const existeIMEI = this.dataSource.some(producto => producto.imei === imeiBuscado);
+    return existeIMEI;
+  }
+
+  agregarProductosLista(producto:Producto){
+    if(producto===undefined){
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'Primero debe ingresar un dispositivo',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });
+    }
+    else{
+      if(!this.validaProductoLista(producto)){
+        this.dataSource = [...this.dataSource, producto];
+        this.mostrarModalProductos=false;
+        this.limpiarCamposAgregarProductos();
+        this.calcularTotal();
+      }else{
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'El producto ya se encuentra agregado a la venta.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });}
+    }
+
+  }
+  cerrarModalAgregarProductos(){
+    this.mostrarModalProductos=false;
+    this.limpiarCamposAgregarProductos();
   }
 
 
+  dataSource: Producto[] = [];
 
-  dataSource: MatTableDataSource<Producto> = new MatTableDataSource<Producto>(this.tableData);
-
-  displayedColumns: string[] = ['IMEI', 'marcaTelefonos', 'modeloTelefonos', 'observacion', 'valorVenta'];
+  displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'valor_compra', 'valorVenta'];
 
   getProducto(imei: string) {
     this.loading = true;
-    const token = 'tu_jwt_token';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-    const endpoint = `http://localhost:8000/compra/compra-inventario_imei/${imei}`;
 
+    const endpoint = `https://back-unisoft-1.onrender.com/compra/compra-inventario_imei/${imei}`;
+     // http://localhost:8000/
     this.http.get<Producto>(endpoint, { headers: headers }).pipe(
       timeout(200000)
     ).subscribe(
       (response: Producto) => {
         this.productoEncontrado=response;
+        this.productoFoundTag=true
         this.loading = false;
       }, (error) => {
         console.error(error);
