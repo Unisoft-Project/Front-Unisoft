@@ -39,20 +39,7 @@ export class AppBadgeComponent {
   }
 
   // Método para calcular el valor del badge basado en los datos del formulario
-  private calculateBadgeValue(): number {
-    // Simulando una validación simple de los datos del formulario
-    let count = 0;
-
-    if (this.nombreUsuario) count++;
-    if (this.usuario.nombre) count++;
-    if (this.usuario.documento) count++;
-    if (this.empresa.nombre) count++;
-    if (this.empresa.nit) count++;
-    if (this.empresa.correo) count++;
-    if (this.empresa.telefono) count++;
-
-    return count;
-  }
+  
 
   // Variable para controlar la visibilidad del badge
   hidden = false;
