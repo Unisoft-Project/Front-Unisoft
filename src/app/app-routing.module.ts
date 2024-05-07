@@ -80,7 +80,10 @@ const routes: Routes = [
         canActivate: [FullguardiansService]
       },
     ],
-  },
+  },{
+    path: '**',
+    redirectTo: 'login'
+  }
 ];
 
 @NgModule({

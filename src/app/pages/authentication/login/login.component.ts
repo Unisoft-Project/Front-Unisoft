@@ -32,7 +32,7 @@ export class AppSideLoginComponent {
           console.log(body)
           console.log(response.token);
           console.log(response); // Agrega esto para depurar
-          if (response.message !== null) { //"message": "Login successful"
+          if (response.message !== null && response.message !== false) { //"message": "Login successful"
             localStorage.setItem('token', response.message);
             this.router.navigate(['/dashboard']);
             Swal.fire({

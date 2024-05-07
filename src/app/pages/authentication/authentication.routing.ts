@@ -24,7 +24,7 @@ export const AuthenticationRoutes: Routes = [
         // Carga el componente AppSideRegisterComponent cuando la URL es /register
         path: 'register',
         component: AppSideRegisterComponent,
-      },
+      }
     ],
   },
 
