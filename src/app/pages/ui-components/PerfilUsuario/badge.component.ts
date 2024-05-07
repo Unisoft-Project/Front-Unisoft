@@ -12,8 +12,8 @@ export class AppBadgeComponent implements OnInit {
   nombreUsuario: string = 'Nombre del Usuario';
   usuario: any = {
     nombre: '',
-    tipoDocumento: 'CC',
-    documento: ''
+    tipo_documento_oid: { descripcion: '' }, // Asegúrate de que tipo_documento_oid esté inicializado correctamente
+    nro_documento: ''
   };
   empresa: any = {
     nombre: '',
@@ -21,11 +21,13 @@ export class AppBadgeComponent implements OnInit {
     razonSocial: '',
     direccion: '',
     correo: '',
-    telefono: '',
-    ciudad: ''
+    telefono: ''
   };
   // Variable para controlar la visibilidad del badge
   hidden = false;
+
+  // Nueva propiedad para almacenar el tipo de documento seleccionado
+  tipoDocumentoSeleccionado: string = '';
 
   constructor(private http: HttpClient) { }
 
@@ -35,7 +37,7 @@ export class AppBadgeComponent implements OnInit {
   }
 
   obtenerDatosUsuario(): void {
-    const url = 'https://back-unisoft-1.onrender.com/usuario';
+    const url = 'https://back-unisoft-1.onrender.com/usuario/1'; // Corregir la URL para incluir el ID del usuario
     const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
 
     if (!token) {
@@ -51,8 +53,19 @@ export class AppBadgeComponent implements OnInit {
     this.http.get(url, { headers }).subscribe(
       (response: any) => {
         // Asignar los datos del usuario obtenidos de la respuesta
-        this.usuario = response.usuario;
-        this.empresa = response.empresa;
+        if (response && response.length > 0) {
+          this.usuario = response[0];
+          this.empresa = {
+            nombre: this.usuario.empresa,
+            nit: this.usuario.nit,
+            razonSocial: this.usuario.razon_social,
+            direccion: this.usuario.direccion,
+            correo: this.usuario.email,
+            telefono: this.usuario.telefono
+          };
+          // Asignar el tipo de documento seleccionado
+          this.tipoDocumentoSeleccionado = this.usuario.tipo_documento_oid?.descripcion || '';
+        }
       },
       (error) => {
         console.error('Error al obtener datos del usuario:', error);
@@ -69,16 +82,41 @@ export class AppBadgeComponent implements OnInit {
 
   // Método para guardar los datos del formulario
   guardarDatos(): void {
-    // Aquí puedes implementar la lógica para guardar los datos del formulario
-    console.log('Datos guardados:', this.usuario, this.empresa);
+    const url = 'https://back-unisoft-1.onrender.com/usuario/1/edit';
+    const token = localStorage.getItem('token');
 
-    // Mostrar mensaje de éxito usando SweetAlert2
-    Swal.fire({
-      icon: 'success',
-      title: '¡Datos guardados correctamente!',
-      showConfirmButton: false,
-      timer: 1500 // El mensaje se mostrará durante 1.5 segundos
+    if (!token) {
+      console.error('Token no encontrado.');
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     });
+
+    // Enviar los datos del usuario actualizados en la solicitud PUT
+    this.http.put(url, this.usuario, { headers }).subscribe(
+      (response: any) => {
+        // Manejar la respuesta del servidor
+        Swal.fire({
+          icon: 'success',
+          title: '¡Datos actualizados correctamente!',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      },
+      (error) => {
+        console.error('Error al actualizar datos del usuario:', error);
+        // Mostrar mensaje de error usando SweetAlert2
+        Swal.fire({
+          icon: 'error',
+          title: '¡Error!',
+          text: 'Ocurrió un error al actualizar los datos del usuario',
+          confirmButtonText: 'Cerrar'
+        });
+      }
+    );
   }
 
   // Método para alternar la visibilidad del badge

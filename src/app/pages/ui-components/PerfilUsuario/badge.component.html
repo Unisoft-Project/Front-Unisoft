@@ -10,18 +10,12 @@
     <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
       <form #clientesForm="ngForm" (ngSubmit)="guardarDatos()">
 
-        <!-- Nombre del usuario en la esquina superior izquierda -->
-        <div class="text-start mb-4">
-          <h4>{{ nombreUsuario }}</h4>
-        </div>
-
         <!-- Datos Personales -->
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Datos Personales</mat-label>
         <br>
 
         <div class="row mb-4">
           <div class="col-md-4">
-
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
               <input required matInput [(ngModel)]="usuario.nombre" name="nombre"/>
@@ -31,17 +25,17 @@
           <div class="col-md-4">
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
             <mat-form-field appearance="fill">
-                <mat-select [(ngModel)]="usuario.tipoDocumento" name="tipoDocumento">
-                    <mat-option value="Cédula de Ciudadanía">Cédula de Ciudadanía</mat-option>
-                    <mat-option value="Tarjeta de Identidad">Tarjeta de Identidad</mat-option>
-                </mat-select>
+              <mat-select [(ngModel)]="tipoDocumentoSeleccionado" name="tipoDocumento">
+                <mat-option value="Cédula de Ciudadanía">Cédula de Ciudadanía</mat-option>
+                <mat-option value="Tarjeta de Identidad">Tarjeta de Identidad</mat-option>
+              </mat-select>
             </mat-form-field>
-        </div>
+          </div>
 
           <div class="col-md-4">
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input required matInput [(ngModel)]="usuario.documento" name="documento"/>
+              <input required matInput [(ngModel)]="usuario.nro_documento" name="documento"/>
             </mat-form-field>
           </div>
         </div>
@@ -52,7 +46,6 @@
         <br>
         <div class="row mb-3">
           <div class="col-md-4">
-
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Empresa</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
               <input required matInput [(ngModel)]="empresa.nombre" name="empresa"/>
@@ -94,16 +87,6 @@
           </div>
         </div>
 
-        <!-- Ciudad -->
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Ciudad</mat-label>
-            <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input required matInput [(ngModel)]="empresa.ciudad" name="ciudad"/>
-            </mat-form-field>
-          </div>
-        </div>
-
         <!-- Botones -->
         <div class="mt-4 row justify-content-end">
           <div class="col-auto">
@@ -112,9 +95,6 @@
             <button mat-flat-button color="primary" class="w-100" (click)="guardarDatos()">Guardar</button>
           </div>
         </div>
-
-
-
 
       </form>
     </div>
