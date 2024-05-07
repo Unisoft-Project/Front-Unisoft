@@ -31,7 +31,7 @@ export class AgregarVentaComponent {
   totalVenta: number = 0;
   productoFoundTag=false;
   imeiField: any;
-
+  valorventafield:any;
   constructor(
     private http: HttpClient,
     private fireStorage: AngularFireStorage
@@ -68,6 +68,7 @@ export class AgregarVentaComponent {
     this.productoEncontrado = productoVacio;
     this.imeiField="";
     this.productoFoundTag=false;
+    this.valorventafield=0;
   }
 
   validaProductoLista(productoBuscado : Producto){
@@ -87,6 +88,7 @@ export class AgregarVentaComponent {
     }
     else{
       if(!this.validaProductoLista(producto)){
+        producto.valor_venta=this.valorventafield
         this.dataSource = [...this.dataSource, producto];
         this.mostrarModalProductos=false;
         this.limpiarCamposAgregarProductos();
