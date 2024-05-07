@@ -1,21 +1,29 @@
 <mat-card class="cardWithShadow theme-card">
   <mat-card-header>
-    <mat-card-title class="m-b-0">Mostrar cálculo de costo final del equipo</mat-card-title>
+    <mat-card-title class="m-b-0">Cálculo del costo final del equipo</mat-card-title>
   </mat-card-header>
   <mat-card-content class="b-t-1">
     <div class="row">
-      <div class="col-lg-12">
-        <button mat-raised-button color="primary" class="m-r-5" (click)="agregarPrecio()">Adjuntar Precio</button>
-        <button mat-raised-button color="primary" class="m-r-5" (click)="agregarIncidencia()">Añadir Incidencia secundaria</button>
-        <button mat-raised-button color="primary" class="m-r-5" (click)="vincularIncidencia()">Vincular Incidencia</button>
-        <button mat-raised-button color="primary" (click)="agregarDiseno()">Añadir Diseño</button>
-      </div>
       <div class="col-lg-12 m-t-10">
-        <mat-form-field>
-          <input matInput placeholder="Precio de venta" [(ngModel)]="precioVenta">
+        <!-- Campo para ingresar el precio de venta -->
+
+        <mat-form-field appearance="fill">
+          <mat-label>Precio de venta del equipo</mat-label>
+          <input matInput placeholder="Ingrese el precio de venta" [(ngModel)]="precioVenta">
         </mat-form-field>
+      </div>
+
+      <div class="col-lg-12 m-t-10">
+        <mat-form-field appearance="fill">
+          <mat-label>Costo de Adquisición</mat-label>
+          <input matInput placeholder=" Costo de Adquisición" [(ngModel)]="precioVenta">
+        </mat-form-field>
+      </div>
+        <div class="col-lg-12 m-t-5">
+        <!-- Botón para calcular ganancia -->
         <button mat-raised-button color="primary" class="m-l-10" (click)="calcularGanancia()">Calcular Ganancia</button>
-        <p *ngIf="gananciaCalculada !== null" class="m-t-10">Ganancia: {{ gananciaCalculada }}</p>
+        <!-- Mostrar la ganancia calculada -->
+        <p *ngIf="gananciaCalculada !== null" class="m-t-10">Ganancia estimada: {{ gananciaCalculada }}</p>
       </div>
     </div>
   </mat-card-content>
