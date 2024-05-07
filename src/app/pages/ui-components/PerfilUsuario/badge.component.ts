@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
-
+import { timeout } from 'rxjs/operators';
 @Component({
   selector: 'app-badge',
   templateUrl: './badge.component.html'
@@ -50,7 +50,9 @@ export class AppBadgeComponent implements OnInit {
       'Authorization': `Bearer ${token}`
     });
 
-    this.http.get(url, { headers }).subscribe(
+    this.http.get(url, { headers }).pipe(
+      timeout(200000)
+    ).subscribe(
       (response: any) => {
         // Asignar los datos del usuario obtenidos de la respuesta
         if (response && response.length > 0) {
@@ -94,9 +96,15 @@ export class AppBadgeComponent implements OnInit {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-
+    const usuarioActualizado = {
+      ...this.usuario,
+      tipo_documento_oid: this.usuario.tipo_documento_oid?.oid || '' // Asignar solo el OID del tipo de documento
+    };
+    
     // Enviar los datos del usuario actualizados en la solicitud PUT
-    this.http.put(url, this.usuario, { headers }).subscribe(
+    this.http.put(url, usuarioActualizado, { headers }).pipe(
+      timeout(200000)
+    ).subscribe(
       (response: any) => {
         // Manejar la respuesta del servidor
         Swal.fire({
