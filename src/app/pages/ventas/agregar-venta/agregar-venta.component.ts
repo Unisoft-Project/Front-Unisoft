@@ -49,6 +49,7 @@ export class AgregarVentaComponent {
     documento: '',
     direccion: '',
     telefono: '',
+    email: ''
   };
 
   
@@ -109,9 +110,9 @@ export class AgregarVentaComponent {
       }
     );
   }
-  generarFactura() {
+  generarFactura(num_factura: any) {
     this.facturaService
-      .getFactura(1)
+      .getFactura(num_factura)
       .pipe(timeout(200000))
       .subscribe(
         (res) => {
@@ -204,7 +205,7 @@ export class AgregarVentaComponent {
     let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
       from_name: 'Danicell',
       to_name: 'test',
-      to_email: 'inventechco@gmail.com',
+      to_email: this.clienteEncontrado.email,
       subject: 'Test subject',
       message: 'this is message',
       link: link,

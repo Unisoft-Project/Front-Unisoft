@@ -77,8 +77,8 @@
                             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Número de
                                 factura</mat-label>
                             <mat-form-field appearance="outline" class="w-100" color="primary">
-                                <input required matInput ngModel name="numeroFactura" type="string"
-                                    placeholder="Número de factura" />
+                                <input required matInput  type="string"
+                                    placeholder="Número de factura" [(ngModel)]="numero_factura" [ngModelOptions]="{ standalone: true }"/>
                                 <mat-error>Campo obligatorio</mat-error>
                             </mat-form-field>
                         </div>
@@ -169,10 +169,8 @@
                     <button class="w-100 flex-grow" mat-raised-button color="primary">
                         Registrar Venta
                     </button>
-                    <button class="w-100 flex-grow d-none" mat-raised-button color="primary" (click)="guardarPDF()">
-                        Guardar Factura
-                    </button>
-                    <button class="w-100" mat-raised-button color="primary" (click)="generarFactura()">
+            
+                    <button class="w-100" mat-raised-button color="primary" (click)="generarFactura(numero_factura)">
                         Guardar Factura
                     </button>
                 </mat-card-content>
