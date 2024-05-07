@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -23,14 +24,16 @@ export class AppSideLoginComponent {
       password: this.password
     };
 
-    this.http.post<any>('http://localhost:8000/auth/login', body, { headers: headers })
-      .subscribe(
+    this.http.post<any>('https://back-unisoft-1.onrender.com/auth/login', body, { headers: headers }
+      ).pipe(
+        timeout(200000)
+      ).subscribe(
         response => {
           console.log(body)
           console.log(response.token);
           console.log(response); // Agrega esto para depurar
-          if (response.status==200) {
-            localStorage.setItem('token', response.token);
+          if (response.message !== null) { //"message": "Login successful"
+            localStorage.setItem('token', response.message);
             this.router.navigate(['/dashboard']);
             Swal.fire({
               icon: 'success',

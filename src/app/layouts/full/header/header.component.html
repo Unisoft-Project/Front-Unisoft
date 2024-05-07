@@ -27,7 +27,7 @@
     />
   </button>
   <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
-    <button mat-menu-item>
+    <button mat-menu-item (click)="perfilUsuario()">
       <mat-icon class="d-flex align-items-center"
         ><i-tabler name="user" class="icon-18 d-flex"></i-tabler></mat-icon
       >Mi Perfil
@@ -48,10 +48,12 @@
 
     <div class="p-x-12 m-t-12">
       <a
-        [routerLink]="['/authentication/login']"
+      (click)="logout()"
+
         mat-stroked-button
         color="primary"
         class="w-100"
+
         >Cerrar sesión</a
       >
     </div>

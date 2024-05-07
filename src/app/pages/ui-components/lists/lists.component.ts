@@ -10,7 +10,8 @@ export interface Section {
   templateUrl: './lists.component.html',
 })
 export class AppListsComponent {
-  constructor() {}
+  precioVenta: number | null = null;
+  gananciaCalculada: number | null = null;
 
   typesOfShoes: string[] = ['Loafers', 'Sneakers'];
 
@@ -38,4 +39,24 @@ export class AppListsComponent {
       updated: new Date('1/18/16'),
     },
   ];
+
+  agregarPrecio() {
+    // Lógica para agregar precio
+  }
+
+  agregarIncidencia() {
+    // Lógica para agregar incidencia
+  }
+
+  vincularIncidencia() {
+    // Lógica para vincular incidencia
+  }
+
+  agregarDiseno() {
+    // Lógica para agregar diseño
+  }
+
+  calcularGanancia() {
+    // Lógica para calcular la ganancia
+  }
 }

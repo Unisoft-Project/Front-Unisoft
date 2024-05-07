@@ -64,21 +64,19 @@ export const navItems: NavItem[] = [
   {
     navCap: 'Perfiles',
   },
+
   {
-    displayName: 'Perfil de usuario',
-    iconName: 'rosette',
-    route: '/ui-components/badge',
+    displayName: 'calculo de costo',
+    iconName: 'list',
+    route: '/ui-components/lists',
   },
+
   {
     displayName: 'Chips',
     iconName: 'poker-chip',
     route: '/ui-components/chips',
   },
-  {
-    displayName: 'Lists',
-    iconName: 'list',
-    route: '/ui-components/lists',
-  },
+  
   {
     displayName: 'Menu',
     iconName: 'layout-navbar-expand',

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { FullguardiansService } from './fullguardians.service';
 
 const routes: Routes = [
   {
@@ -15,23 +16,29 @@ const routes: Routes = [
             (m) => m.AuthenticationModule
           ),
       },
+
     ],
   },
   {
     path: '',
     component: FullComponent,
+    //canActivate: [FullguardiansService],
     children: [
       {
         path: 'dashboard',
         loadChildren: () =>
           import('./pages/pages.module').then((m) => m.PagesModule),
+       canActivate: [FullguardiansService]
+
       },
       {
         path: 'ui-components',
         loadChildren: () =>
           import('./pages/ui-components/ui-components.module').then(
             (m) => m.UicomponentsModule
+
           ),
+          canActivate: [FullguardiansService]
       },
       {
         path: 'clientes',
@@ -39,6 +46,7 @@ const routes: Routes = [
           import('./pages/clientes/clientes.module').then(
             (m) => m.ClientesModule
           ),
+          canActivate: [FullguardiansService]
       },
       {
         path: 'ventas',
@@ -46,6 +54,7 @@ const routes: Routes = [
           import('./pages/ventas/ventas.module').then(
             (m) => m.VentasModule
           ),
+          canActivate: [FullguardiansService]
       },
       {
         path: 'compras',
@@ -53,6 +62,7 @@ const routes: Routes = [
           import('./pages/compras/compras.module').then(
             (m) => m.ComprasModule
           ),
+          canActivate: [FullguardiansService]
       },
       {
         path: 'inventario',
@@ -60,11 +70,14 @@ const routes: Routes = [
           import('./pages/inventario/inventario.module').then(
             (m) => m.InventarioModule
           ),
+
+          canActivate: [FullguardiansService]
       },
       {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.module').then((m) => m.ExtraModule),
+        canActivate: [FullguardiansService]
       },
     ],
   },
