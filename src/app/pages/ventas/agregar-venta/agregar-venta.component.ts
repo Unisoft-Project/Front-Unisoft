@@ -7,6 +7,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { timeout } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { MatTableDataSource } from '@angular/material/table';
+import { FacturaService } from 'src/app/services/factura.service';
+import { Factura } from 'src/app/models/factura.model';
+import { VentaItem } from 'src/app/models/venta.model';
 
 interface TableData {
   IMEI: string;
@@ -29,10 +32,15 @@ export class AgregarVentaComponent {
   totalVenta: number = 0;
 
   constructor(
+    private fireStorage: AngularFireStorage,
     private http: HttpClient,
-    private fireStorage: AngularFireStorage
+    private facturaService: FacturaService
   ) { }
-
+  dataSource: Factura[] = [];
+  factura: Factura[] = [];
+  info_factura: any[] = [];
+  info_compras: any[] = [];
+  numero_factura: any
   //* Estructura para Busqueda Cliente
   doc = '';
   public clienteEncontrado = {
@@ -62,7 +70,7 @@ export class AgregarVentaComponent {
   //   this.calcularTotal(); // Actualiza el total cuando se agrega un nuevo producto
   // }
 
-  dataSource: MatTableDataSource<TableData> = new MatTableDataSource<TableData>(this.tableData);
+  dataSource1: MatTableDataSource<TableData> = new MatTableDataSource<TableData>(this.tableData);
   displayedColumns: string[] = ['IMEI', 'marcaTelefonos', 'modeloTelefonos', 'observacion', 'valorVenta'];
 
 
@@ -101,21 +109,39 @@ export class AgregarVentaComponent {
       }
     );
   }
-
-  generatePDF() {
+  generarFactura() {
+    this.facturaService
+      .getFactura(1)
+      .pipe(timeout(200000))
+      .subscribe(
+        (res) => {
+          this.factura = res;
+          this.info_factura = [this.factura[0]]; // Wrap the single object in an array
+          this.info_compras = [this.factura[1]];
+          console.log(this.info_compras[0]);
+          const doc = this.generatePDF(this.info_factura, this.info_compras); // Call generatePDF to get the PDF document
+          const file: File = new File([doc.output('blob')], 'factura.pdf', {
+            type: 'application/pdf',
+          });
+          this.addFirebase(file, this.info_factura[0].numero_factura);
+        },
+        (err) => console.log(err)
+      );
+  }
+  generatePDF(info: any[], compras: any[]) {
     const margins = {
       top: 30,
       bottom: 30,
       left: 10,
-      right: 10
+      right: 10,
     };
 
     const doc = new jsPDF();
 
     // Add header image
     doc.addImage(
-      "/assets/images/smartphone-call.png",
-      "PNG",
+      '/assets/images/smartphone-call.png',
+      'PNG',
       margins.left,
       10,
       20,
@@ -123,31 +149,31 @@ export class AgregarVentaComponent {
     );
     doc.setFontSize(9);
     // Add header text
-    doc.text('DANICELL', 30, 15);
-    doc.text('NIT 1.006.048.770', 30, 20);
-    doc.text('CELULAR: 3178176300', 30, 25);
+    doc.text(info[0].usuario.empresa, 30, 15);
+    doc.text('NIT:' + ' ' + info[0].usuario.nit, 30, 20);
+    doc.text('CELULAR:' + ' ' + info[0].cliente.telefono, 30, 25);
     doc.text('No Responsable de IVA', 30, 30);
-    doc.text('01/01/2024', 170, 15);
-    doc.text('Factura No. 343536', 170, 20);
+    doc.text(info[0].fecha_hora, 170, 15);
+    doc.text('Factura No.' + ' ' + info[0].numero_factura, 170, 20);
 
     // Add customer information
-    this.addCustomerInfo(doc, margins);
-    this.addDispositivosInfo(doc, margins);
-    doc.save('Factura_343536.pdf');
+    this.addCustomerInfo(doc, margins, info);
+    this.addDispositivosInfo(doc, margins, compras);
+    doc.save('Factura' + info[0].numero_factura + '.pdf');
 
     //agregar a firebase
-    return doc
-
+    return doc;
   }
 
   guardarPDF() {
-    const doc = this.generatePDF(); // Call generatePDF to get the PDF document
-    const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
+    //const doc = this.generatePDF(); // Call generatePDF to get the PDF document
+   // const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
     // Now you have a File object representing the PDF document
     // You can use this file object for further processing or upload
-    this.addFirebase(file, 1234)
+   // this.addFirebase(file, 1234)
 
   }
+
 
   async addFirebase(doc: any, factura: any) {
     const file: File = doc as File;
@@ -174,17 +200,18 @@ export class AgregarVentaComponent {
   }
 
   async send(link: String) {
-    emailjs.init('Hul6hhwwkEGu_XFbm')
+    emailjs.init('Hul6hhwwkEGu_XFbm');
     let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
       from_name: 'Danicell',
       to_name: 'test',
-      to_email: 'valentinabarbetty2@gmail.com',
+      to_email: 'inventechco@gmail.com',
       subject: 'Test subject',
       message: 'this is message',
-      link: link
+      link: link,
     });
-    console.log("mensaje enviado")
+    console.log('mensaje enviado');
   }
+
 
 
 
@@ -204,87 +231,97 @@ export class AgregarVentaComponent {
     }
   }
 
-  private addCustomerInfo(doc: jsPDF, margins: any) {
+  private addCustomerInfo(doc: jsPDF, margins: any, factura: any[]) {
     // Add customer information
     const infoTexts = [
       { label: 'Información del Cliente', yPos: 45 },
-      { label: 'Nombre:', value: 'Valentina', yPos: 55 },
-      { label: 'Tipo De Documento:', value: 'Cédula de Ciudadanía', yPos: 60 },
-      { label: 'Número de Cédula:', value: '123456789', yPos: 65 },
-      { label: 'Dirección:', value: 'Cl 7', yPos: 70 },
-      { label: 'Teléfono:', value: '987654321', yPos: 75 },
+      { label: 'Nombre:', value: factura[0].nombre, yPos: 55 },
+      {
+        label: 'Tipo De Documento:',
+        value: factura[0].cliente.tipo_documento.descripcion,
+        yPos: 60,
+      },
+      {
+        label: 'Número de Cédula:',
+        value: factura[0].cliente.documento,
+        yPos: 65,
+      },
+      { label: 'Dirección:', value: factura[0].cliente.direccion, yPos: 70 },
+      { label: 'Teléfono:', value: factura[0].cliente.telefono, yPos: 75 },
       { label: 'Detalles de compra:', yPos: 85 },
-
     ];
 
-    infoTexts.forEach(info => {
+    infoTexts.forEach((info) => {
       doc.text(info.label, margins.left, info.yPos);
       if (info.value) {
         doc.text(info.value, margins.left + 70, info.yPos);
       }
     });
   }
-  private addDispositivosInfo(doc: jsPDF, margins: any) {
+  venta: VentaItem[] = [];
+  private addDispositivosInfo(doc: jsPDF, margins: any, info: any) {
     // Define table headers
-    const headers = ['IMEI', 'MARCA', 'MODELO', 'PROCEDENCIA', 'GARANTÍA', 'PRECIO UNITARIO', 'SUBTOTAL'];
-
-    // Define table data
-    const dispositivosData = [
-      { imei: '123456789', marca: 'Apple', modelo: 'iPhone 15 Pro', procedencia: 'Nuevo', garantia: '1 año', precio_unitario: '4.000.000', subtotal: '4.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-
-      // Add more data as needed
-      // Add more data as needed
+    const headers = [
+      'IMEI',
+      'MARCA',
+      'MODELO',
+      'PROCEDENCIA',
+      'GARANTÍA',
+      'PRECIO UNITARIO',
+      'SUBTOTAL',
     ];
 
-
-    // Set initial y position for the table
     let yPos = 95;
+    let valorTotal = 0;
 
     // Add table headers
     headers.forEach((header, index) => {
-      doc.text(header, margins.left + (index * 30), yPos);
+      doc.text(header, margins.left + index * 30, yPos);
     });
 
     // Increment y position for data rows
     yPos += 10;
-
-    // Add table data
-    dispositivosData.forEach(data => {
-      doc.text(data.imei, margins.left, yPos);
-      doc.text(data.marca, margins.left + 30, yPos);
-      doc.text(data.modelo, margins.left + 60, yPos);
-      doc.text(data.procedencia, margins.left + 90, yPos);
-      doc.text(data.garantia, margins.left + 120, yPos);
-      doc.text(data.precio_unitario, margins.left + 150, yPos);
-      doc.text(data.subtotal, margins.left + 180, yPos);
-
+    info = info[0]
+    info.forEach((item: any) => {
+      doc.text(item.compra_inventario.imei, margins.left, yPos);
+      doc.text(
+        item.compra_inventario.marca_dispositivo.descripcion_marca_dispositivo,
+        margins.left + 30,
+        yPos
+      );
+      doc.text(item.compra_inventario.modelo_dispositivo.modelos, margins.left + 60, yPos);
+      doc.text(item.observacion, margins.left + 90, yPos);
+      doc.text(item.garantia, margins.left + 120, yPos);
+      
+      doc.text(item.precio_unitario.toString(), margins.left + 150, yPos);
+      doc.text(item.subtotal.toString(), margins.left + 180, yPos);
+      valorTotal += item.subtotal;
       yPos += 5; // Increment y position for next row
     });
+    
 
-    doc.text('Total', margins.left + 180, yPos + 10)
-    doc.text('14.000.000', margins.left + 180, yPos + 15)
+    // Calculate total
+
+     doc.text('Total', margins.left + 150, yPos + 10);
+     doc.text(valorTotal.toString(), margins.left + 180, yPos + 10);
 
     const warrantyText = [
       '1.-Garantía de IMEI de por vida.',
       '2.-Garantía por funcionamiento 2 meses.',
       '3.-La garantía no cubre daños por maltrato, golpes, humedad, display, táctil, sobrecarga o equipos apagados.',
       '4.-La garantía no cubre modificación de software mal instalado por el cliente, que se dañe el software',
-      '5.-Sin factura no hay garantía. 6.- Si el daño no está dentro de la garantía debe cancelarse el costo de la revisión y/o arreglo. 7.- Si el equipo entra por garantía, debe contar con un tiempo de revisión y entrega'
+      '5.-Sin factura no hay garantía. 6.- Si el daño no está dentro de la garantía debe cancelarse el costo de la revisión y/o arreglo. 7.- Si el equipo entra por garantía, debe contar con un tiempo de revisión y entrega',
     ];
-    const concatenatedText = warrantyText.map((text, index) => `${text}`).join(' ');
+    const concatenatedText = warrantyText
+      .map((text, index) => `${text}`)
+      .join(' ');
 
     // Split text into array of lines based on specified width
     const lines = doc.splitTextToSize(concatenatedText, 250); // Adjust width as needed
 
     // Add warranty information to PDF
     lines.forEach((line: any, index: any) => {
-      doc.setFontSize(7)
+      doc.setFontSize(7);
       doc.text(line, margins.left, yPos + 50 + index * 3);
     });
   }

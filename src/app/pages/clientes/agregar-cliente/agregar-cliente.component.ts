@@ -20,6 +20,7 @@ export class AgregarClienteComponent {
     documento: '',
     direccion: '',
     telefono: '',
+    email: ''
   };
 
   constructor(
@@ -29,9 +30,8 @@ export class AgregarClienteComponent {
   ) {}
 
   async addClient(form: any) {
-    const token = localStorage.getItem('token');
     this.loading = true;
-    //const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -44,7 +44,7 @@ export class AgregarClienteComponent {
       !form.value.tipoDocumento ||
       !form.value.documento ||
       !form.value.direccion ||
-      !form.value.telefono
+      !form.value.telefono || !form.value.email
     ) {
       this.loading = false;
       // Show Swal fire alert if any field is empty
@@ -84,6 +84,7 @@ export class AgregarClienteComponent {
       data.documento = form.value.documento;
       data.direccion = form.value.direccion;
       data.telefono = form.value.telefono;
+      data.email = form.value.email;
 
       // Post client data to the server
       this.http
