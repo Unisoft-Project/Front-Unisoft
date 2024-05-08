@@ -26,7 +26,7 @@ export class EditarClienteComponent {
     documento: '',
     direccion: '',
     telefono: '',
-    email: ''
+    correo: ''
   };
   selectOption(option: string) {
     this.data.tipo_documento = option;
@@ -81,7 +81,7 @@ export class EditarClienteComponent {
         this.clientesForm.controls['nombre'].setValue(response[0].nombre);
         this.clientesForm.controls['direccion'].setValue(response[0].direccion);
         this.clientesForm.controls['telefono'].setValue(response[0].telefono);
-        this.clientesForm.controls['email'].setValue(response[0].email);
+        this.clientesForm.controls['correo'].setValue(response[0].correo);
 
 
         switch (response[0].tipo_documento.oid) {
@@ -153,7 +153,7 @@ export class EditarClienteComponent {
       !form.value.tipo_Documento ||
       !form.value.documento ||
       !form.value.direccion ||
-      !form.value.telefono || !form.value.email
+      !form.value.telefono || !form.value.correo
     ) {
       this.loading = false;
       // Show Swal fire alert if any field is empty
@@ -170,6 +170,7 @@ export class EditarClienteComponent {
       data.documento = form.value.documento;
       data.direccion = form.value.direccion;
       data.telefono = form.value.telefono;
+      data.correo = form.value.correo
       if (this.firebaseFile) {
         const file: File = this.firebaseFile as File;
         const path = `docs/${form.value.documento}`;

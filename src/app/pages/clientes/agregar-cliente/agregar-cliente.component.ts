@@ -44,7 +44,7 @@ export class AgregarClienteComponent {
       !form.value.tipoDocumento ||
       !form.value.documento ||
       !form.value.direccion ||
-      !form.value.telefono || !form.value.email
+      !form.value.telefono || !form.value.correo
     ) {
       this.loading = false;
       // Show Swal fire alert if any field is empty
@@ -84,7 +84,8 @@ export class AgregarClienteComponent {
       data.documento = form.value.documento;
       data.direccion = form.value.direccion;
       data.telefono = form.value.telefono;
-      data.email = form.value.email;
+      data.correo = form.value.correo;
+      console.log(data)
 
       // Post client data to the server
       this.http

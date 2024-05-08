@@ -49,7 +49,7 @@ export class AgregarVentaComponent {
     documento: '',
     direccion: '',
     telefono: '',
-    email: ''
+    correo: ''
   };
 
   
@@ -98,6 +98,7 @@ export class AgregarVentaComponent {
         this.clienteEncontrado.nombre = response[0].nombre;
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
+        this.clienteEncontrado.correo = response[0].correo;
       }, (error) => {
         // Handle errors here
         console.error(error);
@@ -202,10 +203,11 @@ export class AgregarVentaComponent {
 
   async send(link: String) {
     emailjs.init('Hul6hhwwkEGu_XFbm');
+
     let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
       from_name: 'Danicell',
       to_name: 'test',
-      to_email: this.clienteEncontrado.email,
+      to_email: this.clienteEncontrado.correo,
       subject: 'Test subject',
       message: 'this is message',
       link: link,
