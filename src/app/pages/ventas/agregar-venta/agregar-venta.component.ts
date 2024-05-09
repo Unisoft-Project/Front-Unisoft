@@ -32,13 +32,14 @@ export class AgregarVentaComponent {
   documentoField: any;
   clientFoundTag: boolean = false;
   clientFound: any;
+  valorDispositivo: number | null = null;
   loading: boolean = false;
   totalVenta: number = 0;
-  mostrarModalProductos=false
+  mostrarModalProductos = false
   productoEncontrado: Producto;
   imeiField: any;
-  productoFoundTag=false;
-  valorventafield:any;
+  productoFoundTag = false;
+  valorventafield: any;
   constructor(
     private fireStorage: AngularFireStorage,
     private http: HttpClient,
@@ -60,8 +61,8 @@ export class AgregarVentaComponent {
     correo: ''
   };
 
-  
- 
+
+
 
   // agregarProducto(nuevoProducto: TableData) {
   //   this.tableData.push(nuevoProducto);
@@ -167,10 +168,10 @@ export class AgregarVentaComponent {
 
   guardarPDF() {
     //const doc = this.generatePDF(); // Call generatePDF to get the PDF document
-   // const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
+    // const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
     // Now you have a File object representing the PDF document
     // You can use this file object for further processing or upload
-   // this.addFirebase(file, 1234)
+    // this.addFirebase(file, 1234)
 
   }
 
@@ -293,18 +294,18 @@ export class AgregarVentaComponent {
       doc.text(item.compra_inventario.modelo_dispositivo.modelos, margins.left + 60, yPos);
       doc.text(item.observacion, margins.left + 90, yPos);
       doc.text(item.garantia, margins.left + 120, yPos);
-      
+
       doc.text(item.precio_unitario.toString(), margins.left + 150, yPos);
       doc.text(item.subtotal.toString(), margins.left + 180, yPos);
       valorTotal += item.subtotal;
       yPos += 5; // Increment y position for next row
     });
-    
+
 
     // Calculate total
 
-     doc.text('Total', margins.left + 150, yPos + 10);
-     doc.text(valorTotal.toString(), margins.left + 180, yPos + 10);
+    doc.text('Total', margins.left + 150, yPos + 10);
+    doc.text(valorTotal.toString(), margins.left + 180, yPos + 10);
 
     const warrantyText = [
       '1.-Garantía de IMEI de por vida.',
@@ -314,7 +315,7 @@ export class AgregarVentaComponent {
       '5.-Sin factura no hay garantía. 6.- Si el daño no está dentro de la garantía debe cancelarse el costo de la revisión y/o arreglo. 7.- Si el equipo entra por garantía, debe contar con un tiempo de revisión y entrega',
     ];
     const concatenatedText = warrantyText
-      .map((text, index) =>` ${text}`)
+      .map((text, index) => ` ${text}`)
       .join(' ');
 
     // Split text into array of lines based on specified width
@@ -326,7 +327,7 @@ export class AgregarVentaComponent {
       doc.text(line, margins.left, yPos + 50 + index * 3);
     });
   }
-  limpiarCamposAgregarProductos(){
+  limpiarCamposAgregarProductos() {
     const productoVacio: Producto = {
       imei: "",
       valor_compra: "",
@@ -337,21 +338,21 @@ export class AgregarVentaComponent {
       valor_venta: 0
     };
     this.productoEncontrado = productoVacio;
-    this.imeiField="";
-    this.productoFoundTag=false;
-    this.valorventafield=0;
+    this.imeiField = "";
+    this.productoFoundTag = false;
+    this.valorventafield = 0;
   }
-  cerrarModalAgregarProductos(){
-    this.mostrarModalProductos=false;
+  cerrarModalAgregarProductos() {
+    this.mostrarModalProductos = false;
     this.limpiarCamposAgregarProductos();
   }
-  validaProductoLista(productoBuscado : Producto){
+  validaProductoLista(productoBuscado: Producto) {
     const imeiBuscado = productoBuscado.imei;
     const existeIMEI = this.dataSource.some(producto => producto.imei === imeiBuscado);
     return existeIMEI;
   }
-  agregarProductosLista(producto:Producto){
-    if(producto===undefined){
+  agregarProductosLista(producto: Producto) {
+    if (producto === undefined) {
       Swal.fire({
         title: 'Advertencia',
         text: 'Primero debe ingresar un dispositivo',
@@ -359,49 +360,73 @@ export class AgregarVentaComponent {
         confirmButtonText: 'Aceptar',
       });
     }
-    else{
-      if(!this.validaProductoLista(producto)){
-        producto.valor_venta=this.valorventafield
+    else {
+      if (!this.validaProductoLista(producto)) {
+        producto.valor_venta = this.valorventafield;
+        console.log('valorVentaSinMoneda', this.totalVenta);
+        console.log('producto.valor_venta', producto.valor_venta);
+        const ventaTotal: number = producto.valor_venta + this.totalVenta;
+        console.log('ventaTotal', ventaTotal);
+        this.totalVenta = ventaTotal;
         this.dataSource = [...this.dataSource, producto];
-        this.mostrarModalProductos=false;
+        this.mostrarModalProductos = false;
         this.limpiarCamposAgregarProductos();
-      }else{
-      Swal.fire({
-        title: 'Advertencia',
-        text: 'El producto ya se encuentra agregado a la venta.',
-        icon: 'warning',
-        confirmButtonText: 'Aceptar',
-      });}
+      } else {
+        Swal.fire({
+          title: 'Advertencia',
+          text: 'El producto ya se encuentra agregado a la venta.',
+          icon: 'warning',
+          confirmButtonText: 'Aceptar',
+        });
+      }
     }
   }
 
- getProducto(imei: string) {
-  this.loading = true;
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
-  const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  });
+  getProducto(imei: string) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
 
-  const endpoint = `https://back-unisoft-1.onrender.com/compra/compra-inventario_imei/${imei}`;
-   // http://localhost:8000/
-  this.http.get<Producto>(endpoint, { headers: headers }).pipe(
-    timeout(200000)
-  ).subscribe(
-    (response: Producto) => {
-      this.productoEncontrado=response;
-      this.productoFoundTag=true
-      this.loading = false;
-    }, (error) => {
-      console.error(error);
-      this.loading = false;
-      Swal.fire({
-        title: 'Advertencia',
-        text: 'Dispositivo no disponible.',
-        icon: 'warning',
-        confirmButtonText: 'OK',
-      });
-    }
-  );
+    const endpoint = `https://back-unisoft-1.onrender.com/compra/compra-inventario_imei/${imei}`;
+    // http://localhost:8000/
+    this.http.get<Producto>(endpoint, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response: Producto) => {
+        this.productoEncontrado = response;
+        this.productoFoundTag = true
+        this.loading = false;
+      }, (error) => {
+        console.error(error);
+        this.loading = false;
+        Swal.fire({
+          title: 'Advertencia',
+          text: 'Dispositivo no disponible.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+    );
+  }
+  onValueChange() {
+  }
+  formatCurrency(event: any): void {
+    const inputValue: string = event.target.value;
+
+    // Eliminar todos los caracteres que no sean números
+    const numericValue: string = inputValue.replace(/[^0-9]/g, '');
+
+    // Convertir el valor a número
+    this.valorDispositivo = parseFloat(numericValue);
+
+    // Formatear el valor como pesos colombianos (COP)
+    event.target.value = this.valorDispositivo.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    });
   }
 }

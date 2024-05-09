@@ -15,3 +15,10 @@
   width: 50%; /* Ajusta esto según el tamaño deseado del modal */
   max-width: 600px; /* Ajusta esto según el tamaño máximo deseado */
 }
+
+.close-button {
+  position: absolute;
+  top: 5px; /* Distancia desde el borde superior */
+  right: 5px; /* Distancia desde el borde derecho */
+  background-color: transparent;
+}
