@@ -22,7 +22,7 @@ interface Device {
   observacion: string;
   valor_venta: string;
   valor_compra: string;
-  modelo_dispositivo: number;
+  modelo_dispositivo: string;
   marca_dispositivo: string;
   fecha_hora: string;
 }
@@ -58,7 +58,7 @@ export class VerInventarioComponent{
 
 
   ngOnInit(): void {
-    this.getDevices()
+    this.getDevices("")
   }
 
 
@@ -68,7 +68,7 @@ export class VerInventarioComponent{
 
 
 
-  getDevices() {
+  getDevices(imei: string) {
     this.loading = true;
     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
     const headers = new HttpHeaders({
@@ -79,19 +79,20 @@ export class VerInventarioComponent{
     this.http.get<any[]>(
       //`https://back-unisoft-1.onrender.com/compra/compras_inventario`,
       //'http://localhost:8000/compra/compras_inventario',
-      'http://localhost:8000/compra/dispositivos/?imei=&marca_dispositivo=&modelo_dispositivo=',
+      `https://back-unisoft-1.onrender.com/compra/dispositivos/?imei=${imei}&marca_dispositivo=&modelo_dispositivo=`,
       { headers: headers }
     ).pipe(
       timeout(200000)
     ).subscribe(
       (response) => {
+        console.log("response",response)
         this.loading = false;
         // Map document type ID to description
         this.dataSource = response.map(device => {
           return {
             ...device,
-            modelo_dispositivo: device.modelo_dispositivo.marca,
-            marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo,
+            /*modelo_dispositivo: device.modelo_dispositivo.modelos,
+            marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo,*/
           };
         });
         console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
@@ -117,7 +118,8 @@ export class VerInventarioComponent{
     }
 
     if (this.filtro) {
-      const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
+      console.log('filtro', this.filtro)
+      /*const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
       this.dataSource = this.datosOriginales.filter(device => {
         const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
         const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
@@ -126,12 +128,14 @@ export class VerInventarioComponent{
         console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
         console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
         return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
-      });
-      if (this.dataSource.length === 0) {
+      });*/
+      const dispo = this.getDevices(this.filtro);
+      console.log("dispo", dispo)
+      /*if (dispo.length === 0) {
         this.errorMessage = 'No se encontraron dispositivos.';
-      }
+      }*/
     } else {
-      this.getDevices();
+      
     }
   }
 
