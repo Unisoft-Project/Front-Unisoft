@@ -10,9 +10,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { FacturaService } from 'src/app/services/factura.service';
 import { Factura } from 'src/app/models/factura.model';
 import { VentaItem } from 'src/app/models/venta.model';
+import { Producto } from './interfaces/productos.interface';
+
 
 interface TableData {
-  IMEI: string;
+  imei: string;
   marcaTelefonos: string;
   observacion: string;
   modeloTelefonos: string;
@@ -21,7 +23,8 @@ interface TableData {
 
 @Component({
   selector: 'app-agregar-venta',
-  templateUrl: './agregar-venta.component.html'
+  templateUrl: './agregar-venta.component.html',
+  styleUrls: ['./agregar-venta.component.css']
 })
 
 export class AgregarVentaComponent {
@@ -30,7 +33,9 @@ export class AgregarVentaComponent {
   clientFound: any;
   loading: boolean = false;
   totalVenta: number = 0;
-
+  productoFoundTag=false;
+  imeiField: any;
+  valorventafield:any;
   constructor(
     private fireStorage: AngularFireStorage,
     private http: HttpClient,
@@ -51,28 +56,102 @@ export class AgregarVentaComponent {
     telefono: '',
     correo: ''
   };
+  productoEncontrado: Producto;
+  mostrarModalProductos=false
 
-  
   calcularTotal(): number {
-    return this.tableData.reduce((total, item) => total + item.valorVenta, 0);
+    return this.tableData.reduce((total, item) => total + item.valor_venta, 0);
   }
 
 
-  tableData: TableData[] = [
-    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 100 },
-    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 400 },
-    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 800 }
-    // Agrega más objetos de tipo TableData aquí si es necesario
-  ];
+  tableData: Producto[] = [];
+  limpiarCamposAgregarProductos(){
+    const productoVacio: Producto = {
+      imei: "",
+      valor_compra: "",
+      modelos: "",
+      descripcion_marca_dispositivo: "",
+      oid: 0,
+      fecha_hora: "",
+      valor_venta: 0
+    };
+    this.productoEncontrado = productoVacio;
+    this.imeiField="";
+    this.productoFoundTag=false;
+    this.valorventafield=0;
+  }
+
+  validaProductoLista(productoBuscado : Producto){
+    const imeiBuscado = productoBuscado.imei;
+    const existeIMEI = this.dataSource.some(producto => producto.imei === imeiBuscado);
+    return existeIMEI;
+  }
+
+  agregarProductosLista(producto:Producto){
+    if(producto===undefined){
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'Primero debe ingresar un dispositivo',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });
+    }
+    else{
+      if(!this.validaProductoLista(producto)){
+        producto.valor_venta=this.valorventafield
+        this.dataSource = [...this.dataSource, producto];
+        this.mostrarModalProductos=false;
+        this.limpiarCamposAgregarProductos();
+        this.calcularTotal();
+      }else{
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'El producto ya se encuentra agregado a la venta.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });}
+    }
+
+  }
+  cerrarModalAgregarProductos(){
+    this.mostrarModalProductos=false;
+    this.limpiarCamposAgregarProductos();
+  }
 
 
-  // agregarProducto(nuevoProducto: TableData) {
-  //   this.tableData.push(nuevoProducto);
-  //   this.calcularTotal(); // Actualiza el total cuando se agrega un nuevo producto
-  // }
+  dataSource: Producto[] = [];
 
-  dataSource1: MatTableDataSource<TableData> = new MatTableDataSource<TableData>(this.tableData);
-  displayedColumns: string[] = ['IMEI', 'marcaTelefonos', 'modeloTelefonos', 'observacion', 'valorVenta'];
+  displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'valor_compra', 'valorVenta'];
+
+  getProducto(imei: string) {
+    this.loading = true;
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    const endpoint = `https://back-unisoft-1.onrender.com/compra/compra-inventario_imei/${imei}`;
+     // http://localhost:8000/
+    this.http.get<Producto>(endpoint, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response: Producto) => {
+        this.productoEncontrado=response;
+        this.productoFoundTag=true
+        this.loading = false;
+      }, (error) => {
+        console.error(error);
+        this.loading = false;
+        Swal.fire({
+          title: 'Advertencia',
+          text: 'Dispositivo no disponible.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+    );
+  }
 
 
   //Gestión GET Cliente
@@ -111,6 +190,7 @@ export class AgregarVentaComponent {
       }
     );
   }
+
   generarFactura(num_factura: any) {
     this.facturaService
       .getFactura(num_factura)
@@ -131,6 +211,7 @@ export class AgregarVentaComponent {
       );
   }
   generatePDF(info: any[], compras: any[]) {
+    
     const margins = {
       top: 30,
       bottom: 30,
@@ -261,6 +342,7 @@ export class AgregarVentaComponent {
       }
     });
   }
+<<<<<<< HEAD
   venta: VentaItem[] = [];
   private addDispositivosInfo(doc: jsPDF, margins: any, info: any) {
     // Define table headers
@@ -272,6 +354,26 @@ export class AgregarVentaComponent {
       'GARANTÍA',
       'PRECIO UNITARIO',
       'SUBTOTAL',
+=======
+
+
+  private addDispositivosInfo(doc: jsPDF, margins: any) {
+    // Define table headers
+    const headers = ['IMEI', 'MARCA', 'MODELO', 'PRECIO UNITARIO', 'SUBTOTAL'];
+
+    // Define table data
+    const dispositivosData = [
+      { imei: '123456789', marca: 'Apple', modelo: 'iPhone 15 Pro', procedencia: 'Nuevo', garantia: '1 año', precio_unitario: '4.000.000', subtotal: '4.000.000' },
+      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
+      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
+      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
+      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
+      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
+      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
+
+      // Add more data as needed
+      // Add more data as needed
+>>>>>>> HU-20
     ];
 
     let yPos = 95;

@@ -63,7 +63,7 @@ export class VerClientesComponent {
     private storage: AngularFireStorage
   ) { }
 
-  
+
 
   getClients() {
     this.loading = true;
@@ -111,7 +111,7 @@ export class VerClientesComponent {
     if (this.datosOriginales.length === 0) {
       this.datosOriginales = [...this.dataSource];
     }
-   
+
     if (this.filtro) {
       const regex = new RegExp(this.filtro); // Expresión regular para buscar el número en cualquier posición del documento
       this.dataSource = this.datosOriginales.filter(cliente => {
@@ -122,7 +122,7 @@ export class VerClientesComponent {
       });
       if (this.dataSource.length === 0) {
         this.errorMessage = 'No se encontraron clientes.';
-      } 
+      }
     } else {
       this.getClients();
     }
@@ -142,7 +142,7 @@ export class VerClientesComponent {
 
   getPhoto(documento: string) {
     const photoPath = `docs/${documento}`;
-  
+
     if (photoPath) {
       // Get the download URL of the photo using the retrieved path
       this.storage
@@ -191,8 +191,10 @@ export class VerClientesComponent {
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
+
       if (result.isConfirmed) {  
         const token = localStorage.getItem('token');
+
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -249,7 +251,7 @@ export class VerClientesComponent {
     this.dataSource = this.allClients.slice(startIndex, endIndex);
     console.log('DataSource after pagination:', this.dataSource); // Verificar el dataSource después de la paginación
   }
-  
+
   actualizarPagina() {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     const endIndex = startIndex + this.paginator.pageSize;
