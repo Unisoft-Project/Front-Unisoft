@@ -58,8 +58,10 @@ export class AgregarCompraComponent {
 
   obtenerModelosDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo';
-    this.http.get<any[]>(url)
-      .subscribe((data: any[]) => {
+    this.http.get<any[]>(url).pipe(
+      timeout(200000)
+    ).subscribe(
+      (data: any[]) => {
         this.modelosDispositivos = data;
         console.log('Modelos de dispositivos:', this.modelosDispositivos);
       });
@@ -67,8 +69,10 @@ export class AgregarCompraComponent {
 
   obtenerMarcasDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
-    this.http.get<any[]>(url)
-      .subscribe((data: any[]) => {
+    this.http.get<any[]>(url).pipe(
+      timeout(200000)
+    ).subscribe(
+      (data: any[]) => {
         this.marcasDispositivos = data;
         console.log('Marcas de dispositivos:', this.marcasDispositivos);
       });
@@ -105,7 +109,6 @@ export class AgregarCompraComponent {
         const uploadTask = await this.fireStorage.upload(path, file);
         const url = await uploadTask.ref.getDownloadURL();
         data.formato_compraventa = url;
-        this.loading = false;
       }
 
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
@@ -231,6 +234,7 @@ export class AgregarCompraComponent {
             confirmButtonText: 'OK'
           });
         } else {
+          this.loading = false;
           // Otro error
           Swal.fire({
             title: 'Error',
