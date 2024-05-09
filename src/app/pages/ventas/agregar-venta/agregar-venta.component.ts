@@ -41,7 +41,7 @@ export class AgregarVentaComponent {
     private http: HttpClient,
     private facturaService: FacturaService
   ) { }
-  dataSource: Factura[] = [];
+  dataSource: Producto[] = [];
   factura: Factura[] = [];
   info_factura: any[] = [];
   info_compras: any[] = [];
@@ -117,9 +117,6 @@ export class AgregarVentaComponent {
     this.mostrarModalProductos=false;
     this.limpiarCamposAgregarProductos();
   }
-
-
-  dataSource: Producto[] = [];
 
   displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'valor_compra', 'valorVenta'];
 
@@ -342,7 +339,6 @@ export class AgregarVentaComponent {
       }
     });
   }
-<<<<<<< HEAD
   venta: VentaItem[] = [];
   private addDispositivosInfo(doc: jsPDF, margins: any, info: any) {
     // Define table headers
@@ -354,26 +350,6 @@ export class AgregarVentaComponent {
       'GARANTÍA',
       'PRECIO UNITARIO',
       'SUBTOTAL',
-=======
-
-
-  private addDispositivosInfo(doc: jsPDF, margins: any) {
-    // Define table headers
-    const headers = ['IMEI', 'MARCA', 'MODELO', 'PRECIO UNITARIO', 'SUBTOTAL'];
-
-    // Define table data
-    const dispositivosData = [
-      { imei: '123456789', marca: 'Apple', modelo: 'iPhone 15 Pro', procedencia: 'Nuevo', garantia: '1 año', precio_unitario: '4.000.000', subtotal: '4.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-      { imei: '738236663', marca: 'Apple', modelo: 'iPhone 15 Pro Max', procedencia: 'Usado', garantia: '1 año', precio_unitario: '5.000.000', subtotal: '5.000.000' },
-
-      // Add more data as needed
-      // Add more data as needed
->>>>>>> HU-20
     ];
 
     let yPos = 95;
