@@ -147,7 +147,7 @@ export class AgregarCompraComponent {
               confirmButtonText: 'OK',
             }).then((result) => {
               if (result.isConfirmed) {
-                this.router.navigate(['/inventario/ver-inventario']);
+                this.router.navigate(['/compras/ver-inventario']);
               }
             });
           },

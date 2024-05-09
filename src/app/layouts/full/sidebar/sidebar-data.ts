@@ -33,7 +33,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Ver compras',
     iconName: 'list',
-    route: '/authentication/register', //********* */
+    route: '/compras/ver-inventario', //********* ver-inventario */
   },
   {
     navCap: 'Clientes',

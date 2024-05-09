@@ -7,9 +7,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { timeout } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { MatTableDataSource } from '@angular/material/table';
+import { Producto } from './interfaces/productos.interface';
+
 import { FacturaService } from 'src/app/services/factura.service';
 import { Factura } from 'src/app/models/factura.model';
 import { VentaItem } from 'src/app/models/venta.model';
+
 
 interface TableData {
   IMEI: string;
@@ -21,7 +24,8 @@ interface TableData {
 
 @Component({
   selector: 'app-agregar-venta',
-  templateUrl: './agregar-venta.component.html'
+  templateUrl: './agregar-venta.component.html',
+  styleUrls: ['./agregar-venta.component.css']
 })
 
 export class AgregarVentaComponent {
@@ -30,13 +34,17 @@ export class AgregarVentaComponent {
   clientFound: any;
   loading: boolean = false;
   totalVenta: number = 0;
-
+  mostrarModalProductos=false
+  productoEncontrado: Producto;
+  imeiField: any;
+  productoFoundTag=false;
+  valorventafield:any;
   constructor(
     private fireStorage: AngularFireStorage,
     private http: HttpClient,
     private facturaService: FacturaService
   ) { }
-  dataSource: Factura[] = [];
+  dataSource: Producto[] = [];
   factura: Factura[] = [];
   info_factura: any[] = [];
   info_compras: any[] = [];
@@ -49,29 +57,18 @@ export class AgregarVentaComponent {
     documento: '',
     direccion: '',
     telefono: '',
+    correo: ''
   };
 
   
-  calcularTotal(): number {
-    return this.tableData.reduce((total, item) => total + item.valorVenta, 0);
-  }
-
-
-  tableData: TableData[] = [
-    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 100 },
-    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 400 },
-    { IMEI: '1234567890', marcaTelefonos: 'Example Brand', modeloTelefonos: 'Example Model', observacion: 'Some Observation', valorVenta: 800 }
-    // Agrega más objetos de tipo TableData aquí si es necesario
-  ];
-
+ 
 
   // agregarProducto(nuevoProducto: TableData) {
   //   this.tableData.push(nuevoProducto);
   //   this.calcularTotal(); // Actualiza el total cuando se agrega un nuevo producto
   // }
 
-  dataSource1: MatTableDataSource<TableData> = new MatTableDataSource<TableData>(this.tableData);
-  displayedColumns: string[] = ['IMEI', 'marcaTelefonos', 'modeloTelefonos', 'observacion', 'valorVenta'];
+  displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'valor_compra', 'valorVenta'];
 
 
   //Gestión GET Cliente
@@ -88,6 +85,7 @@ export class AgregarVentaComponent {
       timeout(200000)
     ).subscribe(
       (response: any) => {
+        this.loading = false;
         // Handle the response here
         this.clientFound = response[0];
         this.doc = documento;
@@ -97,7 +95,9 @@ export class AgregarVentaComponent {
         this.clienteEncontrado.nombre = response[0].nombre;
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
+        this.clienteEncontrado.correo = response[0].correo;
       }, (error) => {
+        this.loading = false;
         // Handle errors here
         console.error(error);
         Swal.fire({
@@ -109,7 +109,7 @@ export class AgregarVentaComponent {
       }
     );
   }
-  generarFactura() {
+  generarFactura(codfactura: any) {
     this.facturaService
       .getFactura(1)
       .pipe(timeout(200000))
@@ -201,10 +201,11 @@ export class AgregarVentaComponent {
 
   async send(link: String) {
     emailjs.init('Hul6hhwwkEGu_XFbm');
+
     let response = await emailjs.send('service_25tuaru', 'template_mdisrb1', {
       from_name: 'Danicell',
       to_name: 'test',
-      to_email: 'inventechco@gmail.com',
+      to_email: this.clienteEncontrado.correo,
       subject: 'Test subject',
       message: 'this is message',
       link: link,
@@ -313,7 +314,7 @@ export class AgregarVentaComponent {
       '5.-Sin factura no hay garantía. 6.- Si el daño no está dentro de la garantía debe cancelarse el costo de la revisión y/o arreglo. 7.- Si el equipo entra por garantía, debe contar con un tiempo de revisión y entrega',
     ];
     const concatenatedText = warrantyText
-      .map((text, index) => `${text}`)
+      .map((text, index) =>` ${text}`)
       .join(' ');
 
     // Split text into array of lines based on specified width
@@ -324,5 +325,83 @@ export class AgregarVentaComponent {
       doc.setFontSize(7);
       doc.text(line, margins.left, yPos + 50 + index * 3);
     });
+  }
+  limpiarCamposAgregarProductos(){
+    const productoVacio: Producto = {
+      imei: "",
+      valor_compra: "",
+      modelos: "",
+      descripcion_marca_dispositivo: "",
+      oid: 0,
+      fecha_hora: "",
+      valor_venta: 0
+    };
+    this.productoEncontrado = productoVacio;
+    this.imeiField="";
+    this.productoFoundTag=false;
+    this.valorventafield=0;
+  }
+  cerrarModalAgregarProductos(){
+    this.mostrarModalProductos=false;
+    this.limpiarCamposAgregarProductos();
+  }
+  validaProductoLista(productoBuscado : Producto){
+    const imeiBuscado = productoBuscado.imei;
+    const existeIMEI = this.dataSource.some(producto => producto.imei === imeiBuscado);
+    return existeIMEI;
+  }
+  agregarProductosLista(producto:Producto){
+    if(producto===undefined){
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'Primero debe ingresar un dispositivo',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });
+    }
+    else{
+      if(!this.validaProductoLista(producto)){
+        producto.valor_venta=this.valorventafield
+        this.dataSource = [...this.dataSource, producto];
+        this.mostrarModalProductos=false;
+        this.limpiarCamposAgregarProductos();
+      }else{
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'El producto ya se encuentra agregado a la venta.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });}
+    }
+  }
+
+ getProducto(imei: string) {
+  this.loading = true;
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  });
+
+  const endpoint = `https://back-unisoft-1.onrender.com/compra/compra-inventario_imei/${imei}`;
+   // http://localhost:8000/
+  this.http.get<Producto>(endpoint, { headers: headers }).pipe(
+    timeout(200000)
+  ).subscribe(
+    (response: Producto) => {
+      this.productoEncontrado=response;
+      this.productoFoundTag=true
+      this.loading = false;
+    }, (error) => {
+      console.error(error);
+      this.loading = false;
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'Dispositivo no disponible.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+    }
+  );
   }
 }

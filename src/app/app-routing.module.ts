@@ -65,15 +65,6 @@ const routes: Routes = [
           canActivate: [FullguardiansService]
       },
       {
-        path: 'inventario',
-        loadChildren: () =>
-          import('./pages/inventario/inventario.module').then(
-            (m) => m.InventarioModule
-          ),
-
-          canActivate: [FullguardiansService]
-      },
-      {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.module').then((m) => m.ExtraModule),
