@@ -87,7 +87,6 @@ export class AgregarCompraComponent {
         icon: 'warning',
         confirmButtonText: 'OK',
       });
-
       return;
     } else if (!this.clientFound) {
       Swal.fire({
@@ -105,7 +104,6 @@ export class AgregarCompraComponent {
         const uploadTask = await this.fireStorage.upload(path, file);
         const url = await uploadTask.ref.getDownloadURL();
         data.formato_compraventa = url;
-        this.loading = false;
       }
 
       const token = localStorage.getItem('token');
