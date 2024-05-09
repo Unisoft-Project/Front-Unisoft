@@ -118,9 +118,10 @@ export class VerInventarioComponent{
       this.datosOriginales = [...this.dataSource];
     }
 
-    if (this.filtro) {
+    this.getDevices(this.filtro);
+    /*if (this.filtro) {
       console.log('filtro', this.filtro)
-      /*const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
+      const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
       this.dataSource = this.datosOriginales.filter(device => {
         const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
         const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
@@ -129,15 +130,11 @@ export class VerInventarioComponent{
         console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
         console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
         return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
-      });*/
+      });
       const dispo = this.getDevices(this.filtro);
-      console.log("dispo", dispo)
-      /*if (dispo.length === 0) {
-        this.errorMessage = 'No se encontraron dispositivos.';
-      }*/
     } else {
-      
-    }
+      const dispo = this.getDevices(this.filtro);
+    }*/
   }
 
   printDocumento(documento: string) {
