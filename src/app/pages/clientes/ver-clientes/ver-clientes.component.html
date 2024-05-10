@@ -13,8 +13,8 @@
       <div class="table-responsive m-t-16">
         <table mat-table [dataSource]="dataSource" class="w-100">
           <!-- Define table columns using ngFor -->
-          <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">{{ column }}</th>
+          <ng-container *ngFor="let column of dataColumns" [matColumnDef]="column">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">{{ displayedColumnHeaders[dataColumns.indexOf(column)] }}</th>
             <td mat-cell *matCellDef="let element" class="mat-body-1">
               <div class="center-icon">
                 <ng-container *ngIf="column === 'FotoDocumento'">
@@ -39,8 +39,8 @@
             </td>
           </ng-container>
           <!-- Header and Row definitions -->
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-header-row *matHeaderRowDef="dataColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: dataColumns;"></tr>
         </table>
         <mat-paginator [length]="allClients.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons (page)="paginaCambiada($event)" #paginator></mat-paginator>
       </div>
@@ -60,7 +60,7 @@
 <div *ngIf="modalDocumento" class="loading-overlayf" id="myModal">
   <div class="modal">
     <mat-card class="cardWithShadow boxed-auth">
-      <!-- Mover el botón de cierre a la esquina superior derecha -->
+      <!-- Move the close button to the upper right corner -->
       <button mat-icon-button class="close-button" (click)="closeModal()">
         <mat-icon color="warn">close</mat-icon>
       </button>

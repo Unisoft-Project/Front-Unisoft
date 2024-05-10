@@ -20,7 +20,7 @@ export class AgregarClienteComponent {
     documento: '',
     direccion: '',
     telefono: '',
-    email: ''
+    correo: ''
   };
 
   constructor(
@@ -85,7 +85,7 @@ export class AgregarClienteComponent {
       data.documento = form.value.documento;
       data.direccion = form.value.direccion;
       data.telefono = form.value.telefono;
-      data.email = form.value.email;
+      data.correo = form.value.email;
       console.log("data", data  )
       // Post client data to the server
       this.http
