@@ -111,10 +111,10 @@ export class VerClientesComponent {
     }
    
     if (this.filtro) {
-      const regex = new RegExp(this.filtro); // Expresión regular para buscar el número en cualquier posición del documento
+      const regex = new RegExp(this.filtro); 
       this.dataSource = this.datosOriginales.filter(cliente => {
-        const documentoMatch = regex.test(cliente.documento); // Verifica si el número especificado está presente en el documento
-        console.log(`Documento ${cliente.documento}: ${documentoMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el documento coincide con el filtro
+        const documentoMatch = regex.test(cliente.documento); 
+        console.log(`Documento ${cliente.documento}: ${documentoMatch ? 'Coincide' : 'No coincide'}`); 
         const nombreMatch = cliente.nombre.toLowerCase().includes(this.filtro.toLowerCase());
         return documentoMatch || nombreMatch;
       });
