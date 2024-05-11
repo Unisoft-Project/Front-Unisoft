@@ -12,7 +12,6 @@
       <mat-card-title>Clientes Registrados</mat-card-title>
       <div class="table-responsive m-t-16">
         <table mat-table [dataSource]="dataSource" class="w-100">
-          <!-- Define table columns using ngFor -->
           <ng-container *ngFor="let column of dataColumns" [matColumnDef]="column">
             <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">{{ displayedColumnHeaders[dataColumns.indexOf(column)] }}</th>
             <td mat-cell *matCellDef="let element" class="mat-body-1">
@@ -25,7 +24,7 @@
               </div>
               <div class="center-icon">
                 <ng-container *ngIf="column === 'Eliminar'">
-                  <button mat-icon-button (click)="printEliminarCliente(element.documento)">
+                  <button mat-icon-button (click)="printEliminarCliente(element.documento, element.nombre)">
                     <mat-icon class="deleteIcon">delete</mat-icon>
                   </button>
                 </ng-container>
@@ -38,7 +37,6 @@
               </ng-container>
             </td>
           </ng-container>
-          <!-- Header and Row definitions -->
           <tr mat-header-row *matHeaderRowDef="dataColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: dataColumns;"></tr>
         </table>
@@ -47,20 +45,12 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div *ngIf="loading" class="loading-overlay">
-  <div class="text-center">
-    <img src="../../../../assets/images/recarga/cargando.gif" width="100px">
-  </div>
-</div>
 <div *ngIf="errorMessage" class="error-message">
   {{ errorMessage }}
 </div>
-
-
 <div *ngIf="modalDocumento" class="loading-overlayf" id="myModal">
   <div class="modal">
     <mat-card class="cardWithShadow boxed-auth">
-      <!-- Move the close button to the upper right corner -->
       <button mat-icon-button class="close-button" (click)="closeModal()">
         <mat-icon color="warn">close</mat-icon>
       </button>
@@ -72,3 +62,4 @@
     </mat-card>
   </div>
 </div>
+<ngx-ui-loader></ngx-ui-loader>

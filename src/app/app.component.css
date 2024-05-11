@@ -1,0 +1,13 @@
+/* app.component.css */
+
+/* Estilo para cubrir toda la pantalla con el cargador */
+.ngx-ui-loader-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Cambia el valor alpha para ajustar la opacidad */
+    z-index: 9998;  /* Ajusta el valor del z-index según sea necesario */
+  }
+  

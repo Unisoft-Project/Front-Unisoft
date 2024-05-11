@@ -7,7 +7,7 @@
       <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="addClient(clientesForm)">
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="nombre" ngModel/>
+          <input required matInput name="nombre" ngModel />
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
         <mat-chip-listbox aria-label="Fish selection" name="tipoDocumento" ngModel>
@@ -19,34 +19,37 @@
         </mat-chip-listbox>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="documento" ngModel/>
+          <input required matInput name="documento" ngModel />
         </mat-form-field>
-
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="direccion" ngModel/>
+          <input required matInput name="direccion" ngModel />
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="telefono" ngModel/>
+          <input required matInput name="telefono" ngModel />
         </mat-form-field>
-        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">E-mail</mat-label>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Correo</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="email" ngModel/>
+          <input required matInput name="email" ngModel />
         </mat-form-field>
-        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
-        <label for="file-upload">
-          <i-tabler class="routeIcon" name="photo-plus" matListItemIcon></i-tabler>
-        </label>
-        <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
-        <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
-        <!-- <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo"> -->
-        <div>
-          <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo" class="w-50" mat-card-image style="max-width: 200px; max-height: 200px;" />
-          <button *ngIf="selectedFile" (click)="deleteSelectedPhoto()" aria-label="Delete Photo">
-            <mat-icon>delete</mat-icon>
-          </button>
+        <div style="margin-bottom: 20px;">
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
+          <div style="display: flex; align-items: center;">
+            <label for="format-upload">
+              <i-tabler *ngIf="!selectedFile" style="color: #1b7dff;" class="routeIcon" name="photo-plus" matListItemIcon></i-tabler>
+            </label>
+            <label *ngIf="selectedFile" (click)="deleteSelectedPhoto()" aria-label="Delete Photo">
+              <mat-icon style="color: red; margin-bottom: 94px;">delete</mat-icon>
+            </label>
+            <input id="format-upload" type="file" style="display: none" (change)="onFileSelected($event)" />
+            <div>
+              <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo" class="w-50" mat-card-image
+                style="max-width: 200px; max-height: 200px; " />
+            </div>
+          </div>
         </div>
+        <br>
         <button mat-flat-button color="primary" class="w-100">
           Agregar
         </button>

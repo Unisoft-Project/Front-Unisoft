@@ -1,9 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, ViewChild  } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import Swal from 'sweetalert2';
 import { timeout } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { MatPaginator, PageEvent, MatPaginatorIntl  } from '@angular/material/paginator';
+import { MatPaginator, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 interface Client {
   id: number;
@@ -33,13 +34,10 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 })
 
 
-
-
 export class VerClientesComponent {
-  displayedColumnHeaders: string[] = ['Tipo Documento', 'Documento', 'Nombre', 'Dirección', 'Teléfono', 'Correo', 'Foto Documento', 'Eliminar'];
+  displayedColumnHeaders: string[] = ['Tipo Documento', 'Documento', 'Nombre', 'Dirección', 'Teléfono', 'Correo', 'Foto', 'Eliminar'];
   dataColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono', 'Correo', 'FotoDocumento', 'Eliminar'];
   dataSource: Client[] = [];
-  loading: boolean = false;
   modalDocumento: boolean = false;
   errorMessage: string = '';
   filtro: string = '';
@@ -59,16 +57,15 @@ export class VerClientesComponent {
     this.getClients()
   }
 
-
   constructor(private http: HttpClient,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private ngxService: NgxUiLoaderService
   ) { }
 
-  
 
   getClients() {
-    this.loading = true;
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -76,32 +73,28 @@ export class VerClientesComponent {
     //
     this.http.get<any[]>(
       `https://back-unisoft-1.onrender.com/cliente/listaClientes`,
-      //`http://localhost:8000/cliente/listaClientes`,
       { headers: headers }
     ).pipe(
       timeout(200000)
     ).subscribe(
       (response) => {
-        this.loading = false;
-        // Map document type ID to description
         this.dataSource = response.map(client => {
           return {
             ...client,
             tipo_documento: client.tipo_documento.descripcion
           };
         });
-        console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
-        this.allClients = this.dataSource; // Asigna los datos mapeados a allClients
-        this.dataSource = this.allClients.slice(0, 5); // Asigna los primeros 5 elementos de allClients a dataSource
+        this.allClients = this.dataSource;
+        this.dataSource = this.allClients.slice(0, 5);
+        this.ngxService.stop();
       },
       (error) => {
-        this.loading = false;
+        this.ngxService.stop();
         if (error.status === 404) {
           this.errorMessage = 'No se encontraron clientes.';
         } else {
           this.errorMessage = 'Ocurrió un error al obtener los clientes.';
         }
-        console.error('Error fetching clients:', error);
       }
     );
   }
@@ -111,18 +104,17 @@ export class VerClientesComponent {
     if (this.datosOriginales.length === 0) {
       this.datosOriginales = [...this.dataSource];
     }
-   
+
     if (this.filtro) {
-      const regex = new RegExp(this.filtro); 
+      const regex = new RegExp(this.filtro);
       this.dataSource = this.datosOriginales.filter(cliente => {
-        const documentoMatch = regex.test(cliente.documento); 
-        console.log(`Documento ${cliente.documento}: ${documentoMatch ? 'Coincide' : 'No coincide'}`); 
+        const documentoMatch = regex.test(cliente.documento);
         const nombreMatch = cliente.nombre.toLowerCase().includes(this.filtro.toLowerCase());
         return documentoMatch || nombreMatch;
       });
       if (this.dataSource.length === 0) {
         this.errorMessage = 'No se encontraron clientes.';
-      } 
+      }
     } else {
       this.getClients();
     }
@@ -132,8 +124,8 @@ export class VerClientesComponent {
     this.getPhoto(documento);
   }
 
-  printEliminarCliente(documento: string) {
-    this.eliminarCliente(documento)
+  printEliminarCliente(documento: string, nombre: string) {
+    this.eliminarCliente(documento, nombre)
   }
 
   closeModal() {
@@ -142,25 +134,18 @@ export class VerClientesComponent {
 
   getPhoto(documento: string) {
     const photoPath = `docs/${documento}`;
-  
+
     if (photoPath) {
-      // Get the download URL of the photo using the retrieved path
       this.storage
         .ref(photoPath)
         .getDownloadURL()
         .subscribe(
           (url) => {
-            // Asigna el URL de descarga a la propiedad photoUrl
             this.photoUrl = url;
-            // Abre el modal después de cargar la imagen
             this.modalDocumento = true;
           },
           (error) => {
-            console.error('Error fetching photo:', error);
-            // Set photoUrl to null to avoid displaying broken image
             this.photoUrl = null;
-            console.log(`Photo with documento ${documento} not found`);
-            // Muestra una alerta indicando que el usuario no tiene foto
             Swal.fire({
               title: 'Foto no encontrada',
               text: 'El usuario no tiene una foto asociada.',
@@ -171,7 +156,6 @@ export class VerClientesComponent {
         );
     } else {
       this.photoUrl = null;
-      // Muestra una alerta indicando que el usuario no tiene foto
       Swal.fire({
         title: 'Foto no encontrada',
         text: 'El usuario no tiene una foto asociada.',
@@ -181,32 +165,30 @@ export class VerClientesComponent {
     }
   }
 
-  eliminarCliente(documento: string) {
-    // Mostrar cuadro de diálogo para confirmar eliminación
+  eliminarCliente(documento: string, nombre: string) {
+    this.ngxService.start();
     Swal.fire({
       title: '¿Está seguro?',
-      text: `¿Desea eliminar este cliente ${documento} ?`,
+      text: `¿Desea eliminar el cliente: ${documento} ${nombre} ?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-      if (result.isConfirmed) {  
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+      if (result.isConfirmed) {
+        const token = localStorage.getItem('token');
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         });
-        // Realizar solicitud de eliminación si se confirma
         this.http.delete<any>(
           `https://back-unisoft-1.onrender.com/cliente/eliminarClientes/${documento}`,
-          // `http://localhost:8000/cliente/eliminarClientes/${documento}`,
           { headers: headers }
         ).pipe(
           timeout(200000)
         ).subscribe(
           (response) => {
-            // Mostrar mensaje de éxito si la eliminación fue exitosa
+            this.ngxService.stop();
             Swal.fire({
               title: 'Cliente eliminado',
               text: 'El cliente se ha eliminado correctamente.',
@@ -216,9 +198,8 @@ export class VerClientesComponent {
             this.getClients();
           },
           (error) => {
+            this.ngxService.stop();
             if (error.status === 409) {
-              // Si el servidor devuelve un código de estado 409 (CONFLICT),
-              // significa que no se puede eliminar el cliente debido a una restricción de clave externa
               Swal.fire({
                 title: 'Error',
                 text: 'No se puede eliminar el cliente porque está asociado a registros de compras.',
@@ -226,7 +207,6 @@ export class VerClientesComponent {
                 confirmButtonText: 'OK'
               });
             } else {
-              // Mostrar mensaje de error genérico si ocurre otro tipo de error
               Swal.fire({
                 title: 'Error',
                 text: 'Ocurrió un error al intentar eliminar el cliente.',
@@ -236,27 +216,21 @@ export class VerClientesComponent {
             }
           }
         );
+      }else {
+        this.ngxService.stop(); 
       }
     });
   }
   allClients: Client[] = [];
   paginaCambiada(event: PageEvent) {
-    console.log('Page event:', event); // Verificar el evento de paginación
     const startIndex = event.pageIndex * event.pageSize;
     const endIndex = startIndex + event.pageSize;
-    console.log('Start index:', startIndex); // Verificar el índice de inicio
-    console.log('End index:', endIndex); // Verificar el índice final
     this.dataSource = this.allClients.slice(startIndex, endIndex);
-    console.log('DataSource after pagination:', this.dataSource); // Verificar el dataSource después de la paginación
   }
-  
+
   actualizarPagina() {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     const endIndex = startIndex + this.paginator.pageSize;
-    console.log('Start index:', startIndex); // Verificar el índice de inicio
-    console.log('End index:', endIndex); // Verificar el índice final
-    // Actualiza los datos del dataSource con los clientes correspondientes a la página actual
     this.dataSource = this.dataSource.slice(startIndex, endIndex);
-    console.log('DataSource after updating page:', this.dataSource); // Verificar el dataSource después de actualizar la página
   }
 }

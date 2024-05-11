@@ -38,7 +38,7 @@ import {
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#1b1a5c",
   bgsOpacity: 0.5,
-  bgsPosition: "top-right",
+  bgsPosition: "center-center",
   bgsSize: 60,
   bgsType: "double-bounce",
   blur: 5,

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { timeout } from 'rxjs/operators';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 @Component({
   selector: 'app-login',

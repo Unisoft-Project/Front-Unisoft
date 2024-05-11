@@ -3,21 +3,18 @@
     <mat-card-title class="m-b-0">Editar Cliente</mat-card-title>
   </mat-card-header>
   <mat-card-content class="b-t-1">
-
-
     <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
       <form class="m-t-30" #clientesForm="ngForm" (ngSubmit)="editClient(clientesForm)">
-      <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
-      <div style="display: flex;">
-          <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px;">
-            <input matInput name="documento" #documentoField="ngModel" ngModel/>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
+        <div style="display: flex">
+          <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
+            <input matInput name="documento" #documentoField="ngModel" ngModel />
           </mat-form-field>
-          <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px;" type="button" (click)="searchClient(documentoField.value)">
+          <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px" type="button"
+            (click)="searchClient(documentoField.value)">
             Buscar
           </button>
         </div>
-        
-        
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="nombre" [(ngModel)]="data.nombre" />
@@ -30,43 +27,39 @@
           <mat-chip-option class="f-s-14" color="primary">Pasaporte</mat-chip-option>
           <mat-chip-option class="f-s-14" color="primary">NIT</mat-chip-option>
         </mat-chip-listbox>
-   
-
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="direccion" ngModel [(ngModel)]="data.direccion"/>
+          <input required matInput name="direccion" ngModel [(ngModel)]="data.direccion" />
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input required matInput name="telefono" ngModel [(ngModel)]="data.telefono"/>
+          <input required matInput name="telefono" ngModel [(ngModel)]="data.telefono" />
         </mat-form-field>
-        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">E-mail</mat-label>
-      <mat-form-field appearance="outline" class="w-100" color="primary">
-        <input required matInput name="email" ngModel/>
-      </mat-form-field>
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Correo</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input required matInput name="email" ngModel />
+        </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
-        <label for="file-upload">
-          <i-tabler class="routeIcon" name="photo-plus" matListItemIcon></i-tabler>
-        </label>
-        <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
-        <input id="file-upload" type="file" style="display: none;" (change)="onFileSelected($event)">
-        <!-- <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo"> -->
-        <div>
-          <img *ngIf="photoUrl || selectedFile" [src]="photoUrl ? photoUrl : selectedFile" alt="Selected Photo" class="w-50" mat-card-image style="max-width: 200px; max-height: 200px;" />
-          <button *ngIf="photoUrl || selectedFile" (click)="deleteSelectedPhoto(photoUrl)" aria-label="Delete Photo">
-            <mat-icon>delete</mat-icon>
-          </button>
+        <div style="display: flex; align-items: center;">
+          <label for="file-upload">
+            <i-tabler *ngIf="!selectedFile" style="color: #1b7dff;" class="routeIcon" name="photo-plus"
+              matListItemIcon></i-tabler>
+          </label>
+          <input id="file-upload" type="file" style="display: none" (change)="onFileSelected($event)" />
+          <input id="file-upload" type="file" style="display: none" (change)="onFileSelected($event)" />
+          <div>
+            <label *ngIf="photoUrl || selectedFile" (click)="deleteSelectedPhoto(photoUrl)" aria-label="Delete Photo">
+              <mat-icon style="color: red;">delete</mat-icon>
+            </label>
+            <div>
+            <img *ngIf="photoUrl || selectedFile" [src]="photoUrl ? photoUrl : selectedFile" alt="Selected Photo"
+              class="w-50" mat-card-image style="max-width: 200px; max-height: 200px" />
+          </div></div>
         </div>
-        
-        <button mat-flat-button color="primary" class="w-100" >
-          Editar
-        </button>
+        <br>
+        <button mat-flat-button color="primary" class="w-100">Editar</button>
       </form>
     </div>
   </mat-card-content>
 </mat-card>
-<div  *ngIf="loading" class="loading-overlay">
-  <div class="text-center">
-    <img src="../../../../assets/images/recarga/cargando.gif" width="100px">
-  </div>
-</div>
+<ngx-ui-loader></ngx-ui-loader>
