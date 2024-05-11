@@ -13,6 +13,7 @@ interface Client {
   direccion: string;
   telefono: string;
   foto_documento: string;
+  correo: string
 }
 
 export class CustomPaginatorIntl extends MatPaginatorIntl {
@@ -35,7 +36,8 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerClientesComponent {
-  displayedColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono', 'E-mail', 'FotoDocumento', 'Eliminar'];
+  displayedColumnHeaders: string[] = ['Tipo Documento', 'Documento', 'Nombre', 'Dirección', 'Teléfono', 'Correo', 'Foto Documento', 'Eliminar'];
+  dataColumns: string[] = ['TipoDocumento', 'Documento', 'Nombre', 'Direccion', 'Telefono', 'Correo', 'FotoDocumento', 'Eliminar'];
   dataSource: Client[] = [];
   loading: boolean = false;
   modalDocumento: boolean = false;
