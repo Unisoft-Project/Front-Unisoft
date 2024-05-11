@@ -16,9 +16,11 @@ import { AuthenticationRoutes } from './authentication.routing';
 
 import { AppSideLoginComponent } from './login/login.component';
 import { AppSideRegisterComponent } from './register/register.component';
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 
 @NgModule({
   imports: [
+    NgxUiLoaderModule,
     CommonModule,
     RouterModule.forChild(AuthenticationRoutes),
     MatIconModule,

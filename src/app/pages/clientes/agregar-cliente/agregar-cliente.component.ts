@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { timeout } from 'rxjs/operators';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Token } from '@angular/compiler';
 @Component({
   selector: 'app-agregar-cliente',
   templateUrl: './agregar-cliente.component.html',
@@ -12,7 +14,6 @@ import { timeout } from 'rxjs/operators';
 export class AgregarClienteComponent {
   selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
   firebaseFile: File | null = null;
-  loading: boolean = false;
 
   clienteForm = {
     nombre: '',
@@ -26,19 +27,18 @@ export class AgregarClienteComponent {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private fireStorage: AngularFireStorage
+    private fireStorage: AngularFireStorage, 
+    private ngxService: NgxUiLoaderService
   ) {}
 
   async addClient(form: any) {
-    this.loading = true;
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIzMTQxOTQ0MDIsIm9pZCI6MTkyLCJub21icmUiOiJ2IiwiYXBlbGxpZG8iOiJiIiwiZW1wcmVzYSI6ImIiLCJ0aXBvX2RvY3VtZW50b19vaWQiOjEsIm5yb19kb2N1bWVudG8iOiIxIiwibml0IjoiMSIsInJhem9uX3NvY2lhbCI6IjEiLCJkaXJlY2Npb24iOiIxIiwidGVsZWZvbm8iOiIxIiwiZmlybWEiOiIxIiwiY2l1ZGFkX29pZCI6MSwiZW1haWwiOiJiQGdtYWlsLmNvIn0.zxsR-QVTTVfY9CVRTzS9h1cbN-QfU0Nen_yk15gAW2s';
+    this.ngxService.start();
+    const token = localStorage.getItem('token'); 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
     const data: any = {};
-
-    // Upload photo if a file is selected
     if (
       !form.value.nombre ||
       !form.value.tipoDocumento ||
@@ -47,15 +47,14 @@ export class AgregarClienteComponent {
       !form.value.telefono || 
       !form.value.email
     ) {
-      this.loading = false;
-      // Show Swal fire alert if any field is empty
+      this.ngxService.stop();
       Swal.fire({
         title: 'Debe rellenar todos los campos',
         text: '',
         icon: 'warning',
         confirmButtonText: 'OK',
       });
-      return; // Exit the method if any field is empty
+      return; 
     } else {
       if (this.firebaseFile) {
         const file: File = this.firebaseFile as File;
@@ -64,7 +63,7 @@ export class AgregarClienteComponent {
         const uploadTask = await this.fireStorage.upload(path, file);
         const url = await uploadTask.ref.getDownloadURL();
         data.foto_documento = url;
-        this.loading = false;
+        this.ngxService.stop();
       }
 
       // Map document type string to corresponding ID
@@ -98,7 +97,7 @@ export class AgregarClienteComponent {
           timeout(200000)
         ).subscribe(
           (response) => {
-            this.loading = false;
+            this.ngxService.stop();
             Swal.fire({
               title: 'Cliente agregado con éxito',
               text: '',
@@ -111,7 +110,7 @@ export class AgregarClienteComponent {
             });
           },
           (error) => {
-            this.loading = false;
+            this.ngxService.stop();
             // Manejo de respuesta en caso de error
             if (error.status === 400) {
               // Error 400: Bad Request
@@ -122,7 +121,7 @@ export class AgregarClienteComponent {
                 confirmButtonText: 'OK',
               });
             } else if (error.status === 404) {
-              this.loading = false;
+              this.ngxService.stop();
               // Error 404: Not Found
               Swal.fire({
                 title: 'Error al crear cliente',
@@ -131,7 +130,7 @@ export class AgregarClienteComponent {
                 confirmButtonText: 'OK',
               });
             } else {
-              this.loading = false;
+              this.ngxService.stop();
               // Otros errores
               Swal.fire({
                 title: 'Error',

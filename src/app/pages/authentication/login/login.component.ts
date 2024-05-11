@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { timeout } from 'rxjs/operators';
-
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,10 +11,11 @@ import { timeout } from 'rxjs/operators';
 export class AppSideLoginComponent {
   email: string;
   password: string;
+  loading: boolean = false;
+  constructor(private http: HttpClient, private router: Router, private ngxService: NgxUiLoaderService) {}
 
-  constructor(private http: HttpClient, private router: Router) {}
-
-  login() {
+  async login() {
+    this.ngxService.start();
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
@@ -24,39 +25,36 @@ export class AppSideLoginComponent {
       password: this.password
     };
 
-    this.http.post<any>('https://back-unisoft-1.onrender.com/auth/login', body, { headers: headers }
-      ).pipe(
-        timeout(200000)
-      ).subscribe(
-        response => {
-          console.log(body)
-          console.log(response.token);
-          console.log(response); // Agrega esto para depurar
-          if (response.message !== null && response.message !== false) { //"message": "Login successful"
-            localStorage.setItem('token', response.message);
-            this.router.navigate(['/dashboard']);
-            Swal.fire({
-              icon: 'success',
-              title: 'Inicio de sesión exitoso',
-              text: '¡Bienvenido!',
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al iniciar sesión',
-              text: 'Credenciales incorrectas',
-            });
-          }
-        },
-        error => {
-          console.error(error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al iniciar sesión',
-            text: 'Por favor, intenta de nuevo más tarde',
-          });
-        }
-      );
+    try {
+      const response = await this.http.post<any>('https://back-unisoft-1.onrender.com/auth/login', body, { headers: headers }).toPromise();
+      console.log(body);
+      console.log(response.token);
+      console.log(response); // Agrega esto para depurar
+      if (response.message !== null && response.message !== false) { 
+        this.ngxService.stop();
+        localStorage.setItem('token', response.message);
+        this.router.navigate(['/dashboard']);
+        Swal.fire({
+          icon: 'success',
+          title: 'Inicio de sesión exitoso',
+          text: '¡Bienvenido!',
+        });
+      } else {
+        this.ngxService.stop();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al iniciar sesión',
+          text: 'Credenciales incorrectas',
+        });
+      }
+    } catch (error) {
+      this.ngxService.stop();
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al iniciar sesión',
+        text: 'Por favor, intenta de nuevo más tarde',
+      });
+    }
   }
-
 }

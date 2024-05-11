@@ -11,7 +11,7 @@ import * as TablerIcons from 'angular-tabler-icons/icons';
 import { clientesRoutes } from './clientes.routing';
 import { EditarClienteComponent } from './editar-cliente/editar-cliente.component';
 import { VerClientesComponent } from './ver-clientes/ver-clientes.component';
-
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 
 
 @NgModule({
@@ -22,6 +22,7 @@ import { VerClientesComponent } from './ver-clientes/ver-clientes.component';
     
   ],
   imports: [
+    NgxUiLoaderModule,
     CommonModule,
     RouterModule.forChild(clientesRoutes),
     MaterialModule,
