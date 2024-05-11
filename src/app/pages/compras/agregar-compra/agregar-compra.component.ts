@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { timeout } from 'rxjs/operators';
-
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-agregar-compra',
@@ -19,19 +19,19 @@ export class AgregarCompraComponent {
   clientFound: any;
   selectedModeloDispositivo: any;
   selectedMarcaDispositivo: any;
-  selectedFile: string | ArrayBuffer | null = null; // Adjust type to File | null
+  selectedFile: string | ArrayBuffer | null = null; 
   firebaseFile: File | null = null;
   modelosDispositivos: any[] = [];
   marcasDispositivos: any[] = [];
-  loading: boolean = false;
 
   constructor(
     private router: Router,
     private http: HttpClient,
-    private fireStorage: AngularFireStorage
+    private fireStorage: AngularFireStorage,
+    private ngxService: NgxUiLoaderService
   ) { }
 
-  //* Estructura para Formulario Compras
+
   public compraForm = {
     imei: '',
     marca_telefono: '',
@@ -41,7 +41,6 @@ export class AgregarCompraComponent {
     valor_compra: 0
   };
 
-  //* Estructura para Busqueda Cliente
   doc = '';
   public clienteEncontrado = {
     nombre: '',
@@ -63,7 +62,6 @@ export class AgregarCompraComponent {
     ).subscribe(
       (data: any[]) => {
         this.modelosDispositivos = data;
-        console.log('Modelos de dispositivos:', this.modelosDispositivos);
       });
   }
 
@@ -74,17 +72,15 @@ export class AgregarCompraComponent {
     ).subscribe(
       (data: any[]) => {
         this.marcasDispositivos = data;
-        console.log('Marcas de dispositivos:', this.marcasDispositivos);
       });
   }
 
   async addCompra(form: any) {
     const data: any = {};
-    this.loading = true;
+    this.ngxService.start();
     if (!form.value.imei || !form.value.marca_dispositivo || !form.value.consecutivo || !form.value.modelo_dispositivo || !form.value.valor_compra
       || !this.selectedMarcaDispositivo || !this.selectedModeloDispositivo
     ) {
-      // Show Swal fire alert if any field is empty
       Swal.fire({
         title: 'Debe rellenar todos los campos',
         text: '',
@@ -117,7 +113,6 @@ export class AgregarCompraComponent {
         'Authorization': `Bearer ${token}`
       });
 
-      // Set other client data
       data.imei = form.value.imei;
       data.consecutivo_compraventa = form.value.consecutivo;
       data.observacion = form.value.observacion;
@@ -127,9 +122,6 @@ export class AgregarCompraComponent {
       data.cliente_id = this.clientFound.oid;
       data.valor_venta = '0';
       data.fecha_hora = '0';
-      console.log(data);
-      // TODO Revisar los campos y averiguar como concatenar info dispositivo + info cliente en un mismo paquete de datos
-      // Realizar la solicitud POST con los datos y encabezados
       this.http
         .post<any>(
           'https://back-unisoft-1.onrender.com/compra/compras_inventario/nueva_compra',
@@ -139,7 +131,7 @@ export class AgregarCompraComponent {
           timeout(200000)
         ).subscribe(
           (response: any) => {
-            this.loading = false;
+            this.ngxService.stop();
             Swal.fire({
               title: 'La compra se ha realizado con éxito',
               text: '',
@@ -152,9 +144,7 @@ export class AgregarCompraComponent {
             });
           },
           (error) => {
-            this.loading = false;
-            // Handle error response
-            console.error('Error añadiendo la compra: ', error);
+            this.ngxService.stop();
             Swal.fire({
               title: 'Error',
               text: 'Error creando la compra',
@@ -166,7 +156,6 @@ export class AgregarCompraComponent {
     }
   }
 
-  //* Subida de Formato CompraVenta
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
@@ -183,7 +172,6 @@ export class AgregarCompraComponent {
     this.selectedFile = null;
   }
 
-  //* Gestión Tabla
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   displayedColumns: string[] = ['IMEI', 'Marca de Teléfono', 'Procedencia', 'Modelo del Teléfono', 'Detalles del Teléfono', 'Valor de Compra'];
   DATA: any[] = []
@@ -192,15 +180,11 @@ export class AgregarCompraComponent {
     this.compraForm = form.value;
     const newData = this.DATA
     newData.push(this.compraForm);
-
     this.dataSource.data = [...newData];
-    console.log('Formulario Captado:', this.compraForm);
-    console.log('Data Source Cargado', this.dataSource.data);
   };
 
-  //Gestión GET Cliente
   getCliente(documento: string) {
-    this.loading = true;
+    this.ngxService.start();
     const token = localStorage.getItem('token'); 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -212,21 +196,17 @@ export class AgregarCompraComponent {
       timeout(200000)
     ).subscribe(
       (response: any) => {
-        // Handle the response here
-        this.loading = false;
+        this.ngxService.stop();
         this.clientFound = response[0];
         this.doc = documento;
         this.clientFoundTag = true;
-        console.log('response', response);
         this.clienteEncontrado.documento = response[0].documento;
         this.clienteEncontrado.nombre = response[0].nombre;
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
       }, (error) => {
-        this.loading = false;
-        // Error en la petición
+        this.ngxService.stop();
         if (error.status === 404) {
-          // Cliente no encontrado
           Swal.fire({
             title: 'Cliente no encontrado',
             text: 'El cliente no existe en la base de datos.',
@@ -234,8 +214,6 @@ export class AgregarCompraComponent {
             confirmButtonText: 'OK'
           });
         } else {
-          this.loading = false;
-          // Otro error
           Swal.fire({
             title: 'Error',
             text: 'Ha ocurrido un error al procesar la solicitud.',

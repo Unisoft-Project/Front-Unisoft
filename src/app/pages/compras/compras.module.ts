@@ -8,17 +8,18 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import * as TablerIcons from 'angular-tabler-icons/icons';
 import { AgregarCompraComponent } from './agregar-compra/agregar-compra.component';
+import { VerCompraComponent } from './ver-compra/ver-compra.component';
 import { comprasRoutes } from './compras.routing';
-import { VerInventarioComponent } from '../compras/ver-inventario/ver-inventario.component';
-
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 
 @NgModule({
   declarations: [
     AgregarCompraComponent,
-    VerInventarioComponent
+    VerCompraComponent
   ],
   imports: [
     CommonModule,
+    NgxUiLoaderModule,
     RouterModule.forChild(comprasRoutes),
     MaterialModule,
     FormsModule,

@@ -33,7 +33,15 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Ver compras',
     iconName: 'list',
-    route: '/compras/ver-inventario', //********* ver-inventario */
+    route: '/compras/ver-compra', //********* ver-inventario */
+  },
+  {
+    navCap: 'Inventario',
+  },
+  {
+    displayName: 'Ver inventario',
+    iconName: 'building-warehouse',
+    route: '/inventario/ver-inventario',
   },
   {
     navCap: 'Clientes',
@@ -52,14 +60,6 @@ export const navItems: NavItem[] = [
     displayName: 'Ver clientes',
     iconName: 'users',
     route: '/clientes/ver-clientes', ///********* */
-  },
-  {
-    navCap: 'Inventario',
-  },
-  {
-    displayName: 'Ver inventario',
-    iconName: 'building-warehouse',
-    route: '/inventario/ver-inventario',
   },
   {
     navCap: 'Perfiles',

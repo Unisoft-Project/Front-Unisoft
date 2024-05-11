@@ -65,9 +65,10 @@ const routes: Routes = [
           canActivate: [FullguardiansService]
       },
       {
-        path: 'extra',
+        path: 'inventario',
         loadChildren: () =>
-          import('./pages/extra/extra.module').then((m) => m.ExtraModule),
+          import('./pages/inventario/inventario.module').then(
+            (m) => m.InventarioModule),
         canActivate: [FullguardiansService]
       },
     ],
