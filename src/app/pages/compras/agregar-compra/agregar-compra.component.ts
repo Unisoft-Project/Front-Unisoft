@@ -52,20 +52,32 @@ export class AgregarCompraComponent {
   };
 
   ngOnInit(): void {
-    this.obtenerModelosDispositivos();
+    // this.obtenerModelosDispositivos();
     this.obtenerMarcasDispositivos();
   }
 
   obtenerModelosDispositivos(): void {
-    const url = 'https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo';
+    const url = `https://back-unisoft-1.onrender.com/modelo/modelo_dispositivo/${this.selectedMarcaDispositivo}`;
     this.http.get<any[]>(url).pipe(
       timeout(200000)
     ).subscribe(
       (data: any[]) => {
-        this.modelosDispositivos = data;
+        if (data && data.length > 0) {
+          // Mapeamos los datos recibidos al formato esperado
+          this.modelosDispositivos = data.map(item => ({ oid: item.oid, modelos: item.modelos }));
+        } else {
+          // Si no hay datos, agregamos un modelo de dispositivo con el mensaje indicando que no hay modelos disponibles
+          this.modelosDispositivos = [{ oid: 0, modelos: 'No hay modelos de dispositivos para esta marca' }];
+        }
         console.log('Modelos de dispositivos:', this.modelosDispositivos);
-      });
+      },
+      (error) => {
+        // Si hay un error en la solicitud, puedes manejarlo aquí
+        console.error('Error al obtener modelos de dispositivos:', error);
+      }
+    );
   }
+
 
   obtenerMarcasDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
@@ -111,8 +123,8 @@ export class AgregarCompraComponent {
         data.formato_compraventa = url;
       }
 
-        const token = localStorage.getItem('token'); 
-        const headers = new HttpHeaders({
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       });
@@ -201,7 +213,7 @@ export class AgregarCompraComponent {
   //Gestión GET Cliente
   getCliente(documento: string) {
     this.loading = true;
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
