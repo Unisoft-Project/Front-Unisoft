@@ -20,7 +20,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Ver ventas',
     iconName: 'notes',
-    route: '/ui-components/chips', ///****** */
+    route: '/ui-components/chips', 
   },
   {
     navCap: 'Compras',
@@ -29,11 +29,16 @@ export const navItems: NavItem[] = [
     displayName: 'Registrar compra',
     iconName: 'shopping-cart',
     route: '/compras/agregar-compra',
+  }, 
+  {
+    displayName: 'Editar compra',
+    iconName: 'shopping-cart-cog',
+    route: '/compras/editar-compra',
   },
   {
     displayName: 'Ver compras',
     iconName: 'list',
-    route: '/compras/ver-compra', //********* ver-inventario */
+    route: '/compras/ver-compra',
   },
   {
     navCap: 'Inventario',
@@ -59,7 +64,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Ver clientes',
     iconName: 'users',
-    route: '/clientes/ver-clientes', ///********* */
+    route: '/clientes/ver-clientes', 
   },
   {
     navCap: 'Perfiles',

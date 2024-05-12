@@ -50,8 +50,11 @@
           </div>
         </div>
         <br>
-        <button mat-flat-button color="primary" class="w-100">
+        <button mat-flat-button color="primary" style=" width: 34%; margin-left: 51px;">
           Agregar
+        </button>
+        <button mat-raised-button color="warn" style=" width: 34%; margin-left: 51px;" type="button"  *ngIf="mostrarBotonRegresarCompra" (click)="regresarACompra()">
+          Regresar a Registrar Compra
         </button>
       </form>
     </div>

@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import Swal from 'sweetalert2';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { timeout } from 'rxjs/operators';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-agregar-cliente',
@@ -14,7 +16,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 export class AgregarClienteComponent {
   selectedFile: string | ArrayBuffer | null = null;
   firebaseFile: File | null = null;
-
+  mostrarBotonRegresarCompra: boolean = false;
   clienteForm = {
     nombre: '',
     tipo_documento: '',
@@ -25,11 +27,18 @@ export class AgregarClienteComponent {
   };
 
   constructor(
+    private location: Location,
+    private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
     private fireStorage: AngularFireStorage,
     private ngxService: NgxUiLoaderService
   ) { }
+
+  ngOnInit(): void {
+    const fromCompra = this.route.snapshot.queryParams['fromCompra'];
+    this.mostrarBotonRegresarCompra = fromCompra === 'true';
+  }
 
   async addClient(form: any) {
     this.ngxService.start();
@@ -151,11 +160,14 @@ export class AgregarClienteComponent {
     this.selectedFile = null;
   }
 
-  ngOnInit(): void { }
 
   hidden = false;
 
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
+  }
+
+  regresarACompra() {
+    this.router.navigate(['/compras/agregar-compra']);
   }
 }

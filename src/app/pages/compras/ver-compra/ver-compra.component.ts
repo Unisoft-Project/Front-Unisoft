@@ -1,37 +1,28 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Component, ViewChild  } from '@angular/core';
-import Swal from 'sweetalert2';
 import { timeout } from 'rxjs/operators';
-import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { MatPaginator, PageEvent, MatPaginatorIntl  } from '@angular/material/paginator';
-import { Token } from '@angular/compiler';
-
-/* interface Device {
-  id: number;
-  tipo_documento: string;
-  documento: string;
-  nombre: string;
-  direccion: string;
-  telefono: string;
-  foto_documento: string;
-} */
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import Swal from 'sweetalert2';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 interface Device {
-  oid: number;
+  codCompra: number;
   imei: string;
-  consecutivo_compraventa: string;
+  consecutivoCompra: string;
   observacion: string;
-  valor_venta: string;
-  valor_compra: string;
-  modelo_dispositivo: string;
-  marca_dispositivo: string;
-  fecha_hora: string;
+  valorCompra: string;
+  valorInversion: string;
+  marca: string;
+  modelo: string;
+  fechaCompra: string;
+  valorTotal: string;
 }
 
 export class CustomPaginatorIntl extends MatPaginatorIntl {
   constructor() {
     super();
-    this.itemsPerPageLabel = 'Dispositivos por página:';
+    this.itemsPerPageLabel = 'Compras por página:';
   }
 }
 
@@ -46,31 +37,33 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerCompraComponent{
-  displayedColumns: string[] = ['No.Compraventa', 'IMEI', 'Modelo', 'Marca', 'Observación', 'Precio Venta', 'Ver más'];
+  displayedColumns: string[] = ['IMEI', 'Consecutivo', 'Marca', 'Modelo', 'Observación', 'Fecha Compra', 'Inversión', 'Compra', 'Total', 'Ver Más', 'Documento', 'Eliminar'];
   dataSource: Device[] = [];
-  loading: boolean = false;
   modalDocumento: boolean = false;
   errorMessage: string = '';
   filtro: string = '';
+  modalFormato: boolean = false
   photoUrl: string | null = null;
-
-
+  totalInversiones: number = 0;
+  totalCompras: number = 0;
+  total: number = 0;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
 
   ngOnInit(): void {
-    this.getDevices("")
+    this.getDevices();
   }
 
 
   constructor(private http: HttpClient,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private ngxService: NgxUiLoaderService
   ) { }
 
 
 
-  getDevices(imei: string) {
-    this.loading = true;
+  getDevices() {
+    this.ngxService.start();
     const token = localStorage.getItem('token');    ;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -78,36 +71,31 @@ export class VerCompraComponent{
     });
     //
     this.http.get<any[]>(
-      //`https://back-unisoft-1.onrender.com/compra/compras_inventario`,
-      //'http://localhost:8000/compra/compras_inventario',
-      `https://back-unisoft-1.onrender.com/compra/dispositivos/?imei=${imei}&marca_dispositivo=&modelo_dispositivo=`,
+      `https://back-unisoft-1.onrender.com/compra/listaCompras`,
       { headers: headers }
     ).pipe(
       timeout(200000)
     ).subscribe(
       (response) => {
-        console.log("response",response)
-        this.loading = false;
-        // Map document type ID to description
         this.dataSource = response.map(device => {
           return {
             ...device,
-            /*modelo_dispositivo: device.modelo_dispositivo.modelos,
-            marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo,*/
           };
         });
-        console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
-        this.allClients = this.dataSource; // Asigna los datos mapeados a allClients
-        this.dataSource = this.allClients.slice(0, 5); // Asigna los primeros 5 elementos de allClients a dataSource
+        this.totalInversiones = this.dataSource.reduce((acc, curr) => acc + parseFloat(curr.valorInversion), 0);
+        this.totalCompras = this.dataSource.reduce((acc, curr) => acc + parseFloat(curr.valorCompra), 0);
+        this.total = this.dataSource.reduce((acc, curr) => acc + parseFloat(curr.valorTotal), 0);
+        this.allClients = this.dataSource; 
+        this.dataSource = this.allClients.slice(0, 5); 
+        this.ngxService.stop();
       },
       (error) => {
-        this.loading = false;
+        this.ngxService.stop();
         if (error.status === 404) {
           this.errorMessage = 'No se encontraron Dispositivos.';
         } else {
           this.errorMessage = 'Ocurrió un error al obtener los Dispositivos.';
         }
-        console.error('Error fetching Devices:', error);
       }
     );
   }
@@ -118,58 +106,60 @@ export class VerCompraComponent{
       this.datosOriginales = [...this.dataSource];
     }
 
-    this.getDevices(this.filtro);
-    /*if (this.filtro) {
-      console.log('filtro', this.filtro)
-      const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
-      this.dataSource = this.datosOriginales.filter(device => {
-        const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
-        const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
-        const modeloMatch = regex.test(device.modelo_dispositivo.toString()); // Verifica si el modelo coincide con el filtro
-        console.log(`Device ${device.imei}: ${imeiMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el imei coincide con el filtro
-        console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
-        console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
-        return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
+    if (this.filtro) {
+      const regex = new RegExp(this.filtro);
+      this.dataSource = this.datosOriginales.filter(compra => {
+        const documentoMatch = regex.test(compra.imei);
+        const nombreMatch = compra.consecutivoCompra.toLowerCase().includes(this.filtro.toLowerCase());
+        return documentoMatch || nombreMatch;
       });
-      const dispo = this.getDevices(this.filtro);
+      if (this.dataSource.length === 0) {
+        this.errorMessage = 'No se encontraron clientes.';
+      }
     } else {
-      const dispo = this.getDevices(this.filtro);
-    }*/
+      this.getDevices();
+    }
   }
 
-  printDocumento(documento: string) {
-    this.getPhoto(documento);
+  allClients: Device[] = [];
+  paginaCambiada(event: PageEvent) {
+    console.log('Page event:', event); 
+    const startIndex = event.pageIndex * event.pageSize;
+    const endIndex = startIndex + event.pageSize;
+    console.log('Start index:', startIndex); 
+    console.log('End index:', endIndex); 
+    this.dataSource = this.allClients.slice(startIndex, endIndex);
+    console.log('DataSource after pagination:', this.dataSource); 
   }
 
-  printEliminarCliente(documento: string) {
-    this.eliminarCliente(documento)
+  actualizarPagina() {
+    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+    const endIndex = startIndex + this.paginator.pageSize;
+    console.log('Start index:', startIndex); 
+    console.log('End index:', endIndex); 
+    this.dataSource = this.dataSource.slice(startIndex, endIndex);
+    console.log('DataSource after updating page:', this.dataSource); 
   }
 
-  closeModal() {
-    this.modalDocumento = false;
+  verMas(element: any) {
+    //this.router.navigate(['/editar-compra', element.id]);
   }
 
-  getPhoto(documento: string) {
-    /* const photoPath = `docs/${documento}`;
+  getPhoto(imeil: string) {
+    console.log(imeil); 
+    const photoPath = `formato_compraventa/${imeil}`;
 
     if (photoPath) {
-      // Get the download URL of the photo using the retrieved path
       this.storage
         .ref(photoPath)
         .getDownloadURL()
         .subscribe(
           (url) => {
-            // Asigna el URL de descarga a la propiedad photoUrl
             this.photoUrl = url;
-            // Abre el modal después de cargar la imagen
-            this.modalDocumento = true;
+            this.modalFormato = true;
           },
           (error) => {
-            console.error('Error fetching photo:', error);
-            // Set photoUrl to null to avoid displaying broken image
             this.photoUrl = null;
-            console.log(`Photo with documento ${documento} not found`);
-            // Muestra una alerta indicando que el usuario no tiene foto
             Swal.fire({
               title: 'Foto no encontrada',
               text: 'El usuario no tiene una foto asociada.',
@@ -180,92 +170,76 @@ export class VerCompraComponent{
         );
     } else {
       this.photoUrl = null;
-      // Muestra una alerta indicando que el usuario no tiene foto
       Swal.fire({
         title: 'Foto no encontrada',
         text: 'El usuario no tiene una foto asociada.',
         icon: 'error',
         confirmButtonText: 'OK'
       });
-    } */
+    }
+  }
+  closeModal() {
+    this.modalFormato = false;
   }
 
-  eliminarCliente(documento: string) {
-    /* // Mostrar cuadro de diálogo para confirmar eliminación
+  printDocumento(imei: string) {
+    this.getPhoto(imei);
+  }
+
+  printEliminarCompra(oidComp: string, imei: string) {
+    this.ngxService.start();
     Swal.fire({
       title: '¿Está seguro?',
-      text: `¿Desea eliminar este cliente ${documento} ?`,
+      text: `¿Desea eliminar el producto: IMEI: ${imei} ?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token');
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         });
-        // Realizar solicitud de eliminación si se confirma
         this.http.delete<any>(
-          `https://back-unisoft-1.onrender.com/cliente/eliminarClientes/${documento}`,
-          // `http://localhost:8000/cliente/eliminarClientes/${documento}`,
+          `https://back-unisoft-1.onrender.com/compra/eliminarCompra/${oidComp}`,
           { headers: headers }
         ).pipe(
           timeout(200000)
         ).subscribe(
           (response) => {
-            // Mostrar mensaje de éxito si la eliminación fue exitosa
+            this.ngxService.stop();
             Swal.fire({
-              title: 'Cliente eliminado',
-              text: 'El cliente se ha eliminado correctamente.',
+              title: 'Producto eliminado',
+              text: 'El producto se ha eliminado correctamente.',
               icon: 'success',
               confirmButtonText: 'OK'
             });
             this.getDevices();
           },
           (error) => {
+            this.ngxService.stop();
             if (error.status === 409) {
-              // Si el servidor devuelve un código de estado 409 (CONFLICT),
-              // significa que no se puede eliminar el cliente debido a una restricción de clave externa
               Swal.fire({
                 title: 'Error',
-                text: 'No se puede eliminar el cliente porque está asociado a registros de compras.',
+                text: 'No se puede eliminar el producto porque está asociado a facturas.',
                 icon: 'error',
                 confirmButtonText: 'OK'
               });
             } else {
-              // Mostrar mensaje de error genérico si ocurre otro tipo de error
               Swal.fire({
                 title: 'Error',
-                text: 'Ocurrió un error al intentar eliminar el cliente.',
+                text: 'Ocurrió un error al intentar eliminar el producto.',
                 icon: 'error',
                 confirmButtonText: 'OK'
               });
             }
           }
         );
+      }else {
+        this.ngxService.stop(); 
       }
-    }); */
-  }
-  allClients: Device[] = [];
-  paginaCambiada(event: PageEvent) {
-    console.log('Page event:', event); // Verificar el evento de paginación
-    const startIndex = event.pageIndex * event.pageSize;
-    const endIndex = startIndex + event.pageSize;
-    console.log('Start index:', startIndex); // Verificar el índice de inicio
-    console.log('End index:', endIndex); // Verificar el índice final
-    this.dataSource = this.allClients.slice(startIndex, endIndex);
-    console.log('DataSource after pagination:', this.dataSource); // Verificar el dataSource después de la paginación
-  }
-
-  actualizarPagina() {
-    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
-    const endIndex = startIndex + this.paginator.pageSize;
-    console.log('Start index:', startIndex); // Verificar el índice de inicio
-    console.log('End index:', endIndex); // Verificar el índice final
-    // Actualiza los datos del dataSource con los clientes correspondientes a la página actual
-    this.dataSource = this.dataSource.slice(startIndex, endIndex);
-    console.log('DataSource after updating page:', this.dataSource); // Verificar el dataSource después de actualizar la página
+    });
   }
 }
