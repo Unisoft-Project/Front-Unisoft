@@ -1,0 +1,159 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Editar Compra</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+      <form class="m-t-30" #compraForm="ngForm" (ngSubmit)="addCompra(compraForm)">
+        <mat-card-content>
+          <div style="margin-bottom: 20px; margin-top: -30px">
+            <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
+          </div>
+          <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+            <div class="col-md-8" style="display: flex; flex-wrap: wrap">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Buscar Cliente</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
+                <input matInput placeholder="Identificación" [(ngModel)]="documentoField"
+                  [ngModelOptions]="{ standalone: true }" />
+              </mat-form-field>
+            </div>
+            <div class="col-md-4" style="display: flex; flex-wrap: wrap; align-items: flex-end">
+              <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+                <div style="display: flex; flex-wrap: wrap; align-items: center">
+                  <button mat-raised-button color="primary" type="button" (click)="getCliente(documentoField)"
+                    style="width: 62%;margin-right: 7px;">
+                    Buscar
+                  </button>
+                  <button mat-raised-button color="warn" type="button" [routerLink]="['/clientes/agregar-cliente']"
+                    [queryParams]="{fromCompra: true}">
+                    Registrar Cliente
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="clientFoundTag" class="search-client position-relative row justify-content-center">
+            <div class="col-lg-6">
+              <mat-card class="client-card">
+                <mat-card-content>
+                  <div class="client-info">
+                    <h2>Información del Cliente</h2>
+                    <hr />
+                    <p>
+                      <strong>Identificación:</strong>
+                      {{ clienteEncontrado.documento }}
+                    </p>
+                    <p>
+                      <strong>Nombre:</strong> {{ clienteEncontrado.nombre }}
+                    </p>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <div class="col-lg-6">
+              <mat-card class="client-card">
+                <mat-card-content>
+                  <div class="client-info">
+                    <h2>Dirección y Contacto</h2>
+                    <hr />
+                    <p>
+                      <strong>Dirección:</strong>
+                      {{ clienteEncontrado.direccion }}
+                    </p>
+                    <p>
+                      <strong>Teléfono:</strong>
+                      {{ clienteEncontrado.telefono }}
+                    </p>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-card-content class="b-t-1">
+          <div style="margin-bottom: 20px">
+            <mat-card-title class="m-b-0">Agregar Dispositivo</mat-card-title>
+          </div>
+          <div style="display: flex; flex-wrap: wrap">
+            <div style="flex: 1; margin-right: 8px">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">IMEI</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input required matInput ngModel name="imei" type="string" placeholder="IMEI" />
+                <mat-error>Campo obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+            <div style="flex: 1; margin-right: 8px">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Consecutivo</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input required matInput [(ngModel)]="consecutivo" name="consecutivo" type="string" placeholder="Consecutivo Compraventa" readonly />
+                <mat-error>Campo obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+            <div style="flex: 1; margin-right: 8px">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marca de dispositivo</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <mat-select required [(ngModel)]="selectedMarcaDispositivo" name="marca_dispositivo"
+                  placeholder="Seleccione una marca" (selectionChange)="onMarcaSeleccionada()">
+                  <mat-option *ngFor="let marca of marcasDispositivos" [value]="marca.oid">
+                    {{ marca.descripcion_marca_dispositivo }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>Campo obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+            <div style="flex: 1">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Modelo del dispositivo</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <mat-select required [(ngModel)]="selectedModeloDispositivo" name="modelo_dispositivo"
+                  placeholder="Seleccione un modelo" [disabled]="!selectedMarcaDispositivo">
+                  <mat-option *ngFor="let modelo of modelosDispositivos" [value]="modelo.oid">
+                    {{ modelo.modelos }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>Campo obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div style="margin-bottom: 20px">
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+              Formato de Compraventa
+            </mat-label>
+            <div style="display: flex; align-items: center">
+              <label for="format-upload">
+                <i-tabler *ngIf="!selectedFile" style="color: #1b7dff;" class="routeIcon" name="receipt"
+                  matListItemIcon></i-tabler>
+              </label>
+              <label *ngIf="selectedFile" (click)="deleteSelectedPhoto()" aria-label="Delete Photo">
+                <mat-icon style="color: red; margin-bottom: 94px;">delete</mat-icon>
+              </label>
+              <input id="format-upload" type="file" style="display: none" (change)="onFileSelected($event)" />
+              <div>
+                <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo" class="w-50" mat-card-image
+                  style="max-width: 200px; max-height: 200px" />
+              </div>
+            </div>
+          </div>
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Observacion del dispositivo
+          </mat-label>
+          <mat-form-field appearance="outline" class="w-100" color="primary">
+            <textarea matInput ngModel name="observacion" type="string" placeholder="observacion" cdkTextareaAutosize
+              cdkAutosizeMinRows="5">
+            </textarea>
+          </mat-form-field>
+          <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+            Valor de Compra
+          </mat-label>
+          <mat-form-field appearance="outline" class="w-100" color="primary">
+            <input matInput ngModel name="valor_compra" type="string" min="0" placeholder="0" appareance="textfield" />
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+          <button class="w-100" mat-raised-button color="primary">
+            Agregar compra
+          </button>
+        </mat-card-content>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>
+<ngx-ui-loader></ngx-ui-loader>
