@@ -1,0 +1,24 @@
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.custom-modal {
+  width: 50%; /* Ajusta esto según el tamaño deseado del modal */
+  max-width: 600px; /* Ajusta esto según el tamaño máximo deseado */
+}
+
+.close-button {
+  position: absolute;
+  top: 5px; /* Distancia desde el borde superior */
+  right: 5px; /* Distancia desde el borde derecho */
+  background-color: transparent;
+}

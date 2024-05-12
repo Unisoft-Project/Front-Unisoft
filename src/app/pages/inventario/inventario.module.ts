@@ -8,12 +8,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import * as TablerIcons from 'angular-tabler-icons/icons';
 import { inventarioRoutes } from './inventario.routing';
-
+import { VerInventarioComponent } from './ver-inventario/ver-inventario.component'; 
 
 
 @NgModule({
   declarations: [
-    //VerInventarioComponent
+    VerInventarioComponent
   ],
   imports: [
     CommonModule,

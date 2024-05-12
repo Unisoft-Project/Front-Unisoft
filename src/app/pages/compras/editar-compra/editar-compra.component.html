@@ -1,10 +1,10 @@
 <mat-card class="cardWithShadow theme-card">
   <mat-card-header>
-    <mat-card-title class="m-b-0">Registrar Compra</mat-card-title>
+    <mat-card-title class="m-b-0">Editar Compra</mat-card-title>
   </mat-card-header>
   <mat-card-content class="b-t-1">
     <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-      <form class="m-t-30" #compraForm="ngForm" (ngSubmit)="addCompra(compraForm)">
+      <form class="m-t-30" #myForm="ngForm">
         <mat-card-content>
           <div style="margin-bottom: 20px; margin-top: -30px">
             <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
@@ -13,15 +13,15 @@
             <div class="col-md-8" style="display: flex; flex-wrap: wrap">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Buscar Cliente</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
-                <input matInput placeholder="Identificación" [(ngModel)]="documentoField"
+                <input matInput placeholder="Identificación" [(ngModel)]="clienteEncontrado.documento"
                   [ngModelOptions]="{ standalone: true }" />
               </mat-form-field>
             </div>
             <div class="col-md-4" style="display: flex; flex-wrap: wrap; align-items: flex-end">
               <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
                 <div style="display: flex; flex-wrap: wrap; align-items: center">
-                  <button mat-raised-button color="primary" type="button" (click)="getCliente(documentoField)"
-                    style="width: 62%;margin-right: 7px;">
+                  <button mat-raised-button color="primary" type="button"
+                    (click)="getCliente(clienteEncontrado.documento, '1')" style="width: 62%;margin-right: 7px;">
                     Buscar
                   </button>
                   <button mat-raised-button color="warn" type="button" [routerLink]="['/clientes/agregar-cliente']"
@@ -32,7 +32,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="clientFoundTag" class="search-client position-relative row justify-content-center">
+          <div class="search-client position-relative row justify-content-center">
             <div class="col-lg-6">
               <mat-card class="client-card">
                 <mat-card-content>
@@ -78,22 +78,23 @@
             <div style="flex: 1; margin-right: 8px">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">IMEI</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary">
-                <input required matInput ngModel name="imei" type="string" placeholder="IMEI" />
+                <input required matInput [(ngModel)]="compraForm.imei" name="imei" type="string" placeholder="IMEI" />
                 <mat-error>Campo obligatorio</mat-error>
               </mat-form-field>
             </div>
             <div style="flex: 1; margin-right: 8px">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Consecutivo</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary">
-                <input required matInput [(ngModel)]="consecutivo" name="consecutivo" type="string" placeholder="Consecutivo Compraventa" readonly />
+                <input required matInput [(ngModel)]="compraForm.consecutivo_compraventa" name="consecutivo"
+                  type="string" placeholder="Consecutivo Compraventa" readonly />
                 <mat-error>Campo obligatorio</mat-error>
               </mat-form-field>
             </div>
             <div style="flex: 1; margin-right: 8px">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marca de dispositivo</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary">
-                <mat-select required [(ngModel)]="selectedMarcaDispositivo" name="marca_dispositivo"
-                  placeholder="Seleccione una marca" (selectionChange)="onMarcaSeleccionada()">
+                <mat-select required [(ngModel)]="selectedMarcaDispositivo" [(ngModel)]="compraForm.marca_dispositivo"
+                  name="marca_dispositivo" placeholder="Seleccione una marca" (selectionChange)="onMarcaSeleccionada()">
                   <mat-option *ngFor="let marca of marcasDispositivos" [value]="marca.oid">
                     {{ marca.descripcion_marca_dispositivo }}
                   </mat-option>
@@ -104,8 +105,8 @@
             <div style="flex: 1">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Modelo del dispositivo</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary">
-                <mat-select required [(ngModel)]="selectedModeloDispositivo" name="modelo_dispositivo"
-                  placeholder="Seleccione un modelo" [disabled]="!selectedMarcaDispositivo">
+                <mat-select required [(ngModel)]="selectedModeloDispositivo" [(ngModel)]="compraForm.modelo_dispositivo"
+                  name="modelo_dispositivo" placeholder="Seleccione un modelo" [disabled]="!selectedMarcaDispositivo">
                   <mat-option *ngFor="let modelo of modelosDispositivos" [value]="modelo.oid">
                     {{ modelo.modelos }}
                   </mat-option>
@@ -128,8 +129,8 @@
               </label>
               <input id="format-upload" type="file" style="display: none" (change)="onFileSelected($event)" />
               <div>
-                <img *ngIf="selectedFile" [src]="selectedFile" alt="Selected Photo" class="w-50" mat-card-image
-                  style="max-width: 200px; max-height: 200px" />
+                <img *ngIf="photoUrl || selectedFile" [src]="photoUrl ? photoUrl : selectedFile" alt="Selected Photo"
+                  class="w-50" mat-card-image style="max-width: 200px; max-height: 200px" />
               </div>
             </div>
           </div>
@@ -137,19 +138,59 @@
             Observacion del dispositivo
           </mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
-            <textarea matInput ngModel name="observacion" type="string" placeholder="observacion" cdkTextareaAutosize
-              cdkAutosizeMinRows="5">
+            <textarea matInput ngModel name="observacion" [(ngModel)]="compraForm.observacion" type="string"
+              placeholder="observacion" cdkTextareaAutosize cdkAutosizeMinRows="5">
             </textarea>
           </mat-form-field>
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
             Valor de Compra
           </mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput ngModel name="valor_compra" type="string" min="0" placeholder="0" appareance="textfield" />
+            <input matInput ngModel name="valor_compra" [(ngModel)]="compraForm.valor_compra" type="string" min="0"
+              placeholder="0" appareance="textfield" />
             <span matTextPrefix>$&nbsp;</span>
           </mat-form-field>
+          <mat-card-content class="b-t-1">
+            <div style="margin-bottom: 20px; display: flex; align-items: center">
+              <mat-card-title class="m-b-0">Añadir Inversiones</mat-card-title>
+              <button (click)="mostrarModalInversiones = true" mat-icon-button color="primary" style="margin-left: 5px">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            <div style="overflow-y: auto" *ngIf="dataSource2.data.length > 0">
+
+              <table mat-table [dataSource]="dataSource2" class="mat-elevation-z8">
+                <!-- Columna de Inversión -->
+                <ng-container matColumnDef="inversion">
+                  <th mat-header-cell *matHeaderCellDef style="font-weight:bold;">Inversión</th>
+                  <td mat-cell *matCellDef="let inversion">{{ inversion.inversion }}</td>
+                </ng-container>
+
+                <!-- Columna de Valor -->
+                <ng-container matColumnDef="valor">
+                  <th mat-header-cell *matHeaderCellDef style="font-weight:bold;">Valor</th>
+                  <td mat-cell *matCellDef="let inversion">{{ inversion.valor }}</td>
+                </ng-container>
+
+                <!-- Columna de Eliminar -->
+                <ng-container matColumnDef="eliminar">
+                  <th mat-header-cell *matHeaderCellDef style="font-weight:bold;">Eliminar</th>
+                  <td mat-cell *matCellDef="let inversion">
+                    <button mat-icon-button color="warn" (click)="eliminarInversion(inversion)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['inversion', 'valor', 'eliminar']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['inversion', 'valor', 'eliminar'];"></tr>
+              </table>
+            </div>
+            <div>
+              <p>Total Inversión:   $ {{ calcularTotalInversiones() }}</p>
+            </div>
+          </mat-card-content>
           <button class="w-100" mat-raised-button color="primary">
-            Agregar compra
+            Actualizar compra
           </button>
         </mat-card-content>
       </form>
@@ -157,3 +198,35 @@
   </mat-card-content>
 </mat-card>
 <ngx-ui-loader></ngx-ui-loader>
+
+<div *ngIf="mostrarModalInversiones" class="custom-modal-overlay">
+  <mat-card class="cardWithShadow theme-card custom-modal">
+    <button (click)="cerrarModalInversion()" mat-icon-button class="close-button">
+      <mat-icon color="warn">close</mat-icon>
+    </button>
+    <mat-card-header>
+      <mat-card-title>Agregar Inversión</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="b-t-1">
+      <div style="flex: 1; margin-right: 8px">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Inversión</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput [(ngModel)]="nuevaInversion.inversion" name="inversion" type="string"
+            placeholder="Ejemplo: Arreglo Display" />
+        </mat-form-field>
+      </div>
+      <div style="flex: 1; margin-right: 8px">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Valor</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput [(ngModel)]="nuevaInversion.valor" name="valor_inversion" type="number"
+            placeholder="$100.000,00" />
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button class="w-100" mat-raised-button color="accent" (click)="agregarInversionLista2(nuevaInversion)">
+        Añadir Inversión
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+import { VerInventarioComponent } from './ver-inventario/ver-inventario.component';
 
 export const inventarioRoutes: Routes = [
   {
@@ -7,7 +7,7 @@ export const inventarioRoutes: Routes = [
     children: [
       {
         path: 'ver-inventario',
-        //component: VerInventarioComponent,
+        component: VerInventarioComponent,
       },
       
     ],
