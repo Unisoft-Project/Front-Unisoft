@@ -20,7 +20,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Ver ventas',
     iconName: 'notes',
-    route: '/ui-components/chips', ///****** */
+    route: '/ventas/ver-ventas', ///****** */
   },
   {
     navCap: 'Compras',

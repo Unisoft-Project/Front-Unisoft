@@ -9,11 +9,13 @@ import { TablerIconsModule } from 'angular-tabler-icons';
 import * as TablerIcons from 'angular-tabler-icons/icons';
 import { AgregarVentaComponent } from './agregar-venta/agregar-venta.component';
 import { ventasRoutes } from './ventas.routing';
+import { VerVentasComponent } from './ver-ventas/ver-ventas.component';
 
 
 @NgModule({
   declarations: [
-    AgregarVentaComponent
+    AgregarVentaComponent,
+    VerVentasComponent
   ],
   imports: [
     CommonModule,
