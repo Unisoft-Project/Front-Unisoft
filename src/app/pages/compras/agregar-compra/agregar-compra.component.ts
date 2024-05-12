@@ -79,6 +79,7 @@ export class AgregarCompraComponent {
         );
     }
 
+
   obtenerMarcasDispositivos(): void {
     const url = 'https://back-unisoft-1.onrender.com/marca/marca_dispositivo';
     this.http.get<any[]>(url).pipe(
@@ -126,8 +127,8 @@ export class AgregarCompraComponent {
         data.formato_compraventa = url;
       }
 
-        const token = localStorage.getItem('token'); 
-        const headers = new HttpHeaders({
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       });
