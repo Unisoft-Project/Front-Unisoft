@@ -87,29 +87,30 @@ export class AgregarVentaComponent {
     ).subscribe(
       (response: any) => {
         this.ngxService.stop();
-        // Handle the response here
         this.clientFound = response[0];
         this.doc = documento;
         this.clientFoundTag = true;
-        console.log('response', response);
         this.clienteEncontrado.documento = response[0].documento;
         this.clienteEncontrado.nombre = response[0].nombre;
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
-        this.clienteEncontrado.correo = response[0].correo;
-        this.clienteEncontrado.tipo_documento = response[0].tipo_documento.descripcion;
-
-
       }, (error) => {
         this.ngxService.stop();
-        // Handle errors here
-        console.error(error);
-        Swal.fire({
-          title: 'Advertencia',
-          text: 'Cliente no encontrado',
-          icon: 'warning',
-          confirmButtonText: 'OK',
-        });
+        if (error.status === 404) {
+          Swal.fire({
+            title: 'Cliente no encontrado',
+            text: 'El cliente no existe en la base de datos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al procesar la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
       }
     );
   }
@@ -129,6 +130,9 @@ export class AgregarVentaComponent {
             type: 'application/pdf',
           });
           this.addFirebase(file, this.info_factura[0].numero_factura);
+          setTimeout(() => {
+            this.router.navigate(['/ventas/ver-ventas']);
+          }, 2000); // 2000 milisegundos = 2 segundos
         },
         (err) => console.log(err)
       );
@@ -352,7 +356,7 @@ export class AgregarVentaComponent {
     this.productoFoundTag = false;
     this.valorventafield = 0;
   }
-  
+
   cerrarModalAgregarProductos() {
     this.mostrarModalProductos = false;
     this.limpiarCamposAgregarProductos();
@@ -426,7 +430,7 @@ export class AgregarVentaComponent {
   }
   onValueChange() {
   }
-  
+
   formatCurrency(event: any): void {
     const inputValue: string = event.target.value;
 
@@ -482,7 +486,6 @@ export class AgregarVentaComponent {
             confirmButtonText: 'OK',
           }).then((result) => {
             if (result.isConfirmed) {
-              this.router.navigate(['/ventas/ver-ventas']);
               this.generarFactura(form.value.numeroFactura)
             }
           });
