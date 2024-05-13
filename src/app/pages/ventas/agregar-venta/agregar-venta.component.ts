@@ -12,6 +12,9 @@ import { Producto } from '../../../models/productos.interface';
 import { FacturaService } from 'src/app/services/factura.service';
 import { Factura } from 'src/app/models/factura.model';
 import { VentaItem } from 'src/app/models/venta.model';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Router } from '@angular/router';
+import { VentasService } from 'src/app/services/ventas.service';
 
 
 interface TableData {
@@ -43,7 +46,11 @@ export class AgregarVentaComponent {
   constructor(
     private fireStorage: AngularFireStorage,
     private http: HttpClient,
-    private facturaService: FacturaService
+    private facturaService: FacturaService,
+    private ngxService: NgxUiLoaderService,
+    private router: Router,
+    private ventasService: VentasService,
+
   ) { }
   dataSource: Producto[] = [];
   factura: Factura[] = [];
@@ -115,9 +122,9 @@ export class AgregarVentaComponent {
       }
     );
   }
-  generarFactura(codfactura: any) {
+  generarFactura(codFactura: any) {
     this.facturaService
-      .getFactura(1)
+      .getFactura(codFactura)
       .pipe(timeout(200000))
       .subscribe(
         (res) => {
@@ -442,5 +449,82 @@ export class AgregarVentaComponent {
       currency: 'COP',
       minimumFractionDigits: 0
     });
+  }
+
+
+  async addVenta(form: any) {
+    this.ngxService.start();
+    const data: any = {};
+    if (
+      !form.value.numeroFactura ||
+      !form.value.metodoPago ||
+      !form.value.fechaFactura 
+    ) {
+      this.ngxService.stop();
+      Swal.fire({
+        title: 'Debe rellenar todos los campos',
+        text: '',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      return;
+    } else {
+      
+
+      data.numero_factura = form.value.numeroFactura;
+      data.fecha_hora = form.value.fechaFactura;
+      
+      data.usuario = 67
+      data.cliente = 44
+      data.total_venta = 1000000;
+      console.log(data)
+      this.ventasService.addVenta(data).pipe(
+          timeout(200000)
+        ).subscribe(
+          (response) => {
+            //this.generarFactura(form.value.numeroFactura)
+            console.log(response)
+            this.ngxService.stop();
+            Swal.fire({
+              title: 'Venta registrada con éxito',
+              text: '',
+              icon: 'success',
+              confirmButtonText: 'OK',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/ventas/ver-ventas']);
+                this.generarFactura(form.value.numeroFactura)
+              }
+            });
+          },
+          (error) => {
+            this.ngxService.stop();
+            if (error.status === 400) {
+              Swal.fire({
+                title: 'Error al registrar venta',
+                text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            } else if (error.status === 404) {
+              this.ngxService.stop();
+              Swal.fire({
+                title: 'Error al registrar venta',
+                text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            } else {
+              this.ngxService.stop();
+              Swal.fire({
+                title: 'Error',
+                text: 'Error al agregar la venta. Por favor, inténtelo nuevamente más tarde.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            }
+          }
+        );
+    }
   }
 }

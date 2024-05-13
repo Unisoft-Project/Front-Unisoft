@@ -8,6 +8,7 @@
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="nombre" ngModel />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
         <mat-chip-listbox aria-label="Fish selection" name="tipoDocumento" ngModel>
@@ -20,18 +21,22 @@
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Documento de Identidad</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="documento" ngModel />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="direccion" ngModel />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="telefono" ngModel />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Correo</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="email" ngModel />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <div style="margin-bottom: 20px;">
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
@@ -55,6 +60,9 @@
         </button>
         <button mat-raised-button color="warn" style=" width: 34%; margin-left: 51px;" type="button"  *ngIf="mostrarBotonRegresarCompra" (click)="regresarACompra()">
           Regresar a Registrar Compra
+        </button>
+        <button mat-raised-button color="warn" style=" width: 34%; margin-left: 51px;" type="button"  *ngIf="mostrarBotonRegresarVenta" (click)="regresarAVenta()">
+          Regresar a Registrar Venta
         </button>
       </form>
     </div>

@@ -17,6 +17,7 @@ export class AgregarClienteComponent {
   selectedFile: string | ArrayBuffer | null = null;
   firebaseFile: File | null = null;
   mostrarBotonRegresarCompra: boolean = false;
+  mostrarBotonRegresarVenta: boolean = false;
   clienteForm = {
     nombre: '',
     tipo_documento: '',
@@ -37,7 +38,9 @@ export class AgregarClienteComponent {
 
   ngOnInit(): void {
     const fromCompra = this.route.snapshot.queryParams['fromCompra'];
+    const fromVenta = this.route.snapshot.queryParams['fromVenta'];
     this.mostrarBotonRegresarCompra = fromCompra === 'true';
+    this.mostrarBotonRegresarVenta = fromVenta === 'true';
   }
 
   async addClient(form: any) {
@@ -169,5 +172,8 @@ export class AgregarClienteComponent {
 
   regresarACompra() {
     this.router.navigate(['/compras/agregar-compra']);
+  }
+  regresarAVenta() {
+    this.router.navigate(['/ventas/agregar-venta']);
   }
 }

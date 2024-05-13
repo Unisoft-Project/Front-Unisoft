@@ -9,6 +9,7 @@ import * as TablerIcons from 'angular-tabler-icons/icons';
 import { AgregarVentaComponent } from './agregar-venta/agregar-venta.component';
 import { ventasRoutes } from './ventas.routing';
 import { VerVentasComponent } from './ver-ventas/ver-ventas.component';
+import { NgxUiLoaderModule } from 'ngx-ui-loader';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import { VerVentasComponent } from './ver-ventas/ver-ventas.component';
     ReactiveFormsModule,
     TablerIconsModule.pick(TablerIcons),
     MatNativeDateModule,
+    NgxUiLoaderModule
   ]
 })
 export class VentasModule { }

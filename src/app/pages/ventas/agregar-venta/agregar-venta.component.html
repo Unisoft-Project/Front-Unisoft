@@ -29,11 +29,10 @@
                     style="margin-right: 8px">
                     Buscar
                   </button>
-                  <!-- Botón Registrar Cliente -->
-                  <a mat-button color="accent" routerLink="/clientes/agregar-cliente" target="_blank"
-                    style="margin-right: 8px">
+                  <button mat-raised-button color="warn" type="button" [routerLink]="['/clientes/agregar-cliente']"
+                    [queryParams]="{fromVenta: true}">
                     Registrar Cliente
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -187,7 +186,7 @@
         
           <div style="margin-top: 16px;">
             <mat-card-actions style="justify-content: flex-end;">
-              <button class="w-50" mat-raised-button color="primary">
+              <button class="w-50" mat-raised-button color="primary" (click)="addVenta(ventaForm)">
                 Registrar Venta
               </button>
               <button class="w-80" mat-raised-button color="secondary" (click)="generarFactura(numero_factura)" style="margin-left: 8px;">
@@ -196,12 +195,6 @@
             </mat-card-actions>
           </div>
         </mat-card-content>
-        
-        
-
-        
-        
-        
       </form>
     </div>
   </mat-card-content>
