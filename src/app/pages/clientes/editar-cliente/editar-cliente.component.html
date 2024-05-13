@@ -9,6 +9,7 @@
         <div style="display: flex">
           <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
             <input matInput name="documento" #documentoField="ngModel" ngModel />
+            <mat-error>Campo obligatorio</mat-error>
           </mat-form-field>
           <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px" type="button"
             (click)="searchClient(documentoField.value)">
@@ -18,6 +19,7 @@
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nombre</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="nombre" [(ngModel)]="data.nombre" />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tipo de Documento</mat-label>
         <mat-chip-listbox aria-label="Fish selection" name="tipo_Documento" ngModel [(ngModel)]="data.tipo_documento">
@@ -30,14 +32,18 @@
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Dirección</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="direccion" ngModel [(ngModel)]="data.direccion" />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Teléfono</mat-label>
+        
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="telefono" ngModel [(ngModel)]="data.telefono" />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Correo</mat-label>
         <mat-form-field appearance="outline" class="w-100" color="primary">
           <input required matInput name="email" ngModel />
+          <mat-error>Campo obligatorio</mat-error>
         </mat-form-field>
         <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Foto Documento de Identidad</mat-label>
         <div style="display: flex; align-items: center;">

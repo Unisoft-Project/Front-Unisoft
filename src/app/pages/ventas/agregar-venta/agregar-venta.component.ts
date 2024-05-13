@@ -7,11 +7,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { timeout } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { MatTableDataSource } from '@angular/material/table';
-import { Producto } from './interfaces/productos.interface';
+import { Producto } from '../../../models/productos.interface';
 
 import { FacturaService } from 'src/app/services/factura.service';
 import { Factura } from 'src/app/models/factura.model';
 import { VentaItem } from 'src/app/models/venta.model';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Router } from '@angular/router';
+import { VentasService } from 'src/app/services/ventas.service';
 
 
 interface TableData {
@@ -43,7 +46,11 @@ export class AgregarVentaComponent {
   constructor(
     private fireStorage: AngularFireStorage,
     private http: HttpClient,
-    private facturaService: FacturaService
+    private facturaService: FacturaService,
+    private ngxService: NgxUiLoaderService,
+    private router: Router,
+    private ventasService: VentasService,
+
   ) { }
   dataSource: Producto[] = [];
   factura: Factura[] = [];
@@ -60,6 +67,7 @@ export class AgregarVentaComponent {
     telefono: '',
     correo: ''
   };
+  tipo_doc: any = ''
 
 
 
@@ -72,6 +80,7 @@ export class AgregarVentaComponent {
   displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'valor_compra', 'valorVenta'];
 
 
+  
   //Gestión GET Cliente
   getCliente(documento: string) {
     this.loading = true;
@@ -97,6 +106,9 @@ export class AgregarVentaComponent {
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
         this.clienteEncontrado.correo = response[0].correo;
+        this.clienteEncontrado.tipo_documento = response[0].tipo_documento.descripcion;
+        
+        
       }, (error) => {
         this.loading = false;
         // Handle errors here
@@ -110,9 +122,9 @@ export class AgregarVentaComponent {
       }
     );
   }
-  generarFactura(codfactura: any) {
+  generarFactura(codFactura: any) {
     this.facturaService
-      .getFactura(1)
+      .getFactura(codFactura)
       .pipe(timeout(200000))
       .subscribe(
         (res) => {
@@ -141,7 +153,7 @@ export class AgregarVentaComponent {
 
     // Add header image
     doc.addImage(
-      '/assets/images/smartphone-call.png',
+      '/assets/images/smartphone-call.jpeg',
       'PNG',
       margins.left,
       10,
@@ -150,10 +162,10 @@ export class AgregarVentaComponent {
     );
     doc.setFontSize(9);
     // Add header text
-    doc.text(info[0].usuario.empresa, 30, 15);
-    doc.text('NIT:' + ' ' + info[0].usuario.nit, 30, 20);
-    doc.text('CELULAR:' + ' ' + info[0].cliente.telefono, 30, 25);
-    doc.text('No Responsable de IVA', 30, 30);
+    doc.text(info[0].usuario.empresa, 40, 15);
+    doc.text('NIT:' + ' ' + info[0].usuario.nit, 40, 20);
+    doc.text('CELULAR:' + ' ' + info[0].cliente.telefono, 40, 25);
+    doc.text('No Responsable de IVA', 40, 30);
     doc.text(info[0].fecha_hora, 170, 15);
     doc.text('Factura No.' + ' ' + info[0].numero_factura, 170, 20);
 
@@ -166,14 +178,6 @@ export class AgregarVentaComponent {
     return doc;
   }
 
-  guardarPDF() {
-    //const doc = this.generatePDF(); // Call generatePDF to get the PDF document
-    // const file: File = new File([doc.output('blob')], 'factura.pdf', { type: 'application/pdf' });
-    // Now you have a File object representing the PDF document
-    // You can use this file object for further processing or upload
-    // this.addFirebase(file, 1234)
-
-  }
 
 
   async addFirebase(doc: any, factura: any) {
@@ -235,26 +239,38 @@ export class AgregarVentaComponent {
 
   private addCustomerInfo(doc: jsPDF, margins: any, factura: any[]) {
     // Add customer information
+    console.log(factura[0])
     const infoTexts = [
-      { label: 'Información del Cliente', yPos: 45 },
-      { label: 'Nombre:', value: factura[0].nombre, yPos: 55 },
+      { label: 'INFORMACIÓN DEL CLIENTE', yPos: 45 },
+      { label: 'NOMBRE:', value: factura[0].cliente.nombre, yPos: 55 },
       {
-        label: 'Tipo De Documento:',
+        label: 'TIPO DE DOCUMENTO:',
         value: factura[0].cliente.tipo_documento.descripcion,
         yPos: 60,
       },
       {
-        label: 'Número de Cédula:',
+        label: 'NÚMERO DE CÉDULA:',
         value: factura[0].cliente.documento,
         yPos: 65,
       },
-      { label: 'Dirección:', value: factura[0].cliente.direccion, yPos: 70 },
-      { label: 'Teléfono:', value: factura[0].cliente.telefono, yPos: 75 },
-      { label: 'Detalles de compra:', yPos: 85 },
+      { label: 'DIRECCIÓN:', value: factura[0].cliente.direccion, yPos: 70 },
+      { label: 'TELÉFONO:', value: factura[0].cliente.telefono, yPos: 75 },
+      { label: 'DETALLES DE COMPRA:', yPos: 90 },
     ];
 
     infoTexts.forEach((info) => {
+      if (info.label === 'INFORMACIÓN DEL CLIENTE' || info.label === 'DETALLES DE COMPRA:') {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+      } else {
+        doc.setFontSize(9)
+      }
+      // Set font style to bold
+      doc.setFont('helvetica', 'bold');
       doc.text(info.label, margins.left, info.yPos);
+      
+      // Reset font style to normal
+      doc.setFont('helvetica', 'normal');
       if (info.value) {
         doc.text(info.value, margins.left + 70, info.yPos);
       }
@@ -273,15 +289,20 @@ export class AgregarVentaComponent {
       'SUBTOTAL',
     ];
 
-    let yPos = 95;
+    let yPos = 100;
     let valorTotal = 0;
 
     // Add table headers
     headers.forEach((header, index) => {
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'bold');
       doc.text(header, margins.left + index * 30, yPos);
+      
     });
 
     // Increment y position for data rows
+    doc.setFont('helvetica', 'normal');
+    
     yPos += 10;
     info = info[0]
     info.forEach((item: any) => {
@@ -428,5 +449,82 @@ export class AgregarVentaComponent {
       currency: 'COP',
       minimumFractionDigits: 0
     });
+  }
+
+
+  async addVenta(form: any) {
+    this.ngxService.start();
+    const data: any = {};
+    if (
+      !form.value.numeroFactura ||
+      !form.value.metodoPago ||
+      !form.value.fechaFactura 
+    ) {
+      this.ngxService.stop();
+      Swal.fire({
+        title: 'Debe rellenar todos los campos',
+        text: '',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      return;
+    } else {
+      
+
+      data.numero_factura = form.value.numeroFactura;
+      data.fecha_hora = form.value.fechaFactura;
+      
+      data.usuario = 67
+      data.cliente = 44
+      data.total_venta = 1000000;
+      console.log(data)
+      this.ventasService.addVenta(data).pipe(
+          timeout(200000)
+        ).subscribe(
+          (response) => {
+            //this.generarFactura(form.value.numeroFactura)
+            console.log(response)
+            this.ngxService.stop();
+            Swal.fire({
+              title: 'Venta registrada con éxito',
+              text: '',
+              icon: 'success',
+              confirmButtonText: 'OK',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/ventas/ver-ventas']);
+                this.generarFactura(form.value.numeroFactura)
+              }
+            });
+          },
+          (error) => {
+            this.ngxService.stop();
+            if (error.status === 400) {
+              Swal.fire({
+                title: 'Error al registrar venta',
+                text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            } else if (error.status === 404) {
+              this.ngxService.stop();
+              Swal.fire({
+                title: 'Error al registrar venta',
+                text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            } else {
+              this.ngxService.stop();
+              Swal.fire({
+                title: 'Error',
+                text: 'Error al agregar la venta. Por favor, inténtelo nuevamente más tarde.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            }
+          }
+        );
+    }
   }
 }
