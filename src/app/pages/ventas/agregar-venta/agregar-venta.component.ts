@@ -69,22 +69,13 @@ export class AgregarVentaComponent {
   };
   tipo_doc: any = ''
 
-
-
-
-  // agregarProducto(nuevoProducto: TableData) {
-  //   this.tableData.push(nuevoProducto);
-  //   this.calcularTotal(); // Actualiza el total cuando se agrega un nuevo producto
-  // }
-
   displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'valor_compra', 'valorVenta'];
 
 
-  
   //Gestión GET Cliente
   getCliente(documento: string) {
-    this.loading = true;
-    const token = localStorage.getItem('token'); 
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -95,7 +86,7 @@ export class AgregarVentaComponent {
       timeout(200000)
     ).subscribe(
       (response: any) => {
-        this.loading = false;
+        this.ngxService.stop();
         // Handle the response here
         this.clientFound = response[0];
         this.doc = documento;
@@ -107,10 +98,10 @@ export class AgregarVentaComponent {
         this.clienteEncontrado.telefono = response[0].telefono;
         this.clienteEncontrado.correo = response[0].correo;
         this.clienteEncontrado.tipo_documento = response[0].tipo_documento.descripcion;
-        
-        
+
+
       }, (error) => {
-        this.loading = false;
+        this.ngxService.stop();
         // Handle errors here
         console.error(error);
         Swal.fire({
@@ -122,6 +113,7 @@ export class AgregarVentaComponent {
       }
     );
   }
+
   generarFactura(codFactura: any) {
     this.facturaService
       .getFactura(codFactura)
@@ -141,6 +133,7 @@ export class AgregarVentaComponent {
         (err) => console.log(err)
       );
   }
+
   generatePDF(info: any[], compras: any[]) {
     const margins = {
       top: 30,
@@ -177,8 +170,6 @@ export class AgregarVentaComponent {
     //agregar a firebase
     return doc;
   }
-
-
 
   async addFirebase(doc: any, factura: any) {
     const file: File = doc as File;
@@ -217,9 +208,6 @@ export class AgregarVentaComponent {
     });
     console.log('mensaje enviado');
   }
-
-
-
 
   getContentType(fileName: string): string {
     const extension = fileName.split('.').pop();
@@ -268,7 +256,7 @@ export class AgregarVentaComponent {
       // Set font style to bold
       doc.setFont('helvetica', 'bold');
       doc.text(info.label, margins.left, info.yPos);
-      
+
       // Reset font style to normal
       doc.setFont('helvetica', 'normal');
       if (info.value) {
@@ -297,12 +285,12 @@ export class AgregarVentaComponent {
       doc.setFontSize(9)
       doc.setFont('helvetica', 'bold');
       doc.text(header, margins.left + index * 30, yPos);
-      
+
     });
 
     // Increment y position for data rows
     doc.setFont('helvetica', 'normal');
-    
+
     yPos += 10;
     info = info[0]
     info.forEach((item: any) => {
@@ -348,6 +336,7 @@ export class AgregarVentaComponent {
       doc.text(line, margins.left, yPos + 50 + index * 3);
     });
   }
+
   limpiarCamposAgregarProductos() {
     const productoVacio: Producto = {
       imei: "",
@@ -363,15 +352,18 @@ export class AgregarVentaComponent {
     this.productoFoundTag = false;
     this.valorventafield = 0;
   }
+  
   cerrarModalAgregarProductos() {
     this.mostrarModalProductos = false;
     this.limpiarCamposAgregarProductos();
   }
+
   validaProductoLista(productoBuscado: Producto) {
     const imeiBuscado = productoBuscado.imei;
     const existeIMEI = this.dataSource.some(producto => producto.imei === imeiBuscado);
     return existeIMEI;
   }
+
   agregarProductosLista(producto: Producto) {
     if (producto === undefined) {
       Swal.fire({
@@ -404,8 +396,8 @@ export class AgregarVentaComponent {
   }
 
   getProducto(imei: string) {
-    this.loading = true;
-    const token = localStorage.getItem('token'); 
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -419,10 +411,10 @@ export class AgregarVentaComponent {
       (response: Producto) => {
         this.productoEncontrado = response;
         this.productoFoundTag = true
-        this.loading = false;
+        this.ngxService.stop();
       }, (error) => {
         console.error(error);
-        this.loading = false;
+        this.ngxService.stop();
         Swal.fire({
           title: 'Advertencia',
           text: 'Dispositivo no disponible.',
@@ -434,6 +426,7 @@ export class AgregarVentaComponent {
   }
   onValueChange() {
   }
+  
   formatCurrency(event: any): void {
     const inputValue: string = event.target.value;
 
@@ -451,14 +444,13 @@ export class AgregarVentaComponent {
     });
   }
 
-
   async addVenta(form: any) {
     this.ngxService.start();
     const data: any = {};
     if (
       !form.value.numeroFactura ||
       !form.value.metodoPago ||
-      !form.value.fechaFactura 
+      !form.value.fechaFactura
     ) {
       this.ngxService.stop();
       Swal.fire({
@@ -469,62 +461,61 @@ export class AgregarVentaComponent {
       });
       return;
     } else {
-      
 
+      data.usuario = 1  //Toca añadir que sea el usuario de la sesión
       data.numero_factura = form.value.numeroFactura;
       data.fecha_hora = form.value.fechaFactura;
-      
-      data.usuario = 67
-      data.cliente = 44
-      data.total_venta = 1000000;
+      data.cliente = this.clientFound.oid
+      data.total_venta = this.totalVenta;
       console.log(data)
       this.ventasService.addVenta(data).pipe(
-          timeout(200000)
-        ).subscribe(
-          (response) => {
-            //this.generarFactura(form.value.numeroFactura)
-            console.log(response)
+        timeout(200000)
+      ).subscribe(
+        (response) => {
+          //this.generarFactura(form.value.numeroFactura)
+          console.log(response)
+          this.ngxService.stop();
+          Swal.fire({
+            title: 'Venta registrada con éxito',
+            text: '',
+            icon: 'success',
+            confirmButtonText: 'OK',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.router.navigate(['/ventas/ver-ventas']);
+              this.generarFactura(form.value.numeroFactura)
+            }
+          });
+        },
+        (error) => {
+          console.log(error);
+          this.ngxService.stop();
+          if (error.status === 400) {
+            Swal.fire({
+              title: 'Error al registrar venta',
+              text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
+              icon: 'error',
+              confirmButtonText: 'OK',
+            });
+          } else if (error.status === 404) {
             this.ngxService.stop();
             Swal.fire({
-              title: 'Venta registrada con éxito',
-              text: '',
-              icon: 'success',
+              title: 'Error al registrar venta',
+              text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
+              icon: 'error',
               confirmButtonText: 'OK',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.router.navigate(['/ventas/ver-ventas']);
-                this.generarFactura(form.value.numeroFactura)
-              }
             });
-          },
-          (error) => {
+          } else {
             this.ngxService.stop();
-            if (error.status === 400) {
-              Swal.fire({
-                title: 'Error al registrar venta',
-                text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-              });
-            } else if (error.status === 404) {
-              this.ngxService.stop();
-              Swal.fire({
-                title: 'Error al registrar venta',
-                text: 'El número de la factura ya está registrado. Por favor, intente con otro número.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-              });
-            } else {
-              this.ngxService.stop();
-              Swal.fire({
-                title: 'Error',
-                text: 'Error al agregar la venta. Por favor, inténtelo nuevamente más tarde.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-              });
-            }
+            Swal.fire({
+              title: 'Error',
+              text: 'Error al agregar la venta. Por favor, inténtelo nuevamente más tarde.',
+              icon: 'error',
+              confirmButtonText: 'OK',
+            });
           }
-        );
+        }
+      );
     }
   }
 }

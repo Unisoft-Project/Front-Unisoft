@@ -34,6 +34,7 @@ export class VentasService {
       { headers: headers }
     );
   }
+
   addVenta(data: any): Observable<any> {
     const token = localStorage.getItem('token');
     console.log(token)
@@ -42,7 +43,7 @@ export class VentasService {
       Authorization: `Bearer ${token}`,
     });
     return this.http.post<any>(
-      `https://back-unisoft-1.onrender.com/ventas/nueva_venta/}`,
+      `https://back-unisoft-1.onrender.com/ventas/nueva_venta`,
       data,
       { headers: headers }
     );
