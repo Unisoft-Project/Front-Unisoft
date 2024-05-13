@@ -21,6 +21,7 @@ import { BlankComponent } from './layouts/blank/blank.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './pages/authentication/login/auth.interceptor';
 
+import { ActivatedRoute } from '@angular/router';
 
 // Vertical Layout
 import { SidebarComponent } from './layouts/full/sidebar/sidebar.component';

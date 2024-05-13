@@ -7,6 +7,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { timeout } from 'rxjs/operators';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { Inversion } from '../interfaces/inversion.interface';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-editar-compra',
@@ -40,11 +41,28 @@ export class EditarCompraComponent {
 
   constructor(
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private http: HttpClient,
     private storage: AngularFireStorage,
     private ngxService: NgxUiLoaderService
   ) {  }
 
+  ngOnInit(): void {
+    this.obtenerMarcasDispositivos(); 
+    this.activatedRoute.paramMap.subscribe(params => {
+      const id = params.get('oid');
+      if (id) {
+        this.getCompra(id, 1);
+      }
+    });
+  }
+
+  onImeiChange(): void {
+    // Verificar si el IMEI tiene una longitud válida antes de hacer la llamada
+    if (this.compraForm.imei.length > 0) {
+      this.getCompra(this.compraForm.imei, 2);
+    }
+  }
   public compraForm: {
     imei: string,
     consecutivo_compraventa: string,
@@ -84,10 +102,6 @@ export class EditarCompraComponent {
     valor: ''
   };
   
-  ngOnInit(): void {
-    this.obtenerMarcasDispositivos();  
-    this.getCompra('43');
-  }
 
   onMarcaSeleccionada(): void {
     this.modelosDispositivos = [];
@@ -139,21 +153,37 @@ export class EditarCompraComponent {
   deleteSelectedPhoto() {
     this.selectedFile = null;
   }
+  getInversiones(codCompra: string): void {
+      const url = 'https://back-unisoft-1.onrender.com/inversion/listaInversiones/' + codCompra;
+      this.http.get<any[]>(url).pipe(
+        timeout(200000)
+      ).subscribe(
+        (data: any[]) => {
+          this.dataSource2 = new MatTableDataSource<Inversion>(data);
+        },
+        (error) => {
+            console.error('Error al obtener inversiones:', error);
+        });
+    }
 
-
-  getCompra(codCompra: string){
+  getCompra(codCompra: string, tipo: number){
+    var endpoint = "";
     this.ngxService.start();
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-    const endpoint = `https://back-unisoft-1.onrender.com/compra/compras_inventarioActualizar/${codCompra}`;
+    if(tipo === 1){
+       endpoint = `https://back-unisoft-1.onrender.com/compra/compras_inventarioActualizar/${codCompra}`;
+    }else{
+       endpoint = `https://back-unisoft-1.onrender.com/compra/compras_inventarioActualizar2/${codCompra}`;
+    }
+
     this.http.get(endpoint, { headers: headers }).pipe(
       timeout(200000)
     ).subscribe(
       (response: any) => {
-        console.log(response);  
         this.ngxService.stop();
         this.compraForm.imei = response.imei;
         this.compraForm.consecutivo_compraventa = response.consecutivo_compraventa;
@@ -169,6 +199,7 @@ export class EditarCompraComponent {
         this.getCliente(response.cliente_id, '2');
         this.obtenerModelosDispositivos();
         this.getPhoto(response.imei); 
+        this.getInversiones(response.oid);  
       }, (error) => {
         this.ngxService.stop();
         if (error.status === 404) {
@@ -205,7 +236,6 @@ export class EditarCompraComponent {
     }else{
       endpoint = `https://back-unisoft-1.onrender.com/cliente/listaClientes/documento/${oidCliente}`;
     }
-    console.log(endpoint);
 
     this.http.get(endpoint, { headers: headers }).pipe(
       timeout(200000)
@@ -310,7 +340,6 @@ export class EditarCompraComponent {
     
   }
   calcularTotalInversiones(): number {
-    console.log(this.dataSource2.data);
     return this.dataSource2.data.reduce((total, inversion) => {
       const valor = parseFloat(inversion.valor);
       return isNaN(valor) ? total : total + valor;
@@ -348,8 +377,84 @@ export class EditarCompraComponent {
       }
     }
   }
+
+
+
+  actualizarInventario() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    
+    // Armar el cuerpo de la solicitud con los datos necesarios
+    const body = this.dataSource2.data.map(inversion => ({
+      inversion: inversion.inversion,
+      valor: inversion.valor,
+      compra_inventario: this.compraForm.oid,
+    }));
   
+
+    const endpoint = `https://back-unisoft-1.onrender.com/inversion/registrarInversion`;
+    console.log('Cuerpo de la solicitud:', body);
+    // Enviar la solicitud POST
+    this.http.post(endpoint, body, { headers: headers }).subscribe(
+      (response: any) => {
+        console.log('Respuesta del servidor:', response); 
+      }, 
+      (error) => {
+        console.error('Error al actualizar el inventario:', error);
+      }
+    );
+  }     
+
+
   
+  actualizardatos() {
+    
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    const endpoint = `https://back-unisoft-1.onrender.com/compra/actualizarCompra/` + this.compraForm.oid;
+    const body = {
+      imei: this.compraForm.imei,
+      consecutivo_compraventa: this.compraForm.consecutivo_compraventa,
+      modelo_dispositivo: this.compraForm.modelo_dispositivo,
+      valor_compra: this.compraForm.valor_compra,
+      observacion: this.compraForm.observacion,
+      oid: this.compraForm.oid,
+      marca_dispositivo: this.compraForm.marca_dispositivo,
+      fecha_hora: this.compraForm.fecha_hora,
+      valor_venta: this.calcularTotalInversiones().toString(),
+      cliente_id: this.compraForm.cliente_id,
+    };
+    this.actualizarInventario();
+    this.http.put(endpoint, body, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response: any) => {
+        this.ngxService.stop();
+        Swal.fire({
+          title: 'Compra Actualizada',
+          text: 'La compra se ha actualizado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        this.router.navigate(['/compras/ver-compra']);
+      }, (error) => {
+        this.ngxService.stop();
+        Swal.fire({
+          title: 'Error',
+          text: 'Ha ocurrido un error al procesar la solicitud.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    );
+  }
 
   validaInversionLista(inversionBuscada: Inversion): boolean {
     return this.dataSource2.data.some(inversion => inversion.inversion === inversionBuscada.inversion);

@@ -78,7 +78,7 @@
             <div style="flex: 1; margin-right: 8px">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">IMEI</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary">
-                <input required matInput [(ngModel)]="compraForm.imei" name="imei" type="string" placeholder="IMEI" />
+                <input required matInput [(ngModel)]="compraForm.imei"(ngModelChange)="onImeiChange()"  name="imei" type="string" placeholder="IMEI" />
                 <mat-error>Campo obligatorio</mat-error>
               </mat-form-field>
             </div>
@@ -189,7 +189,7 @@
               <p>Total Inversión:   $ {{ calcularTotalInversiones() }}</p>
             </div>
           </mat-card-content>
-          <button class="w-100" mat-raised-button color="primary">
+          <button class="w-100" mat-raised-button color="primary" (click)="actualizardatos()" >
             Actualizar compra
           </button>
         </mat-card-content>

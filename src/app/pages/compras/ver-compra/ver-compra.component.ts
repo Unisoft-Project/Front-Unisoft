@@ -5,6 +5,8 @@ import { MatPaginator, PageEvent, MatPaginatorIntl  } from '@angular/material/pa
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import Swal from 'sweetalert2';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { Router } from '@angular/router';
+
 
 interface Device {
   codCompra: number;
@@ -37,7 +39,7 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerCompraComponent{
-  displayedColumns: string[] = ['IMEI', 'Consecutivo', 'Marca', 'Modelo', 'Observación', 'Fecha Compra', 'Inversión', 'Compra', 'Total', 'Ver Más', 'Documento', 'Eliminar'];
+  displayedColumns: string[] = ['IMEI', 'Consecutivo', 'Marca', 'Modelo', 'Observación', 'Fecha Compra', 'Inversión', 'Compra', 'Total', 'Editar', 'Documento', 'Eliminar'];
   dataSource: Device[] = [];
   modalDocumento: boolean = false;
   errorMessage: string = '';
@@ -57,7 +59,8 @@ export class VerCompraComponent{
 
   constructor(private http: HttpClient,
     private storage: AngularFireStorage,
-    private ngxService: NgxUiLoaderService
+    private ngxService: NgxUiLoaderService,
+    private router: Router
   ) { }
 
 
@@ -141,8 +144,8 @@ export class VerCompraComponent{
     console.log('DataSource after updating page:', this.dataSource); 
   }
 
-  verMas(element: any) {
-    //this.router.navigate(['/editar-compra', element.id]);
+  editar(oid: string) {
+    this.router.navigate(['compras/editar-compra', oid]);
   }
 
   getPhoto(imeil: string) {

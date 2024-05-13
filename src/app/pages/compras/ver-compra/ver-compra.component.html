@@ -46,9 +46,9 @@
                 $ {{ element.valorTotal }}
               </ng-container>
               <div style="text-align: center;">
-              <ng-container *ngIf="column === 'Ver Más'">
-                <button mat-icon-button color="primary" (click)="verMas(element)">
-                  <mat-icon>visibility</mat-icon>
+              <ng-container *ngIf="column === 'Editar'">
+                <button mat-icon-button color="primary" (click)="editar(element.codCompra)">
+                  <mat-icon>editar</mat-icon>
                 </button>
               </ng-container>
               <ng-container *ngIf="column === 'Documento'">

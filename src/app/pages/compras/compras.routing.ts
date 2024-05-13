@@ -16,6 +16,10 @@ export const comprasRoutes: Routes = [
         component: EditarCompraComponent,
       },
       {
+        path: 'editar-compra/:oid', 
+        component: EditarCompraComponent,
+      },
+      {
         path: 'ver-compra',
         component: VerCompraComponent,
       },
