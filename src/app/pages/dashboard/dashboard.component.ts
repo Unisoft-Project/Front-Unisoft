@@ -427,8 +427,7 @@ export class AppDashboardComponent {
     });
     //
     this.http.get<any[]>(
-     // `https://back-unisoft-1.onrender.com/cliente/listaClientes`,
-     `http://localhost:8000/dashboard/inversiones`,
+     `https://back-unisoft-1.onrender.com/cliente/listaClientes`,
       { headers: headers }
     ).pipe(
       timeout(200000)
