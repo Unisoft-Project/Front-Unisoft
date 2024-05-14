@@ -442,7 +442,6 @@ export class AppDashboardComponent {
           this.porcentajes.push(primerosDosDigitos);
         }
         this.datosAmostrar = this.porcentajes.map(Number)
-        console.log(this.datosAmostrar);
         this.primeroPorcentaje = this.porcentajes[0];
         this.segundoPorcentaje = this.porcentajes[1];
       },
