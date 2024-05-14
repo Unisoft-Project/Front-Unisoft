@@ -1,3 +1,6 @@
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { timeout } from 'rxjs/operators';
 import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
 import {
   ApexChart,
@@ -131,6 +134,8 @@ const ELEMENT_DATA: productsData[] = [
   encapsulation: ViewEncapsulation.None,
 })
 export class AppDashboardComponent {
+
+
   @ViewChild('chart') chart: ChartComponent = Object.create(null);
 
   public salesOverviewChart!: Partial<salesOverviewChart> | any;
@@ -221,7 +226,17 @@ export class AppDashboardComponent {
     },
   ];
 
-  constructor() {
+  //inversion of variables
+  totalInversion: number = 0;
+  years: number[] = [];
+  porcentajes: string[] = [];
+  primeroPorcentaje: string = '0';
+  segundoPorcentaje: string = '0';
+  datosAmostrar: any[] = [];
+
+  constructor(private ngxService: NgxUiLoaderService, private http: HttpClient,) {
+    this.getInversionesDashboard();
+    
     // sales overview chart
     this.salesOverviewChart = {
       series: [
@@ -310,10 +325,9 @@ export class AppDashboardComponent {
       ],
     };
 
-    // yearly breakup chart
+    // Brian Gomez
     this.yearlyChart = {
-      series: [38, 40, 25],
-
+      series: [10, 20, 30, 40],
       chart: {
         type: 'donut',
         fontFamily: "'Plus Jakarta Sans', sans-serif;",
@@ -323,7 +337,7 @@ export class AppDashboardComponent {
         },
         height: 130,
       },
-      colors: ['#5D87FF', '#ECF2FF', '#F9F9FD'],
+      colors: ['#FFFFFF', '#ECF2FF', '#4463BC', '#5D87FF'],
       plotOptions: {
         pie: {
           startAngle: 0,
@@ -400,5 +414,42 @@ export class AppDashboardComponent {
         },
       },
     };
+  }
+
+
+
+  getInversionesDashboard() {
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    //
+    this.http.get<any[]>(
+     // `https://back-unisoft-1.onrender.com/cliente/listaClientes`,
+     `http://localhost:8000/dashboard/inversiones`,
+      { headers: headers }
+    ).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response) => {
+        this.totalInversion = response.reduce((inversion, item) => inversion + item.inversion, 0);
+        this.years = response.map(item => item.ano_de_inversion);
+        for (let i = 0; i < response.length; i++) {
+          const porcentaje = (response[i].inversion / response[i].total) * 100;
+          let primerosDosDigitos = Math.floor(porcentaje).toString().substring(0, 2);
+          this.porcentajes.push(primerosDosDigitos);
+        }
+        this.datosAmostrar = this.porcentajes.map(Number)
+        console.log(this.datosAmostrar);
+        this.primeroPorcentaje = this.porcentajes[0];
+        this.segundoPorcentaje = this.porcentajes[1];
+      },
+      (error) => {
+        this.ngxService.stop();
+        console.log('Error a la consultar datos de la dashboard.');
+      }
+    );
   }
 }

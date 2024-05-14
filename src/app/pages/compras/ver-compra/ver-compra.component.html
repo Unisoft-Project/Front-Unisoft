@@ -37,13 +37,13 @@
                 {{ element.fechaCompra | date: 'dd/MM/yyyy HH:mm' }}
               </ng-container>
               <ng-container *ngIf="column === 'Inversión'">
-                $ {{ element.valorInversion }}
+                $ {{ element.valorInversion | currency}} 
               </ng-container>
               <ng-container *ngIf="column === 'Compra'">
-                $ {{ element.valorCompra }}
+                $ {{ element.valorCompra  | currency}}
               </ng-container>
               <ng-container *ngIf="column === 'Total'">
-                $ {{ element.valorTotal }}
+                $ {{ element.valorTotal  | currency}}
               </ng-container>
               <div style="text-align: center;">
               <ng-container *ngIf="column === 'Editar'">
@@ -68,9 +68,9 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table> 
         <div class="totalizador">
-          <p>Total: $ {{ total }}</p>
-          <p>Total de Inversiones: $ {{ totalInversiones }}</p>
-          <p>Total de Compras: $ {{ totalCompras }}</p>
+          <p>Total: $ {{ total  | currency }}</p>
+          <p>Total de Inversiones: $ {{ totalInversiones  | currency }}</p>
+          <p>Total de Compras: $ {{ totalCompras  | currency }}</p>
         </div>       
         <mat-paginator [length]="allClients.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 100]"
           showFirstLastButtons (page)="paginaCambiada($event)" #paginator></mat-paginator>
