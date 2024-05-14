@@ -433,6 +433,7 @@ export class AppDashboardComponent {
       timeout(200000)
     ).subscribe(
       (response) => {
+        this.ngxService.stop();
         this.totalInversion = response.reduce((inversion, item) => inversion + item.inversion, 0);
         this.years = response.map(item => item.ano_de_inversion);
         for (let i = 0; i < response.length; i++) {
