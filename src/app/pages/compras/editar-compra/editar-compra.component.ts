@@ -393,16 +393,23 @@ export class EditarCompraComponent {
       valor: inversion.valor,
       compra_inventario: this.compraForm.oid,
     }));
-  
-
-    const endpoint = `https://back-unisoft-1.onrender.com/inversion/registrarInversion`;
-    console.log('Cuerpo de la solicitud:', body);
-    // Enviar la solicitud POST
-    this.http.post(endpoint, body, { headers: headers }).subscribe(
+    const endpoint = `https://back-unisoft-1.onrender.com/inversion/registrarInversion/` + this.compraForm.oid;
+    this.http.post(endpoint, body, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
       (response: any) => {
-        console.log('Respuesta del servidor:', response); 
+        Swal.fire({
+          title: 'Compra Actualizada',
+          text: 'La compra se ha actualizado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        this.ngxService.stop();
+        console.log('Inventario Actualizado:'); 
+        this.router.navigate(['/compras/ver-compra']);
       }, 
       (error) => {
+        this.ngxService.stop();
         console.error('Error al actualizar el inventario:', error);
       }
     );
@@ -411,7 +418,6 @@ export class EditarCompraComponent {
 
   
   actualizardatos() {
-    
     this.ngxService.start();
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
@@ -431,19 +437,12 @@ export class EditarCompraComponent {
       valor_venta: this.calcularTotalInversiones().toString(),
       cliente_id: this.compraForm.cliente_id,
     };
-    this.actualizarInventario();
     this.http.put(endpoint, body, { headers: headers }).pipe(
       timeout(200000)
     ).subscribe(
       (response: any) => {
-        this.ngxService.stop();
-        Swal.fire({
-          title: 'Compra Actualizada',
-          text: 'La compra se ha actualizado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'OK'
-        });
-        this.router.navigate(['/compras/ver-compra']);
+        console.log('Compra actualizada:'); 
+        this.actualizarInventario();
       }, (error) => {
         this.ngxService.stop();
         Swal.fire({
