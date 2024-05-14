@@ -104,7 +104,7 @@
                 <mat-error>Campo obligatorio</mat-error>
               </mat-form-field>
             </div>
-            <!-- <div class="col-md-4">
+           <div class="col-md-4">
               <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Fecha de Facturación</mat-label>
               <mat-form-field appearance="outline" class="w-100" color="primary">
                 <input matInput [matDatepicker]="picker" placeholder="Seleccione una fecha" name="fechaFactura" required
@@ -113,7 +113,7 @@
                 <mat-datepicker #picker></mat-datepicker>
                 <mat-error>Campo obligatorio</mat-error>
               </mat-form-field>
-            </div> -->
+            </div>
           </div>
           <!--Detalles-->
           <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
@@ -256,7 +256,7 @@
               <mat-list-item>
                 <span matListItemTitle class="f-s-16 f-w-600">Costo:</span>
                 <span matListItemLine class="mat-body-1">{{
-                  productoEncontrado.valor_compra
+                  productoEncontrado.valor_compra | currency
                   }}</span>
               </mat-list-item>
               <mat-list-item>

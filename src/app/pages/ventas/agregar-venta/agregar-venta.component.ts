@@ -453,8 +453,7 @@ export class AgregarVentaComponent {
     const data: any = {};
     if (
       !form.value.numeroFactura ||
-      !form.value.metodoPago ||
-      !form.value.fechaFactura
+      !form.value.metodoPago
     ) {
       this.ngxService.stop();
       Swal.fire({
@@ -478,6 +477,7 @@ export class AgregarVentaComponent {
         (response) => {
           //this.generarFactura(form.value.numeroFactura)
           console.log(response)
+          //agregar detales venta
           this.ngxService.stop();
           Swal.fire({
             title: 'Venta registrada con éxito',

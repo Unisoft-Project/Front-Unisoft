@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID, DEFAULT_CURRENCY_CODE } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -35,7 +35,11 @@ import {
   NgxUiLoaderModule, NgxUiLoaderConfig, SPINNER, POSITION, PB_DIRECTION, 
   NgxUiLoaderRouterModule, NgxUiLoaderHttpModule, NgxUiLoaderHttpConfig
 } from 'ngx-ui-loader';
+import localePt from '@angular/common/locales/pt';
+import { registerLocaleData } from '@angular/common';
 
+// Register the localization
+registerLocaleData(localePt, 'pt-COP');
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#1b1a5c",
   bgsOpacity: 0.5,
@@ -96,7 +100,15 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    {
+      provide: LOCALE_ID,
+      useValue: 'pt-COP'
+     },
+     {
+       provide: DEFAULT_CURRENCY_CODE,
+       useValue: 'COP'
+     },
   ],
 
 
