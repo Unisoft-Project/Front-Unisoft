@@ -18,21 +18,12 @@ import { VentasService } from 'src/app/services/ventas.service';
 import { DetalleVenta } from 'src/app/models/detalleVenta.model';
 
 
-interface TableData {
-  IMEI: string;
-  marcaTelefonos: string;
-  observacion: string;
-  modeloTelefonos: string;
-  valorVenta: number;
-}
-
 @Component({
-  selector: 'app-agregar-venta',
-  templateUrl: './agregar-venta.component.html',
-  styleUrls: ['./agregar-venta.component.css']
+  selector: 'app-editar-venta',
+  templateUrl: './editar-venta.component.html',
+  styleUrls: ['./editar-venta.component.scss']
 })
-
-export class AgregarVentaComponent {
+export class EditarVentaComponent {
   documentoField: any;
   clientFoundTag: boolean = false;
   clientFound: any;
@@ -44,7 +35,7 @@ export class AgregarVentaComponent {
   imeiField: any;
   productoFoundTag = false;
   valorventafield: any;
-  showTable = false
+
   garantiafield: any;
   constructor(
     private fireStorage: AngularFireStorage,
@@ -73,12 +64,9 @@ export class AgregarVentaComponent {
   };
   tipo_doc: any = ''
 
-  displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'garantia', 'valor_compra', 'valorVenta', 'eliminar'];
+  displayedColumns: string[] = ['imei', 'descripcion_marca_dispositivo', 'modelos', 'garantia', 'valor_compra', 'valorVenta'];
 
-  deleteProduct(oid: any): void {
-    console.log("deleting")
-    this.dataSource = this.dataSource.filter(p => p.oid !== oid);
-  }
+
   //Gestión GET Cliente
   getCliente(documento: string) {
     this.ngxService.start();
@@ -399,7 +387,6 @@ export class AgregarVentaComponent {
     }
     else {
       if (!this.validaProductoLista(producto)) {
-        this.showTable = true
         producto.valor_venta = this.valorventafield;
         producto.garantia = this.garantiafield
         console.log('valorVentaSinMoneda', this.totalVenta);

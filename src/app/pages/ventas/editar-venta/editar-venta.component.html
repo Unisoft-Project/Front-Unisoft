@@ -1,0 +1,303 @@
+<mat-card class="cardWithShadow theme-card">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">Registrar Venta</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="b-t-1">
+      <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+        <form class="m-t-30" #ventaForm="ngForm">
+          <!--* Datos del Cliente-->
+          <mat-card-content>
+            <div style="margin-bottom: 20px; margin-top: -30px">
+              <mat-card-title class="m-b-0">Datos del Cliente</mat-card-title>
+            </div>
+            <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+              <!-- Columna izquierda -->
+              <div class="col-md-8" style="display: flex; flex-wrap: wrap">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Buscar Cliente</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
+                  <input matInput placeholder="Identificación" [(ngModel)]="documentoField"
+                    [ngModelOptions]="{ standalone: true }" />
+                </mat-form-field>
+              </div>
+              <!-- Columna derecha -->
+              <div class="col-md-4" style="display: flex; flex-wrap: wrap; align-items: flex-end">
+                <!-- Botón Buscar -->
+                <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center">
+                    <!-- Botón Buscar -->
+                    <button mat-raised-button color="primary" type="button" (click)="getCliente(documentoField)"
+                      style="margin-right: 8px">
+                      Buscar
+                    </button>
+                    <button mat-raised-button color="warn" type="button" [routerLink]="['/clientes/agregar-cliente']"
+                      [queryParams]="{fromVenta: true}">
+                      Registrar Cliente
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div *ngIf="clientFoundTag" class="search-client position-relative row justify-content-center">
+              <div class="col-lg-6">
+                <mat-card class="client-card">
+                  <mat-card-content>
+                    <div class="client-info">
+                      <h2>Información del Cliente</h2>
+                      <hr />
+                      <p>
+                        <strong>Tipo de Documento:</strong>
+                        {{ clienteEncontrado.tipo_documento }}
+                      </p>
+                      <p>
+                        <strong>Número de Documento:</strong>
+                        {{ clienteEncontrado.documento }}
+                      </p>
+                      <p>
+                        <strong>Nombre:</strong> {{ clienteEncontrado.nombre }}
+                      </p>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+              <div class="col-lg-6">
+                <mat-card class="client-card">
+                  <mat-card-content>
+                    <div class="client-info">
+                      <h2>Dirección y Contacto</h2>
+                      <hr />
+                      <p>
+                        <strong>Dirección:</strong>
+                        {{ clienteEncontrado.direccion }}
+                      </p>
+                      <p>
+                        <strong>Teléfono:</strong>
+                        {{ clienteEncontrado.telefono }}
+                      </p>
+                      <p>
+                        <strong>E-mail:</strong>
+                        {{ clienteEncontrado.correo }}
+                      </p>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </mat-card-content>
+          <!--* Apartado Información de Facturación-->
+          <mat-card-content class="b-t-1">
+            <div style="margin-bottom: 20px">
+              <mat-card-title class="m-b-0">Información de Facturación</mat-card-title>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Número de factura</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                  <input required matInput ngModel name="numeroFactura" type="string" placeholder="Número de factura" />
+                  <mat-error>Campo obligatorio</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Método de pago</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                  <input required matInput ngModel name="metodoPago" type="string" placeholder="Método de Pago" />
+                  <mat-error>Campo obligatorio</mat-error>
+                </mat-form-field>
+              </div>
+             <div class="col-md-4">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Fecha de Facturación</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                  <input matInput [matDatepicker]="picker" placeholder="Seleccione una fecha" name="fechaFactura" required
+                    ngModel />
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error>Campo obligatorio</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <!--Detalles-->
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+              Observación de la factura
+            </mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <textarea matInput ngModel name="observacion" type="string" placeholder="Observación" cdkTextareaAutosize
+                cdkAutosizeMinRows="5">
+              </textarea>
+            </mat-form-field>
+            
+          </mat-card-content>
+  
+          <mat-card-content class="b-t-1">
+            <div style="margin-bottom: 20px; display: flex; align-items: center">
+              <mat-card-title class="m-b-0">Información de los Productos</mat-card-title>
+              <button (click)="mostrarModalProductos = true" mat-icon-button color="primary" style="margin-left: 5px">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            <div style="overflow-y: auto">
+              <table mat-table [dataSource]="dataSource" class="mat-elevation-z8"
+                style="width: 100%; table-layout: fixed; overflow-y: auto">
+                <ng-container matColumnDef="imei">
+                  <th mat-header-cell *matHeaderCellDef>Imei</th>
+                  <td mat-cell *matCellDef="let element">{{ element.imei }}</td>
+                </ng-container>
+  
+                <ng-container matColumnDef="descripcion_marca_dispositivo">
+                  <th mat-header-cell *matHeaderCellDef>Marca del Teléfono</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.descripcion_marca_dispositivo }}
+                  </td>
+                </ng-container>
+  
+                <ng-container matColumnDef="modelos">
+                  <th mat-header-cell *matHeaderCellDef>Modelo del Teléfono</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.modelos }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="garantia">
+                  <th mat-header-cell *matHeaderCellDef>Garantía</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.garantia }}
+                  </td>
+                </ng-container>
+  
+                <ng-container matColumnDef="valor_compra">
+                  <th mat-header-cell *matHeaderCellDef>Valor compra</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.valor_compra | currency }}
+                  </td>
+                </ng-container>
+  
+                <ng-container matColumnDef="valorVenta">
+                  <th mat-header-cell *matHeaderCellDef>Valor de Venta</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.valor_venta | currency }}
+                  </td>
+                </ng-container>
+  
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+              </table>
+            </div>
+          </mat-card-content>
+          <mat-card-content class="b-t-1" style="display: flex; flex-direction: column; justify-content: flex-end;">
+            <div style="margin-left: auto; margin-right: 16px;">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">
+                <span style="font-weight: bold">Total de la venta</span>
+              </mat-label>
+              <mat-form-field appearance="outline" class="w-20" color="primary">
+                <input matInput type="number" [value]="totalVenta" [disabled]="true" style="font-weight: bold" />
+              </mat-form-field>
+            </div>
+          
+            <div style="margin-top: 16px;">
+              <mat-card-actions style="justify-content: flex-end;">
+                <button class="w-50" mat-raised-button color="primary" (click)="addVenta(ventaForm)">
+                  Registrar Venta
+                </button>
+                <button class="w-80" mat-raised-button color="secondary" (click)="generarFactura(numero_factura)" style="margin-left: 8px;">
+                  Guardar Factura
+                </button>
+              </mat-card-actions>
+            </div>
+          </mat-card-content>
+        </form>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Modal con mat-card -->
+  <div *ngIf="mostrarModalProductos" class="custom-modal-overlay">
+    <mat-card class="cardWithShadow theme-card custom-modal">
+      <button mat-icon-button class="close-button" (click)="cerrarModalAgregarProductos()">
+        <mat-icon color="warn">close</mat-icon>
+      </button>
+      <mat-card-header>
+        <mat-card-title>Buscar Producto</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="container">
+          <div class="row d-flex align-items-center">
+            <div class="col-md-9">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Imei del producto</mat-label>
+              <mat-form-field appearance="outline" class="w-100 align-items-center" color="primary">
+                <input matInput placeholder="Ejemplo: 123456789012345" [(ngModel)]="imeiField"
+                  [ngModelOptions]="{ standalone: true }" />
+              </mat-form-field>
+            </div>
+            <div class="col-md-3">
+              <button mat-raised-button color="primary" type="button" style="height: 55px; margin-top: 2px;"
+                (click)="getProducto(imeiField)">
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="loading" class="loading-overlay">
+          <div class="text-center">
+            <img src="../../../../assets/images/recarga/cargando.gif" width="100px" />
+          </div>
+        </div>
+        <div *ngIf="productoFoundTag" class="container">
+          <div class="row d-flex align-items-center">
+            <div class="d-flex col-md-6">
+              <mat-list>
+                <mat-list-item>
+                  <span matListItemTitle class="f-s-16 f-w-600">Imei:</span>
+                  <span matListItemLine class="mat-body-1">{{
+                    productoEncontrado.imei
+                    }}</span>
+                </mat-list-item>
+                <mat-list-item>
+                  <span matListItemTitle class="f-s-16 f-w-600">Marca:</span>
+                  <span matListItemLine class="mat-body-1">{{
+                    productoEncontrado.descripcion_marca_dispositivo
+                    }}</span>
+                </mat-list-item>
+              </mat-list>
+           
+  
+            </div>
+            <div class="col-md-6">
+              <mat-list>
+                <mat-list-item>
+                  <span matListItemTitle class="f-s-16 f-w-600">Costo:</span>
+                  <span matListItemLine class="mat-body-1">{{
+                    productoEncontrado.valor_compra | currency
+                    }}</span>
+                </mat-list-item>
+                <mat-list-item>
+                  <span matListItemTitle class="f-s-16 f-w-600">Fecha de compra:</span>
+                  <span matListItemLine class="mat-body-1">{{
+                    productoEncontrado.fecha_hora
+                    }}</span>
+                </mat-list-item>
+              </mat-list>
+            </div>
+            <div class="col-md-8" style="margin-left: 19px;">
+              <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Garantía</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input required matInput [(ngModel)]="garantiafield" name="garantiafield" type="string" placeholder="Garantía" />
+                <mat-error>Campo obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-md-8" style="margin-left: 19px;">
+              <mat-label class="mat-subtitle-2 f-s-16 f-w-600 m-b-12 d-block">Valor del dispositivo</mat-label>
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input required matInput [(ngModel)]="valorventafield" name="valorventafield"
+                  (blur)="formatCurrency($event)" (ngModelChange)="onValueChange()" type="text" placeholder="$0.00" />
+                <mat-error>Campo obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="agregarProductosLista(productoEncontrado)" mat-raised-button color="accent"
+          style="margin: 8px">
+          Agregar Producto
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>

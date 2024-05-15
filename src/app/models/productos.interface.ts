@@ -6,5 +6,9 @@ export interface Producto {
   oid: number;
   fecha_hora: string;
   valor_venta: number
+  compra_inventario_oid: number
+  garantia: string
+
+
 }
 
