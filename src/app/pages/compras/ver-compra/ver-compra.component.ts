@@ -185,8 +185,8 @@ export class VerCompraComponent{
     this.modalFormato = false;
   }
 
-  printDocumento(imei: string) {
-    this.getPhoto(imei);
+  printDocumento(oid: any) {
+    this.getPhoto(oid);
   }
 
   printEliminarCompra(oidComp: string, imei: string) {

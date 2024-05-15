@@ -59,12 +59,27 @@
                 </div>
                 <div class="center-icon">
                   <ng-container *ngIf="column === 'Total Venta'">
-                    {{ element.total_venta }}
+                    {{ element.total_venta | currency }}
                   </ng-container>
                 </div>
                 <ng-container *ngIf="column === 'Detalles'">
-                  <button mat-icon-button color="primary" (click)="verMas(element)">
+                  <button mat-icon-button color="primary" (click)="printDocumento(element)">
                     <mat-icon>visibility</mat-icon>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="column === 'Factura'">
+                  <button mat-icon-button color="primary" (click)="getFactura(element)">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="column === 'Editar'">
+                  <button mat-icon-button color="primary" (click)="editar(element.oid)">
+                    <mat-icon style="color: #55bacd;">edit</mat-icon>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="column === 'Eliminar'">
+                  <button mat-icon-button color="primary" (click)="printEliminarCompra(element)">
+                    <mat-icon style="color: red;">delete</mat-icon>
                   </button>
                 </ng-container>
      
@@ -89,5 +104,19 @@
 
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
+  </div>
+  <div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
+    <div class="modal">
+      <mat-card class="cardWithShadow boxed-auth">
+        <button mat-icon-button class="close-button" (click)="closeModal()">
+          <mat-icon color="warn">close</mat-icon>
+        </button>
+        <mat-card-content class="p-32">
+          <form class="m-t-30">
+            <img [src]="photoUrl" class="modal-image">
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
   <ngx-ui-loader></ngx-ui-loader>

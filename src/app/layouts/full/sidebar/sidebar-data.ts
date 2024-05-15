@@ -23,6 +23,11 @@ export const navItems: NavItem[] = [
     route: '/ventas/ver-ventas', ///****** */
   },
   {
+    displayName: 'Editar venta',
+    iconName: 'shopping-cart-cog',
+    route: '/ventas/editar-venta',
+  },
+  {
     navCap: 'Compras',
   },
   {
