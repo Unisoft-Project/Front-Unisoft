@@ -29,7 +29,7 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerVentasComponent{
-  displayedColumns: string[] = ['Número Factura', 'Fecha', 'Cliente', 'Total Venta', 'Detalles', 'Factura', 'Editar', 'Eliminar'];
+  displayedColumns: string[] = ['Número Factura', 'Fecha', 'Cliente', 'Total Venta', 'Detalles', 'Factura', 'Eliminar'];
 
 
 
@@ -124,7 +124,7 @@ export class VerVentasComponent{
           'Authorization': `Bearer ${token}`
         });
         this.http.delete<any>(
-          `https://back-unisoft-1.onrender.com/ventas/ventas_realizadas/${oidVenta.oid}`,
+          `https://back-unisoft-1.onrender.com/ventas/eliminar_venta/${oidVenta.oid}`,
           { headers: headers }
         ).pipe(
           timeout(200000)
@@ -163,9 +163,7 @@ export class VerVentasComponent{
       }
     });
   }
-  editar(oid: string) {
-    this.router.navigate(['ventas/editar-venta', oid]);
-  }
+
   paginaCambiada(event: PageEvent) {
     console.log('Page event:', event); // Verificar el evento de paginación
     const startIndex = event.pageIndex * event.pageSize;
@@ -185,10 +183,54 @@ export class VerVentasComponent{
     this.dataSource = this.dataSource.slice(startIndex, endIndex);
     console.log('DataSource after updating page:', this.dataSource); // Verificar el dataSource después de actualizar la página
   }
-  getPhoto(imeil: string) {
-    console.log(imeil); 
-    const photoPath = `formato_compraventa/${imeil}`;
-    this.modalFormato = true
+  // In your component class
+  dataSourceDetalles = [];
+  displayedColumnsDetalles = ['IMEI', 'Marca', 'Modelo', 'Garantía', 'Valor compra', 'Valor venta'];
+
+  getVentaDetalles(oid: any) {
+    console.log(oid.oid); 
+  
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    const endpoint = `https://back-unisoft-1.onrender.com/ventas/get_venta_by_id/${oid.oid}`;
+  
+    this.http.get(endpoint, { headers: headers }).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response: any) => {
+        this.modalFormato = true;
+        console.log("Venta:", response.detalles_venta_rel[0]);
+         this.dataSourceDetalles = response.detalles_venta_rel; // Assign the array directly
+         console.log(this.dataSourceDetalles);
+        this.ngxService.stop();
+      },
+      (error) => {
+        this.ngxService.stop();
+        if (error.status === 404) {
+          Swal.fire({
+            title: 'Detalles no encontrados',
+            text: 'No se encontraron detalles en la base de datos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al procesar la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+      }
+    );
+  
+  
+
+   // /ventas/get_venta_by_id/200
     // if (photoPath) {
     //   this.storage
     //     .ref(photoPath)
@@ -223,7 +265,7 @@ export class VerVentasComponent{
   }
 
   printDocumento(oid: any) {
-    this.getPhoto(oid);
+    this.getVentaDetalles(oid);
   }
 }
 
