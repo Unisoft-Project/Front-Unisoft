@@ -1,122 +1,122 @@
 <div class="col-lg-20">
-    <mat-card class="cardWithShadow">
-      <div style="display: flex">
-        <mat-form-field
-          appearance="outline"
-          class="w-100"
-          color="primary"
-          style="margin-right: 8px"
-        >
-          <input
-            matInput
-            placeholder="Número de IMEI"
-            name="filtro"
-            #filtroField="ngModel"
-            [(ngModel)]="filtro"
-          />
-        </mat-form-field>
-        <button
-          mat-flat-button
-          color="primary"
-          style="width: 100px; margin-top: 10px"
-          type="button"
-          
-        >
-          Filtrar
-        </button>
+  <mat-card class="cardWithShadow">
+    <div style="display: flex">
+      <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
+        <input matInput placeholder="Número de IMEI" name="filtro" #filtroField="ngModel" [(ngModel)]="filtro" />
+      </mat-form-field>
+      <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px" type="button">
+        Filtrar
+      </button>
+    </div>
+    <mat-card-content class="p-24">
+      <mat-card-title>Inventario</mat-card-title>
+      <div class="table-responsive m-t-16">
+        <table mat-table [dataSource]="dataSource" class="w-100">
+          <!-- Define table columns using ngFor -->
+          <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              {{ column }}
+            </th>
+            <td mat-cell *matCellDef="let element" class="mat-body-1">
+              <div class="center-icon">
+                <ng-container *ngIf="column === 'Número Factura'">
+                  {{ element.numero_factura }}
+                </ng-container>
+              </div>
+              <div class="center-icon">
+                <ng-container *ngIf="column === 'Fecha'">
+                  {{ element.fecha_hora }}
+                </ng-container>
+              </div>
+              <div class="center-icon">
+                <ng-container *ngIf="column === 'Cliente'">
+                  {{ element.cliente }}
+                </ng-container>
+              </div>
+              <div class="center-icon">
+                <ng-container *ngIf="column === 'Total Venta'">
+                  {{ element.total_venta | currency }}
+                </ng-container>
+              </div>
+              <ng-container *ngIf="column === 'Detalles'">
+                <button mat-icon-button color="primary" (click)="printDocumento(element)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="column === 'Factura'">
+                <button mat-icon-button color="primary" (click)="getFactura(element)">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="column === 'Eliminar'">
+                <button mat-icon-button color="primary" (click)="printEliminarCompra(element)">
+                  <mat-icon style="color: red;">delete</mat-icon>
+                </button>
+              </ng-container>
+
+            </td>
+          </ng-container>
+          <!-- Header and Row definitions -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <mat-paginator [length]="dataSource.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 100]"
+          showFirstLastButtons (page)="paginaCambiada($event)" #paginator></mat-paginator>
       </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf="errorMessage" class="error-message">
+  {{ errorMessage }}
+</div>
+<div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
+  <div class="modal">
+    <mat-card class="cardWithShadow boxed-auth">
+      <button mat-icon-button class="close-button" (click)="closeModal()">
+        <mat-icon color="warn">close</mat-icon>
+      </button>
       <mat-card-content class="p-24">
-        <mat-card-title>Inventario</mat-card-title>
+        <mat-card-title>Detalles</mat-card-title>
         <div class="table-responsive m-t-16">
-          <table mat-table [dataSource]="dataSource" class="w-100">
-            <!-- Define table columns using ngFor -->
-            <ng-container
-              *ngFor="let column of displayedColumns"
-              [matColumnDef]="column"
-            >
-              <th
-                mat-header-cell
-                *matHeaderCellDef
-                class="f-w-600 mat-subtitle-1 f-s-14"
-              >
+          <table mat-table [dataSource]="dataSourceDetalles" class="w-100">
+            <ng-container *ngFor="let column of displayedColumnsDetalles" [matColumnDef]="column">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
                 {{ column }}
               </th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">
-                <div class="center-icon">
-                  <ng-container *ngIf="column === 'Número Factura'">
-                    {{ element.numero_factura }}
-                  </ng-container>
-                </div>
-                <div class="center-icon">
-                  <ng-container *ngIf="column === 'Fecha'">
-                    {{ element.fecha_hora }}
-                  </ng-container>
-                </div>
-                <div class="center-icon">
-                  <ng-container *ngIf="column === 'Cliente'">
-                    {{ element.cliente }}
-                  </ng-container>
-                </div>
-                <div class="center-icon">
-                  <ng-container *ngIf="column === 'Total Venta'">
-                    {{ element.total_venta | currency }}
-                  </ng-container>
-                </div>
-                <ng-container *ngIf="column === 'Detalles'">
-                  <button mat-icon-button color="primary" (click)="printDocumento(element)">
-                    <mat-icon>visibility</mat-icon>
-                  </button>
+              <td mat-cell *matCellDef="let element" class="mat-body-1 left-align"> <!-- Añadir clase left-align -->
+                <ng-container *ngIf="column === 'IMEI'">
+                  {{ element.cantidad }}
                 </ng-container>
-                <ng-container *ngIf="column === 'Factura'">
-                  <button mat-icon-button color="primary" (click)="getFactura(element)">
-                    <mat-icon>download</mat-icon>
-                  </button>
+                <ng-container *ngIf="column === 'Marca'">
+                  {{ element.compra_inventario }}
                 </ng-container>
-                <ng-container *ngIf="column === 'Editar'">
-                  <button mat-icon-button color="primary" (click)="editar(element.oid)">
-                    <mat-icon style="color: #55bacd;">edit</mat-icon>
-                  </button>
+                <ng-container *ngIf="column === 'Marca'">
+                  {{ element.precio_unitario }}
                 </ng-container>
-                <ng-container *ngIf="column === 'Eliminar'">
-                  <button mat-icon-button color="primary" (click)="printEliminarCompra(element)">
-                    <mat-icon style="color: red;">delete</mat-icon>
-                  </button>
+                <ng-container *ngIf="column === 'Modelo'">
+                  {{ element.venta_id }}
                 </ng-container>
-     
+                <ng-container *ngIf="column === 'Garantía'">
+                  {{ element.garantia }}
+                </ng-container>
+                <ng-container *ngIf="column === 'Valor compra'">
+                  {{ element.subtotal }}
+                </ng-container>
+                <ng-container *ngIf="column === 'Valor venta'">
+                  $ {{ element.valorInversion | currency}} 
+                </ng-container>
+         
               </td>
             </ng-container>
-            <!-- Header and Row definitions -->
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
-          <mat-paginator
-            [length]="dataSource.length"
-            [pageSize]="5"
-            [pageSizeOptions]="[5, 10, 25, 100]"
-            showFirstLastButtons
-            (page)="paginaCambiada($event)"
-            #paginator
-          ></mat-paginator>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDetalles"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsDetalles"></tr>
+          </table> 
+
         </div>
       </mat-card-content>
     </mat-card>
   </div>
+</div>
 
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
-  <div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
-    <div class="modal">
-      <mat-card class="cardWithShadow boxed-auth">
-        <button mat-icon-button class="close-button" (click)="closeModal()">
-          <mat-icon color="warn">close</mat-icon>
-        </button>
-        <mat-card-content class="p-32">
-          <form class="m-t-30">
-            <img [src]="photoUrl" class="modal-image">
-          </form>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
-  <ngx-ui-loader></ngx-ui-loader>
+<ngx-ui-loader></ngx-ui-loader>
