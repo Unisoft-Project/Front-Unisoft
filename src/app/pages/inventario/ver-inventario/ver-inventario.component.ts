@@ -46,7 +46,7 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerInventarioComponent{
-  displayedColumns: string[] = ['No.Compraventa', 'IMEI', 'Modelo', 'Marca', 'Observación', 'Precio Venta', 'Ver más'];
+  displayedColumns: string[] = ['ID Compra', 'IMEI', 'Marca', 'Modelo', 'Valor Compra', 'Ver más'];
   dataSource: Device[] = [];
   loading: boolean = false;
   modalDocumento: boolean = false;
@@ -78,9 +78,8 @@ export class VerInventarioComponent{
     });
     //
     this.http.get<any[]>(
-      //`https://back-unisoft-1.onrender.com/compra/compras_inventario`,
-      //'http://localhost:8000/compra/compras_inventario',
-      `https://back-unisoft-1.onrender.com/compra/dispositivos/?imei=${imei}&marca_dispositivo=&modelo_dispositivo=`,
+      //TODO: Cambiar URL a Producción
+      `http://localhost:8000/compra/dispositivos_disponibles/?imei=&marca_dispositivo=&modelo_dispositivo=`,
       { headers: headers }
     ).pipe(
       timeout(200000)
@@ -92,8 +91,8 @@ export class VerInventarioComponent{
         this.dataSource = response.map(device => {
           return {
             ...device,
-            /*modelo_dispositivo: device.modelo_dispositivo.modelos,
-            marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo,*/
+            //modelo_dispositivo: device.modelo_dispositivo.modelos,
+            //marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo
           };
         });
         console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
@@ -119,7 +118,7 @@ export class VerInventarioComponent{
     }
 
     this.getDevices(this.filtro);
-    /*if (this.filtro) {
+    if (this.filtro) {
       console.log('filtro', this.filtro)
       const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
       this.dataSource = this.datosOriginales.filter(device => {
@@ -134,7 +133,7 @@ export class VerInventarioComponent{
       const dispo = this.getDevices(this.filtro);
     } else {
       const dispo = this.getDevices(this.filtro);
-    }*/
+    }
   }
 
   printDocumento(documento: string) {
@@ -201,7 +200,7 @@ export class VerInventarioComponent{
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token');
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
