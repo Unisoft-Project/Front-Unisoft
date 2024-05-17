@@ -78,6 +78,7 @@ export class AgregarVentaComponent {
   deleteProduct(oid: any): void {
     console.log("deleting")
     this.dataSource = this.dataSource.filter(p => p.oid !== oid);
+    this.dataSourceDetalles = this.dataSourceDetalles.filter(p => p.compra_inventario!== oid);
   }
   //Gestión GET Cliente
   getCliente(documento: string) {
@@ -101,6 +102,8 @@ export class AgregarVentaComponent {
         this.clienteEncontrado.nombre = response[0].nombre;
         this.clienteEncontrado.direccion = response[0].direccion;
         this.clienteEncontrado.telefono = response[0].telefono;
+        this.clienteEncontrado.tipo_documento = response[0].tipo_documento.descripcion;
+        this.clienteEncontrado.correo = response[0].correo;
       }, (error) => {
         this.ngxService.stop();
         if (error.status === 404) {

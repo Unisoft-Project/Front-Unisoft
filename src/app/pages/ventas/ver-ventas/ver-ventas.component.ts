@@ -22,6 +22,8 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 @Component({
   selector: 'app-ver-ventas',
   templateUrl: './ver-ventas.component.html',
+  
+  styleUrls: ['./ver-ventas.css'],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
   ]

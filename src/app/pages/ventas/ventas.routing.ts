@@ -17,14 +17,6 @@ export const ventasRoutes: Routes = [
         path: 'ver-ventas',
         component: VerVentasComponent,
       },
-      {
-        path: 'editar-venta/:oid',
-        component: EditarVentaComponent,
-      },
-      {
-        path: 'editar-venta',
-        component: EditarVentaComponent,
-      },
     ],
   },
 ];

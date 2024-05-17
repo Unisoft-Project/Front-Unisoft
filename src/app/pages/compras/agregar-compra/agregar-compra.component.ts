@@ -61,6 +61,7 @@ export class AgregarCompraComponent {
     this.modelosDispositivos = [];
     if (this.selectedMarcaDispositivo) {
         this.obtenerModelosDispositivos();
+        console.log(this.selectedMarcaDispositivo)
     } else {
         this.modelosDispositivos = [];
     }
