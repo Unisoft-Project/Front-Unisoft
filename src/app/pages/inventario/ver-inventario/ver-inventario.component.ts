@@ -83,7 +83,7 @@ export class VerInventarioComponent{
     //
     this.http.get<any[]>(
       //TODO: Cambiar URL a Producción
-      `http://localhost:8000/compra/dispositivos_disponibles/?imei=&marca_dispositivo=&modelo_dispositivo=`,
+      `http://localhost:8000/compra/dispositivos_disponibles/?imei=${imei}&marca_dispositivo=&modelo_dispositivo=`,
       { headers: headers }
     ).pipe(
       timeout(200000)
@@ -100,7 +100,6 @@ export class VerInventarioComponent{
           };
         });
         this.ngxService.stop();
-        console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
         this.allClients = this.dataSource; // Asigna los datos mapeados a allClients
         this.dataSource = this.allClients.slice(0, 5); // Asigna los primeros 5 elementos de allClients a dataSource
       },
@@ -124,22 +123,22 @@ export class VerInventarioComponent{
     }
 
     this.getDevices(this.filtro);
-    if (this.filtro) {
-      console.log('filtro', this.filtro)
-      const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
-      this.dataSource = this.datosOriginales.filter(device => {
-        const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
-        const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
-        const modeloMatch = regex.test(device.modelo_dispositivo.toString()); // Verifica si el modelo coincide con el filtro
-        console.log(`Device ${device.imei}: ${imeiMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el imei coincide con el filtro
-        console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
-        console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
-        return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
-      });
-      const dispo = this.getDevices(this.filtro);
-    } else {
-      const dispo = this.getDevices(this.filtro);
-    }
+  //   if (this.filtro) {
+  //     console.log('filtro', this.filtro)
+  //     const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
+  //     this.dataSource = this.datosOriginales.filter(device => {
+  //       const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
+  //       const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
+  //       const modeloMatch = regex.test(device.modelo_dispositivo.toString()); // Verifica si el modelo coincide con el filtro
+  //       console.log(`Device ${device.imei}: ${imeiMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el imei coincide con el filtro
+  //       console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
+  //       console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
+  //       return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
+  //     });
+  //     const dispo = this.getDevices(this.filtro);
+  //   } else {
+  //     const dispo = this.getDevices(this.filtro);
+  //   }
   }
 
   printDocumento(documento: string) {
