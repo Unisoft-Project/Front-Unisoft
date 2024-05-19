@@ -113,11 +113,7 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div *ngIf="loading" class="loading-overlay">
-  <div class="text-center">
-    <img src="../../../../assets/images/recarga/cargando.gif" width="100px" />
-  </div>
-</div>
+
 <div *ngIf="errorMessage" class="error-message">
   {{ errorMessage }}
 </div>
@@ -137,3 +133,32 @@
     </mat-card>
   </div>
 </div>
+<div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
+  <div class="modal">
+    <mat-card class="cardWithShadow boxed-auth">
+      <button mat-icon-button class="close-button" (click)="closeModal()">
+        <mat-icon color="warn">close</mat-icon>
+      </button>
+      <mat-card-content class="p-32">
+        <form class="m-t-30">
+          <img [src]="photoUrl" class="modal-image">
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
+  <div class="modal">
+    <mat-card class="cardWithShadow boxed-auth">
+      <button mat-icon-button class="close-button" (click)="closeModal()">
+        <mat-icon color="warn">close</mat-icon>
+      </button>
+      <mat-card-content class="p-32">
+        <form class="m-t-30">
+          <img [src]="photoUrl" class="modal-image">
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

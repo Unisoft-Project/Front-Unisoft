@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, ViewChild  } from '@angular/core';
 import Swal from 'sweetalert2';
 import { timeout } from 'rxjs/operators';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { MatPaginator, PageEvent, MatPaginatorIntl  } from '@angular/material/paginator';
 import { Token } from '@angular/compiler';
@@ -49,6 +50,7 @@ export class VerInventarioComponent{
   displayedColumns: string[] = ['ID Compra', 'IMEI', 'Marca', 'Modelo', 'Valor Compra', 'Ver más'];
   dataSource: Device[] = [];
   loading: boolean = false;
+  modalFormato: boolean = false
   modalDocumento: boolean = false;
   errorMessage: string = '';
   filtro: string = '';
@@ -64,12 +66,14 @@ export class VerInventarioComponent{
 
 
   constructor(private http: HttpClient,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private ngxService: NgxUiLoaderService
   ) { }
 
 
 
   getDevices(imei: string) {
+    this.ngxService.start();
     this.loading = true;
     const token = localStorage.getItem('token');    ;
     const headers = new HttpHeaders({
@@ -95,11 +99,13 @@ export class VerInventarioComponent{
             //marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo
           };
         });
+        this.ngxService.stop();
         console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
         this.allClients = this.dataSource; // Asigna los datos mapeados a allClients
         this.dataSource = this.allClients.slice(0, 5); // Asigna los primeros 5 elementos de allClients a dataSource
       },
       (error) => {
+        this.ngxService.stop();
         this.loading = false;
         if (error.status === 404) {
           this.errorMessage = 'No se encontraron Dispositivos.';
@@ -145,7 +151,7 @@ export class VerInventarioComponent{
   }
 
   closeModal() {
-    this.modalDocumento = false;
+    this.modalFormato = false;
   }
 
   getPhoto(documento: string) {
