@@ -225,7 +225,30 @@ export class AppDashboardComponent {
       rprice: '375',
     },
   ];
-
+  stockActual: number = 0;
+  getDevices() {
+    const token = localStorage.getItem('token');    ;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    //
+    this.http.get<any[]>(
+      //TODO: Cambiar URL a Producción
+      `http://localhost:8000/compra/dispositivos_disponibles/?imei=&marca_dispositivo=&modelo_dispositivo=`,
+      { headers: headers }
+    ).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response) => {
+        this.stockActual = response.length
+      },
+      (error) => {
+        return 0
+      }
+    );
+  }
+  
   //inversion of variables
   totalInversion: number = 0;
   years: number[] = [];
@@ -236,7 +259,7 @@ export class AppDashboardComponent {
 
   constructor(private ngxService: NgxUiLoaderService, private http: HttpClient,) {
     this.getInversionesDashboard();
-    
+    this.getDevices();
     // sales overview chart
     this.salesOverviewChart = {
       series: [
