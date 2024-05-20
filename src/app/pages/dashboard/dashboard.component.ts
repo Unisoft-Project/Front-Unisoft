@@ -234,8 +234,7 @@ export class AppDashboardComponent {
     });
     //
     this.http.get<any[]>(
-      //TODO: Cambiar URL a Producción
-      `http://localhost:8000/compra/dispositivos_disponibles/?imei=&marca_dispositivo=&modelo_dispositivo=`,
+      `https://back-unisoft-1.onrender.com/compra/dispositivos_disponibles/?imei=&marca_dispositivo=&modelo_dispositivo=`,
       { headers: headers }
     ).pipe(
       timeout(200000)
