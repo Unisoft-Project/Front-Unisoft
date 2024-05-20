@@ -67,8 +67,10 @@ export class AppBadgeComponent implements OnInit {
           };
           // Asignar el tipo de documento seleccionado
           this.tipoDocumentoSeleccionado = this.usuario.tipo_documento_oid?.descripcion || '';
+          localStorage.setItem('tipoDocumentoSeleccionado', this.tipoDocumentoSeleccionado);
         }
-      },
+        },
+
       (error) => {
         console.error('Error al obtener datos del usuario:', error);
         // Mostrar mensaje de error usando SweetAlert2
@@ -100,7 +102,7 @@ export class AppBadgeComponent implements OnInit {
       ...this.usuario,
       tipo_documento_oid: this.usuario.tipo_documento_oid?.oid || '' // Asignar solo el OID del tipo de documento
     };
-    
+
     // Enviar los datos del usuario actualizados en la solicitud PUT
     this.http.put(url, usuarioActualizado, { headers }).pipe(
       timeout(200000)
