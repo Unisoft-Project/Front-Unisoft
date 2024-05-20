@@ -337,7 +337,7 @@ export class AppDashboardComponent {
         },
         height: 130,
       },
-      colors: ['#FFFFFF', '#ECF2FF', '#4463BC', '#5D87FF'],
+      colors: ['#4c6ca8', '#6f89b9', '#b7c4dc', '#5D87FF'],
       plotOptions: {
         pie: {
           startAngle: 0,
