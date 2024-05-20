@@ -43,8 +43,8 @@
             </th>
             <td mat-cell *matCellDef="let element" class="mat-body-1">
               <div class="center-icon">
-                <ng-container *ngIf="column === 'No.Compraventa'">
-                  {{ element.consecutivo_compraventa }}
+                <ng-container *ngIf="column === 'ID Compra'">
+                  {{ element.compra_inventario_oid }}
                 </ng-container>
               </div>
               <div class="center-icon">
@@ -53,18 +53,18 @@
                 </ng-container>
               </div>
               <div class="center-icon">
+                <ng-container *ngIf="column === 'Marca'">
+                  {{ element.descripcion_marca_dispositivo }}
+                </ng-container>
+              </div>
+              <div class="center-icon">
                 <ng-container *ngIf="column === 'Modelo'">
-                  {{ element.modelo_dispositivo.modelos }}
+                  {{ element.modelos }}
                 </ng-container>
               </div>
               <div class="center-icon">
-                <ng-container *ngIf="column === 'Observación'">
-                  {{ element.observacion }}
-                </ng-container>
-              </div>
-              <div class="center-icon">
-                <ng-container *ngIf="column === 'Precio Venta'">
-                  {{ element.valor_compra }}
+                <ng-container *ngIf="column === 'Valor Compra'">
+                  {{ element.valor_compra | currency }}
                 </ng-container>
               </div>
               <!--<div class="center-icon">
@@ -88,7 +88,7 @@
                 </ng-container>
               </div>
               <ng-container *ngIf="column === 'TipoDocumento'">
-                
+
               </ng-container>
               <ng-container
                 *ngIf="column !== 'FotoDocumento' && column !== 'TipoDocumento'"
@@ -113,11 +113,7 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div *ngIf="loading" class="loading-overlay">
-  <div class="text-center">
-    <img src="../../../../assets/images/recarga/cargando.gif" width="100px" />
-  </div>
-</div>
+
 <div *ngIf="errorMessage" class="error-message">
   {{ errorMessage }}
 </div>
@@ -137,3 +133,32 @@
     </mat-card>
   </div>
 </div>
+<div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
+  <div class="modal">
+    <mat-card class="cardWithShadow boxed-auth">
+      <button mat-icon-button class="close-button" (click)="closeModal()">
+        <mat-icon color="warn">close</mat-icon>
+      </button>
+      <mat-card-content class="p-32">
+        <form class="m-t-30">
+          <img [src]="photoUrl" class="modal-image">
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<div *ngIf="modalFormato" class="loading-overlayf" id="myModal">
+  <div class="modal">
+    <mat-card class="cardWithShadow boxed-auth">
+      <button mat-icon-button class="close-button" (click)="closeModal()">
+        <mat-icon color="warn">close</mat-icon>
+      </button>
+      <mat-card-content class="p-32">
+        <form class="m-t-30">
+          <img [src]="photoUrl" class="modal-image">
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

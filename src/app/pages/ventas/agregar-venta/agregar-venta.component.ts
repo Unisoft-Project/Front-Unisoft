@@ -78,7 +78,6 @@ export class AgregarVentaComponent {
   deleteProduct(oid: any): void {
     console.log("deleting")
     this.dataSource = this.dataSource.filter(p => p.oid !== oid);
-    this.dataSourceDetalles = this.dataSourceDetalles.filter(p => p.compra_inventario!== oid);
   }
   //Gestión GET Cliente
   getCliente(documento: string) {
@@ -524,7 +523,7 @@ export class AgregarVentaComponent {
       data.cliente = this.clientFound.oid
       data.total_venta = this.totalVenta;
       data.detalle_venta = this.dataSourceDetalles
-      console.log(data)
+      console.log("VENTA", data)
       this.ventasService.addVenta(data).pipe(
         timeout(200000)
       ).subscribe(

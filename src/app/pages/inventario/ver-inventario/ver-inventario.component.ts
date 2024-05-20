@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, ViewChild  } from '@angular/core';
 import Swal from 'sweetalert2';
 import { timeout } from 'rxjs/operators';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { MatPaginator, PageEvent, MatPaginatorIntl  } from '@angular/material/paginator';
 import { Token } from '@angular/compiler';
@@ -46,9 +47,10 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 
 
 export class VerInventarioComponent{
-  displayedColumns: string[] = ['No.Compraventa', 'IMEI', 'Modelo', 'Marca', 'Observación', 'Precio Venta', 'Ver más'];
+  displayedColumns: string[] = ['ID Compra', 'IMEI', 'Marca', 'Modelo', 'Valor Compra', 'Ver más'];
   dataSource: Device[] = [];
   loading: boolean = false;
+  modalFormato: boolean = false
   modalDocumento: boolean = false;
   errorMessage: string = '';
   filtro: string = '';
@@ -64,12 +66,14 @@ export class VerInventarioComponent{
 
 
   constructor(private http: HttpClient,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private ngxService: NgxUiLoaderService
   ) { }
 
 
 
   getDevices(imei: string) {
+    this.ngxService.start();
     this.loading = true;
     const token = localStorage.getItem('token');    ;
     const headers = new HttpHeaders({
@@ -78,9 +82,7 @@ export class VerInventarioComponent{
     });
     //
     this.http.get<any[]>(
-      //`https://back-unisoft-1.onrender.com/compra/compras_inventario`,
-      //'http://localhost:8000/compra/compras_inventario',
-      `https://back-unisoft-1.onrender.com/compra/dispositivos/?imei=${imei}&marca_dispositivo=&modelo_dispositivo=`,
+      `https://back-unisoft-1.onrender.com/compra/dispositivos_disponibles/?imei=${imei}&marca_dispositivo=&modelo_dispositivo=`,
       { headers: headers }
     ).pipe(
       timeout(200000)
@@ -92,15 +94,16 @@ export class VerInventarioComponent{
         this.dataSource = response.map(device => {
           return {
             ...device,
-            /*modelo_dispositivo: device.modelo_dispositivo.modelos,
-            marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo,*/
+            //modelo_dispositivo: device.modelo_dispositivo.modelos,
+            //marca_dispositivo: device.marca_dispositivo.descripcion_marca_dispositivo
           };
         });
-        console.log('DataSource after mapping:', this.dataSource); // Agrega este console.log para verificar los datos en dataSource después del mapeo
+        this.ngxService.stop();
         this.allClients = this.dataSource; // Asigna los datos mapeados a allClients
         this.dataSource = this.allClients.slice(0, 5); // Asigna los primeros 5 elementos de allClients a dataSource
       },
       (error) => {
+        this.ngxService.stop();
         this.loading = false;
         if (error.status === 404) {
           this.errorMessage = 'No se encontraron Dispositivos.';
@@ -119,22 +122,22 @@ export class VerInventarioComponent{
     }
 
     this.getDevices(this.filtro);
-    /*if (this.filtro) {
-      console.log('filtro', this.filtro)
-      const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
-      this.dataSource = this.datosOriginales.filter(device => {
-        const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
-        const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
-        const modeloMatch = regex.test(device.modelo_dispositivo.toString()); // Verifica si el modelo coincide con el filtro
-        console.log(`Device ${device.imei}: ${imeiMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el imei coincide con el filtro
-        console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
-        console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
-        return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
-      });
-      const dispo = this.getDevices(this.filtro);
-    } else {
-      const dispo = this.getDevices(this.filtro);
-    }*/
+  //   if (this.filtro) {
+  //     console.log('filtro', this.filtro)
+  //     const regex = new RegExp(this.filtro, 'i'); // Expresión regular para buscar el filtro sin distinguir mayúsculas y minúsculas
+  //     this.dataSource = this.datosOriginales.filter(device => {
+  //       const imeiMatch = regex.test(device.imei); // Verifica si el imei coincide con el filtro
+  //       const marcaMatch = regex.test(device.marca_dispositivo); // Verifica si la marca coincide con el filtro
+  //       const modeloMatch = regex.test(device.modelo_dispositivo.toString()); // Verifica si el modelo coincide con el filtro
+  //       console.log(`Device ${device.imei}: ${imeiMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el imei coincide con el filtro
+  //       console.log(`Device ${device.marca_dispositivo}: ${marcaMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si la marca coincide con el filtro
+  //       console.log(`Device ${device.modelo_dispositivo}: ${modeloMatch ? 'Coincide' : 'No coincide'}`); // Mostrar si el modelo coincide con el filtro
+  //       return imeiMatch || marcaMatch || modeloMatch; // Devuelve true si alguno de los campos coincide con el filtro
+  //     });
+  //     const dispo = this.getDevices(this.filtro);
+  //   } else {
+  //     const dispo = this.getDevices(this.filtro);
+  //   }
   }
 
   printDocumento(documento: string) {
@@ -146,7 +149,7 @@ export class VerInventarioComponent{
   }
 
   closeModal() {
-    this.modalDocumento = false;
+    this.modalFormato = false;
   }
 
   getPhoto(documento: string) {
@@ -201,7 +204,7 @@ export class VerInventarioComponent{
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token');
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

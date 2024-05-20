@@ -141,6 +141,8 @@ export class AppDashboardComponent {
   public salesOverviewChart!: Partial<salesOverviewChart> | any;
   public yearlyChart!: Partial<yearlyChart> | any;
   public monthlyChart!: Partial<monthlyChart> | any;
+  public dailySalesChart!: Partial<yearlyChart> | any;
+
 
   displayedColumns: string[] = ['assigned', 'name', 'priority', 'budget'];
   dataSource = ELEMENT_DATA;
@@ -225,7 +227,29 @@ export class AppDashboardComponent {
       rprice: '375',
     },
   ];
-
+  stockActual: number = 0;
+  getDevices() {
+    const token = localStorage.getItem('token');    ;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    //
+    this.http.get<any[]>(
+      `https://back-unisoft-1.onrender.com/compra/dispositivos_disponibles/?imei=&marca_dispositivo=&modelo_dispositivo=`,
+      { headers: headers }
+    ).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response) => {
+        this.stockActual = response.length
+      },
+      (error) => {
+        return 0
+      }
+    );
+  }
+  
   //inversion of variables
   totalInversion: number = 0;
   years: number[] = [];
@@ -233,9 +257,13 @@ export class AppDashboardComponent {
   primeroPorcentaje: string = '0';
   segundoPorcentaje: string = '0';
   datosAmostrar: any[] = [];
+  //ventas variables
+  ventasHoy: number = 0;
 
   constructor(private ngxService: NgxUiLoaderService, private http: HttpClient,) {
     this.getInversionesDashboard();
+    this.getDevices();
+    this.getDailySales();
     
     // sales overview chart
     this.salesOverviewChart = {
@@ -448,6 +476,30 @@ export class AppDashboardComponent {
       (error) => {
         this.ngxService.stop();
         console.log('Error a la consultar datos de la dashboard.');
+      }
+    );
+  }
+
+  getDailySales() {
+    this.ngxService.start();
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.get<any>(
+      `https://back-unisoft-1.onrender.com/ventas/ventas_hoy`,
+      { headers: headers }
+    ).pipe(
+      timeout(200000)
+    ).subscribe(
+      (response) => {
+        this.ngxService.stop();
+        this.ventasHoy = response.cantidad_ventas; // Asignar el valor correcto desde la respuesta
+      },
+      (error) => {
+        this.ngxService.stop();
+        console.log('Error al consultar datos de ventas diarias.');
       }
     );
   }
