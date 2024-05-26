@@ -11,7 +11,6 @@ import { InfoFactura } from 'src/app/models/InfoFactura.model';
 import { Router } from '@angular/router';
 
 
-
 export class CustomPaginatorIntl extends MatPaginatorIntl {
   constructor() {
     super();
@@ -62,7 +61,9 @@ export class VerVentasComponent{
       .pipe(timeout(200000))
       .subscribe(
         (res) => {
-          this.dataSource = res;
+          // this.dataSource = res;
+          this.dataSourcePaginada = res;
+          this.dataSource = this.dataSourcePaginada.slice(0, 5);
           console.log(this.dataSource);
           this.ngxService.stop()
         },
@@ -166,25 +167,41 @@ export class VerVentasComponent{
     });
   }
 
+  // paginaCambiada(event: PageEvent) {
+  //   console.log('Page event:', event); // Verificar el evento de paginación
+  //   const startIndex = event.pageIndex * event.pageSize;
+  //   const endIndex = startIndex + event.pageSize;
+  //   console.log('Start index:', startIndex); // Verificar el índice de inicio
+  //   console.log('End index:', endIndex); // Verificar el índice final
+  //   this.dataSource = this.dataSource.slice(startIndex, endIndex);
+  //   console.log('DataSource after pagination:', this.dataSource); // Verificar el dataSource después de la paginación
+  // }
+
+  // actualizarPagina() {
+  //   const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+  //   const endIndex = startIndex + this.paginator.pageSize;
+  //   console.log('Start index:', startIndex); // Verificar el índice de inicio
+  //   console.log('End index:', endIndex); // Verificar el índice final
+  //   // Actualiza los datos del dataSource con los clientes correspondientes a la página actual
+  //   this.dataSource = this.dataSource.slice(startIndex, endIndex);
+  //   console.log('DataSource after updating page:', this.dataSource); // Verificar el dataSource después de actualizar la página
+  // }
+
+  dataSourcePaginada: InfoFactura[] = [];
   paginaCambiada(event: PageEvent) {
-    console.log('Page event:', event); // Verificar el evento de paginación
     const startIndex = event.pageIndex * event.pageSize;
     const endIndex = startIndex + event.pageSize;
-    console.log('Start index:', startIndex); // Verificar el índice de inicio
-    console.log('End index:', endIndex); // Verificar el índice final
-    this.dataSource = this.dataSource.slice(startIndex, endIndex);
-    console.log('DataSource after pagination:', this.dataSource); // Verificar el dataSource después de la paginación
+    // Crear una copia paginada del dataSource original
+    this.dataSource  = this.dataSourcePaginada.slice(startIndex, endIndex);
   }
 
   actualizarPagina() {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     const endIndex = startIndex + this.paginator.pageSize;
-    console.log('Start index:', startIndex); // Verificar el índice de inicio
-    console.log('End index:', endIndex); // Verificar el índice final
-    // Actualiza los datos del dataSource con los clientes correspondientes a la página actual
+    // Crear una copia paginada del dataSource original
     this.dataSource = this.dataSource.slice(startIndex, endIndex);
-    console.log('DataSource after updating page:', this.dataSource); // Verificar el dataSource después de actualizar la página
   }
+  
   // In your component class
   dataSourceDetalles = [];
   displayedColumnsDetalles = ['IMEI', 'Marca', 'Modelo', 'Garantía', 'Valor compra', 'Valor venta'];
