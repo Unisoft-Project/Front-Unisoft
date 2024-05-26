@@ -417,8 +417,19 @@ export class EditarCompraComponent {
 
 
   
-  actualizardatos() {
+  async actualizardatos() {
     this.ngxService.start();
+
+    if (this.firebaseFile) {
+      const file: File = this.firebaseFile as File;
+      const path = `formato_compraventa/${this.compraForm.imei}`;
+      this.storage.upload(path, file);
+      const uploadTask = await this.storage.upload(path, file);
+      const url = await uploadTask.ref.getDownloadURL();
+    }else{
+      this.ngxService.stop();
+    }
+
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
