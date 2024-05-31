@@ -4,7 +4,7 @@
       <mat-form-field appearance="outline" class="w-100" color="primary" style="margin-right: 8px">
         <input matInput placeholder="Número de IMEI" name="filtro" #filtroField="ngModel" [(ngModel)]="filtro" />
       </mat-form-field>
-      <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px" type="button">
+      <button mat-flat-button color="primary" style="width: 100px; margin-top: 10px" type="button" (click)="filtrar(filtro)">
         Filtrar
       </button>
     </div>

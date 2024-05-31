@@ -107,7 +107,47 @@ export class VerVentasComponent{
   verMas(element: any) {
     //this.router.navigate(['/editar-compra', element.id]);
   }
+  datosOriginales: any[] = [];
+  filtrar(imei: any) {
+    if (imei) {
+      this.ngxService.start();
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+      console.log(imei)
+      const endpoint = `https://back-unisoft-1.onrender.com/ventas/get_venta_by_imei/${imei}`;
+  
+      this.http.get(endpoint, { headers: headers }).pipe(
+        timeout(200000)
+      ).subscribe(
+        (response: any) => {
 
+          console.log(response)
+          //get venta 
+          const filteredData = this.dataSource.filter(item => item.oid === response.venta);
+          console.log(filteredData); 
+          this.dataSource = filteredData;
+          
+         //this.paginator.firstPage(); // Reset paginator to first page
+          this.ngxService.stop();
+        },
+        (error) => {
+          this.ngxService.stop();
+          if (error.status === 404) {
+            this.errorMessage = 'No se encontraron ventas para el IMEI proporcionado.';
+          } else {
+            this.errorMessage = 'Ocurrió un error al obtener las ventas.';
+          }
+          console.error('Error fetching Ventas:', error);
+        }
+      );
+    } else {
+      this.getVentas(); // If no IMEI provided, fetch all sales data
+    }
+  }
+  
   
   printEliminarCompra(oidVenta: any) {
     this.ngxService.start();
