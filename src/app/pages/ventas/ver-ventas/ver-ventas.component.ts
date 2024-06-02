@@ -21,7 +21,7 @@ export class CustomPaginatorIntl extends MatPaginatorIntl {
 @Component({
   selector: 'app-ver-ventas',
   templateUrl: './ver-ventas.component.html',
-  
+
   styleUrls: ['./ver-ventas.css'],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
@@ -51,13 +51,13 @@ export class VerVentasComponent{
     private ngxService: NgxUiLoaderService,
     private ventasService: VentasService,
     private router: Router
-    
+
   ) { }
 
 
   getVentas() {
     this.ngxService.start()
-    this.ventasService.getAllVentas()  
+    this.ventasService.getAllVentas()
       .pipe(timeout(200000))
       .subscribe(
         (res) => {
@@ -68,7 +68,7 @@ export class VerVentasComponent{
           this.ngxService.stop()
         },
         (error) => {
-  
+
           if (error.status === 404) {
             this.errorMessage = 'No se encontraron ventas.';
           } else {
@@ -78,7 +78,7 @@ export class VerVentasComponent{
         }
       );
   }
-  
+
   photoUrl: string | null = null;
 
   getFactura(oid: any) {
@@ -102,8 +102,8 @@ export class VerVentasComponent{
       this.photoUrl = null;
     }
   }
-  
-  
+
+
   verMas(element: any) {
     //this.router.navigate(['/editar-compra', element.id]);
   }
@@ -118,18 +118,18 @@ export class VerVentasComponent{
       });
       console.log(imei)
       const endpoint = `https://back-unisoft-1.onrender.com/ventas/get_venta_by_imei/${imei}`;
-  
+
       this.http.get(endpoint, { headers: headers }).pipe(
         timeout(200000)
       ).subscribe(
         (response: any) => {
 
           console.log(response)
-          //get venta 
+          //get venta
           const filteredData = this.dataSource.filter(item => item.oid === response.venta);
-          console.log(filteredData); 
+          console.log(filteredData);
           this.dataSource = filteredData;
-          
+
          //this.paginator.firstPage(); // Reset paginator to first page
           this.ngxService.stop();
         },
@@ -147,14 +147,13 @@ export class VerVentasComponent{
       this.getVentas(); // If no IMEI provided, fetch all sales data
     }
   }
-  
-  
+
   printEliminarCompra(oidVenta: any) {
     this.ngxService.start();
     console.log("oid", oidVenta);
     Swal.fire({
       title: '¿Está seguro?',
-      text: `¿Desea eliminar la venta: IMEI: ${oidVenta} ?`,
+      text: `¿Desea eliminar la venta con el número de factura: ${oidVenta.numero_factura}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
@@ -202,7 +201,7 @@ export class VerVentasComponent{
           }
         );
       }else {
-        this.ngxService.stop(); 
+        this.ngxService.stop();
       }
     });
   }
@@ -241,14 +240,14 @@ export class VerVentasComponent{
     // Crear una copia paginada del dataSource original
     this.dataSource = this.dataSource.slice(startIndex, endIndex);
   }
-  
+
   // In your component class
   dataSourceDetalles = [];
   displayedColumnsDetalles = ['IMEI', 'Marca', 'Modelo', 'Garantía', 'Valor compra', 'Valor venta'];
 
   getVentaDetalles(oid: any) {
-    console.log(oid.oid); 
-  
+    console.log(oid.oid);
+
     this.ngxService.start();
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
@@ -256,7 +255,7 @@ export class VerVentasComponent{
       'Authorization': `Bearer ${token}`
     });
     const endpoint = `https://back-unisoft-1.onrender.com/ventas/get_venta_by_id/${oid.oid}`;
-  
+
     this.http.get(endpoint, { headers: headers }).pipe(
       timeout(200000)
     ).subscribe(
@@ -286,8 +285,8 @@ export class VerVentasComponent{
         }
       }
     );
-  
-  
+
+
 
    // /ventas/get_venta_by_id/200
     // if (photoPath) {
