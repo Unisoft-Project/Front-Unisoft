@@ -61,7 +61,6 @@ export class AgregarCompraComponent {
     this.modelosDispositivos = [];
     if (this.selectedMarcaDispositivo) {
         this.obtenerModelosDispositivos();
-        console.log(this.selectedMarcaDispositivo)
     } else {
         this.modelosDispositivos = [];
     }
@@ -119,14 +118,14 @@ export class AgregarCompraComponent {
       });
     } else {
 
-      if (this.firebaseFile) {
         const file: File = this.firebaseFile as File;
         const path = `formato_compraventa/${form.value.imei}`;
         this.fireStorage.upload(path, file);
         const uploadTask = await this.fireStorage.upload(path, file);
         const url = await uploadTask.ref.getDownloadURL();
-        data.formato_compraventa = url;
-      }
+        data.foto_documento = url;
+        this.ngxService.stop();
+      
 
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders({

@@ -124,9 +124,9 @@ export class AgregarVentaComponent {
     );
   }
 
-  generarFactura(codFactura: any) {
+  generarFactura(codFactura: any, oid: any) {
     this.facturaService
-      .getFactura(codFactura)
+      .getFactura(oid)
       .pipe(timeout(200000))
       .subscribe(
         (res) => {
@@ -528,9 +528,9 @@ export class AgregarVentaComponent {
         timeout(200000)
       ).subscribe(
         (response) => {
-          //this.generarFactura(form.value.numeroFactura)
+         // this.generarFactura(form.value.numeroFactura, response[0].venta.oid)
           console.log("RESPONSE", response[0].venta.oid)
-          this.generarFactura(response[0].venta.oid)
+        //  this.generarFactura(response[0].venta.oid)
           //agregar detales venta
           this.ngxService.stop();
           Swal.fire({
@@ -540,7 +540,7 @@ export class AgregarVentaComponent {
             confirmButtonText: 'OK',
           }).then((result) => {
             if (result.isConfirmed) {
-              this.generarFactura(form.value.numeroFactura)
+              this.generarFactura(form.value.numeroFactura, response[0].venta.oid)
             }
           });
         },

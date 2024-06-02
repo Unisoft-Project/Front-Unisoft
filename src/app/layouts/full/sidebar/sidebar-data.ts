@@ -65,51 +65,5 @@ export const navItems: NavItem[] = [
     displayName: 'Ver clientes',
     iconName: 'users',
     route: '/clientes/ver-clientes', 
-  },
-  {
-    navCap: 'Perfiles',
-  },
-
-  {
-    displayName: 'calculo de costo',
-    iconName: 'list',
-    route: '/ui-components/lists',
-  },
-
-  {
-    displayName: 'Chips',
-    iconName: 'poker-chip',
-    route: '/ui-components/chips',
-  },
-  
-  {
-    displayName: 'Menu',
-    iconName: 'layout-navbar-expand',
-    route: '/ui-components/menu',
-  },
-  {
-    displayName: 'Tooltips',
-    iconName: 'tooltip',
-    route: '/ui-components/tooltips',
-  },
-  {
-    displayName: 'Login',
-    iconName: 'lock',
-    route: '/authentication/login',
-  },
-  {
-    displayName: 'Registro',
-    iconName: 'user-plus',
-    route: '/authentication/register',
-  },
-  {
-    displayName: 'Icons',
-    iconName: 'mood-smile',
-    route: '/extra/icons',
-  },
-  {
-    displayName: 'Sample Page',
-    iconName: 'aperture',
-    route: '/extra/sample-page',
-  },
+  }
 ];
