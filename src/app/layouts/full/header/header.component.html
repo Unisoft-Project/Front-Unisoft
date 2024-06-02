@@ -5,10 +5,6 @@
   </button>
   <!-- --------------------------------------------------------------- -->
 
-  <!-- --------------------------------------------------------------- -->
-  <!-- Notificaciones desplegables -->
-  <!-- --------------------------------------------------------------- -->
-
   <span class="flex-1-auto"></span>
 
   <!-- --------------------------------------------------------------- -->
@@ -19,11 +15,12 @@
     mat-icon-button
     [matMenuTriggerFor]="profilemenu"
     aria-label="Notificaciones"
+    style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin-top: 18px;"
   >
     <img
       src="/assets/images/profile/user-1.jpg"
       class="rounded-circle object-cover"
-      width="60"
+      style="width: 70px; height: 70px;"
     />
   </button>
   <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
@@ -32,28 +29,13 @@
         ><i-tabler name="user" class="icon-18 d-flex"></i-tabler></mat-icon
       >Mi Perfil
     </button>
-    <button mat-menu-item>
-      <mat-icon class="d-flex align-items-center"
-        ><i-tabler name="mail" class="icon-18 d-flex"></i-tabler></mat-icon
-      >Mi Cuenta
-    </button>
-    <button mat-menu-item>
-      <mat-icon class="d-flex align-items-center"
-        ><i-tabler
-          name="list-check"
-          class="icon-18 d-flex"
-        ></i-tabler></mat-icon
-      >Mis Tareas
-    </button>
 
     <div class="p-x-12 m-t-12">
       <a
-      (click)="logout()"
-
+        (click)="logout()"
         mat-stroked-button
         color="primary"
         class="w-100"
-
         >Cerrar sesión</a
       >
     </div>
